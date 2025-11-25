@@ -1,0 +1,33 @@
+# Environment variables and secrets
+.env
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Logs
+*.log
+last_run.txt
+scorer_processed.txt
+
+# Reports - exclude all except the HTML dashboard
+Reports/*.csv
+Reports/*.png
+
+# Allow the HTML dashboard to be committed
+!Reports/capacity_dashboard.html
+
+# Mac
+.DS_Store
+
+# Temporary files
+*.tmp
+*.bak
+/tmp/
