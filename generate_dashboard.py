@@ -358,8 +358,12 @@ def generate_capacity_heatmap(tasks, team_capacity_config):
         current_date = today + timedelta(days=day_offset)
         daily_capacity = 0
 
-        # Calculate capacity needed for tasks active on this day (including completed)
+        # Calculate capacity needed for tasks active on this day (excluding completed to match PNG)
         for task in tasks:
+            # Skip completed tasks to match video_scorer.py behavior
+            if task.get('completed', False):
+                continue
+
             try:
                 # Match video_scorer.py logic for handling missing dates
                 if task['due_on']:
