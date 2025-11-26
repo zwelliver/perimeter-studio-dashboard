@@ -342,13 +342,16 @@ def generate_capacity_heatmap(tasks, team_capacity_config):
     today = datetime.now().date()
     heatmap_data = []
 
+    # Default span for tasks without start dates (assume 7 working days)
+    DEFAULT_TASK_DURATION_DAYS = 7
+
     # Generate next 30 days
     for day_offset in range(30):
         current_date = today + timedelta(days=day_offset)
         daily_capacity = 0
         daily_max = sum(team_capacity_config[member]['max'] for member in team_capacity_config)
 
-        # Calculate capacity needed for tasks due on this day
+        # Calculate capacity needed for tasks active on this day
         for task in tasks:
             if task['completed'] or not task['due_on']:
                 continue
@@ -356,19 +359,37 @@ def generate_capacity_heatmap(tasks, team_capacity_config):
             try:
                 due_date = datetime.fromisoformat(task['due_on']).date() if isinstance(task['due_on'], str) else task['due_on']
 
-                # Simple heuristic: distribute task capacity over days until due date
+                # Determine work period for this task
                 if task['start_on']:
                     start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
                 else:
-                    start_date = today
+                    # No start date: assume task starts DEFAULT_TASK_DURATION_DAYS before due date
+                    # But not earlier than today
+                    calculated_start = due_date - timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+                    start_date = max(today, calculated_start)
 
+                # Only count if this date falls within the task's work period
                 if start_date <= current_date <= due_date:
                     days_span = (due_date - start_date).days or 1
-                    daily_allocation = task['estimated_allocation'] / days_span if task['estimated_allocation'] > 0 else 0
-                    daily_capacity += daily_allocation
-            except:
+
+                    # Task allocation is % of one person for 30 days
+                    # Example: 13% = 3.9 person-days total
+                    task_person_days = (task['estimated_allocation'] / 100) * 30
+
+                    # Distribute over the actual work period
+                    # Example: 3.9 days / 7 calendar days = 0.557 person-days per day
+                    daily_person_days = task_person_days / days_span
+
+                    # Convert to percentage of one person's daily capacity
+                    # Example: 0.557 person-days = 55.7% of one person per day
+                    daily_person_pct = daily_person_days * 100
+
+                    # Add to total daily capacity requirement
+                    daily_capacity += daily_person_pct
+            except Exception as e:
                 pass
 
+        # Calculate utilization as percentage of daily team capacity
         utilization = (daily_capacity / daily_max * 100) if daily_max > 0 else 0
 
         # Categorize
