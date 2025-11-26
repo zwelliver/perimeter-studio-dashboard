@@ -717,6 +717,209 @@ def generate_html_dashboard(data):
                 page-break-inside: avoid;
             }}
         }}
+
+        /* Chat Widget Styles */
+        .chat-widget {{
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }}
+
+        .chat-button {{
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: {BRAND_BLUE};
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }}
+
+        .chat-button:hover {{
+            background: {BRAND_NAVY};
+            transform: scale(1.05);
+        }}
+
+        .chat-window {{
+            display: none;
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 400px;
+            max-width: calc(100vw - 40px);
+            height: 600px;
+            max-height: calc(100vh - 120px);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            flex-direction: column;
+            overflow: hidden;
+        }}
+
+        .chat-window.open {{
+            display: flex;
+        }}
+
+        .chat-header {{
+            background: {BRAND_NAVY};
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }}
+
+        .chat-header h3 {{
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }}
+
+        .chat-close {{
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }}
+
+        .chat-close:hover {{
+            background: rgba(255,255,255,0.1);
+        }}
+
+        .chat-messages {{
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }}
+
+        .chat-message {{
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            line-height: 1.4;
+        }}
+
+        .chat-message.user {{
+            background: {BRAND_BLUE};
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }}
+
+        .chat-message.assistant {{
+            background: white;
+            color: {BRAND_NAVY};
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }}
+
+        .chat-message.system {{
+            background: #ffe69c;
+            color: #856404;
+            margin: 0 auto;
+            text-align: center;
+            font-size: 13px;
+        }}
+
+        .chat-input-container {{
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 10px;
+        }}
+
+        .chat-input {{
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }}
+
+        .chat-input:focus {{
+            outline: none;
+            border-color: {BRAND_BLUE};
+        }}
+
+        .chat-send {{
+            padding: 10px 20px;
+            background: {BRAND_BLUE};
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }}
+
+        .chat-send:hover {{
+            background: {BRAND_NAVY};
+        }}
+
+        .chat-send:disabled {{
+            background: #6c757d;
+            cursor: not-allowed;
+        }}
+
+        .typing-indicator {{
+            display: none;
+            padding: 10px 16px;
+            background: white;
+            border-radius: 12px;
+            max-width: 60px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }}
+
+        .typing-indicator.show {{
+            display: block;
+        }}
+
+        .typing-indicator span {{
+            height: 8px;
+            width: 8px;
+            background: {BRAND_BLUE};
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: typing 1.4s infinite;
+        }}
+
+        .typing-indicator span:nth-child(2) {{
+            animation-delay: 0.2s;
+        }}
+
+        .typing-indicator span:nth-child(3) {{
+            animation-delay: 0.4s;
+        }}
+
+        @keyframes typing {{
+            0%, 60%, 100% {{
+                opacity: 0.3;
+            }}
+            30% {{
+                opacity: 1;
+            }}
+        }}
     </style>
 </head>
 <body>
@@ -1126,10 +1329,115 @@ def generate_html_dashboard(data):
                 }}
             }}
         }});
+
+        // Chat Widget JavaScript
+        const chatButton = document.getElementById('chatButton');
+        const chatWindow = document.getElementById('chatWindow');
+        const chatClose = document.getElementById('chatClose');
+        const chatInput = document.getElementById('chatInput');
+        const chatSend = document.getElementById('chatSend');
+        const chatMessages = document.getElementById('chatMessages');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        // Toggle chat window
+        chatButton.addEventListener('click', () => {{
+            chatWindow.classList.toggle('open');
+            if (chatWindow.classList.contains('open')) {{
+                chatInput.focus();
+            }}
+        }});
+
+        chatClose.addEventListener('click', () => {{
+            chatWindow.classList.remove('open');
+        }});
+
+        // Send message
+        async function sendMessage() {{
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            chatInput.value = '';
+            chatSend.disabled = true;
+
+            // Show typing indicator
+            typingIndicator.classList.add('show');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {{
+                // Call backend API
+                const response = await fetch('http://localhost:5000/api/chat', {{
+                    method: 'POST',
+                    headers: {{
+                        'Content-Type': 'application/json'
+                    }},
+                    body: JSON.stringify({{ message }})
+                }});
+
+                if (!response.ok) {{
+                    throw new Error('Failed to get response');
+                }}
+
+                const data = await response.json();
+
+                // Hide typing indicator
+                typingIndicator.classList.remove('show');
+
+                // Add assistant response
+                addMessage(data.response, 'assistant');
+            }} catch (error) {{
+                typingIndicator.classList.remove('show');
+                addMessage('Sorry, I\\'m having trouble connecting to the backend. Make sure the chat backend is running on localhost:5000.', 'system');
+            }} finally {{
+                chatSend.disabled = false;
+            }}
+        }}
+
+        function addMessage(text, type) {{
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${{type}}`;
+            messageDiv.textContent = text;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }}
+
+        chatSend.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {{
+            if (e.key === 'Enter' && !e.shiftKey) {{
+                e.preventDefault();
+                sendMessage();
+            }}
+        }});
+
+        // Welcome message
+        addMessage('Hi! I\\'m Claude, your capacity dashboard assistant. Ask me anything about team workload, capacity trends, or project planning!', 'assistant');
 """
 
     html += """
     </script>
+
+    <!-- Chat Widget -->
+    <div class="chat-widget">
+        <button id="chatButton" class="chat-button" title="Ask Claude about your dashboard data">💬</button>
+        <div id="chatWindow" class="chat-window">
+            <div class="chat-header">
+                <h3>Dashboard Assistant</h3>
+                <button id="chatClose" class="chat-close">&times;</button>
+            </div>
+            <div id="chatMessages" class="chat-messages">
+                <!-- Messages will be added here -->
+            </div>
+            <div id="typingIndicator" class="typing-indicator">
+                <span></span><span></span><span></span>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" id="chatInput" class="chat-input" placeholder="Ask about your dashboard data..." />
+                <button id="chatSend" class="chat-send">Send</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
 """
