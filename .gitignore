@@ -17,12 +17,13 @@ ENV/
 last_run.txt
 scorer_processed.txt
 
-# Reports - exclude all except the HTML dashboard
+# Reports - exclude all except the HTML dashboard and combined heatmap
 Reports/*.csv
 Reports/*.png
 
-# Allow the HTML dashboard to be committed
+# Allow the HTML dashboard and combined heatmap to be committed
 !Reports/capacity_dashboard.html
+!Reports/Combined_heatmap_weighted.png
 
 # Mac
 .DS_Store
