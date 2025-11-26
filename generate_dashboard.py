@@ -349,7 +349,8 @@ def generate_capacity_heatmap(tasks, team_capacity_config):
     for day_offset in range(30):
         current_date = today + timedelta(days=day_offset)
         daily_capacity = 0
-        daily_max = sum(team_capacity_config[member]['max'] for member in team_capacity_config)
+        # Match PNG heatmap: MAX_CAPACITY/5 for daily capacity (5-day work week)
+        daily_max = sum(team_capacity_config[member]['max'] for member in team_capacity_config) / 5
 
         # Calculate capacity needed for tasks active on this day
         for task in tasks:
@@ -370,22 +371,12 @@ def generate_capacity_heatmap(tasks, team_capacity_config):
 
                 # Only count if this date falls within the task's work period
                 if start_date <= current_date <= due_date:
-                    days_span = (due_date - start_date).days or 1
-
-                    # Task allocation is % of one person for 30 days
-                    # Example: 13% = 3.9 person-days total
-                    task_person_days = (task['estimated_allocation'] / 100) * 30
-
-                    # Distribute over the actual work period
-                    # Example: 3.9 days / 7 calendar days = 0.557 person-days per day
-                    daily_person_days = task_person_days / days_span
-
-                    # Convert to percentage of one person's daily capacity
-                    # Example: 0.557 person-days = 55.7% of one person per day
-                    daily_person_pct = daily_person_days * 100
+                    # Use SAME calculation as PNG heatmap for consistency
+                    # allocation% / 5 = daily workload (5-day work week)
+                    daily_workload = task['estimated_allocation'] / 5
 
                     # Add to total daily capacity requirement
-                    daily_capacity += daily_person_pct
+                    daily_capacity += daily_workload
             except Exception as e:
                 pass
 
