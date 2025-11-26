@@ -360,20 +360,27 @@ def generate_capacity_heatmap(tasks, team_capacity_config):
 
         # Calculate capacity needed for tasks active on this day (including completed)
         for task in tasks:
-            if not task['due_on']:
-                continue
-
             try:
-                due_date = datetime.fromisoformat(task['due_on']).date() if isinstance(task['due_on'], str) else task['due_on']
+                # Match video_scorer.py logic for handling missing dates
+                if task['due_on']:
+                    due_date = datetime.fromisoformat(task['due_on']).date() if isinstance(task['due_on'], str) else task['due_on']
 
-                # Determine work period for this task
-                if task['start_on']:
+                    if task['start_on']:
+                        start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
+                    else:
+                        # Has due but no start: work backwards from due date
+                        calculated_start = due_date - timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+                        start_date = max(today, calculated_start)
+
+                elif task['start_on']:
+                    # Has start but no due: assign default duration from start
                     start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
+                    due_date = start_date + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+
                 else:
-                    # No start date: assume task starts DEFAULT_TASK_DURATION_DAYS before due date
-                    # But not earlier than today
-                    calculated_start = due_date - timedelta(days=DEFAULT_TASK_DURATION_DAYS)
-                    start_date = max(today, calculated_start)
+                    # Neither date exists: assign defaults (matches video_scorer.py lines 700-703)
+                    start_date = today
+                    due_date = today + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
 
                 # Only count if this date falls within the task's work period
                 if start_date <= current_date <= due_date:
