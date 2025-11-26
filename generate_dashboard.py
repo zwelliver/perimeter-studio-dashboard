@@ -855,15 +855,49 @@ def generate_html_dashboard(data):
 
         <!-- Capacity Utilization Heatmap -->
         <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>📊 Team Capacity Calendar - Next 12 Months</h2>
-            <p style="font-size: 14px; color: #6c757d; margin-bottom: 15px;">
-                Combined view showing all phases (Preproduction, Production, Post Production) with adaptive color scaling based on peak workload.
-            </p>
-            <div style="margin-top: 15px; text-align: center; overflow-x: auto;">
-                <img src="Reports/Combined_heatmap_weighted.png" alt="Team Capacity Calendar" style="max-width: 100%; height: auto; border: 1px solid #dee2e6; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2>📊 Capacity Utilization - Next 30 Days</h2>
+            <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px;">
+    """
+
+    heatmap = data.get('capacity_heatmap', [])
+    for day_data in heatmap:
+        date_str = day_data.get('date', '')  # Full date like "2025-11-26"
+        day_abbr = day_data.get('day', '')  # Day abbreviation like "Wed"
+        utilization = day_data.get('utilization', 0)
+        status = day_data.get('status', 'low')
+
+        # Format date for display (show month/day)
+        try:
+            from datetime import datetime
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+            display_date = date_obj.strftime('%m/%d')  # Shows as "11/26"
+        except:
+            display_date = day_abbr
+
+        # Color based on utilization
+        if status == 'high':
+            bg_color = '#dc3545'
+        elif status == 'medium':
+            bg_color = '#ffc107'
+        else:
+            bg_color = '#28a745'
+
+        html += f"""
+                <div style="background: {bg_color}; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="{date_str}: {utilization:.1f}% capacity">
+                    <div style="font-weight: bold;">{display_date}</div>
+                    <div style="font-size: 9px; margin-top: 2px;">{utilization:.0f}%</div>
+                </div>
+        """
+
+    html += """
             </div>
-            <div style="margin-top: 15px; font-size: 12px; color: #6c757d; text-align: center;">
-                <em>Heatmap shows daily capacity utilization with color intensity based on workload relative to team capacity. Current month highlighted in blue.</em>
+            <div style="margin-top: 15px; font-size: 12px; color: #6c757d; display: flex; justify-content: center; gap: 20px;">
+                <div><span style="display: inline-block; width: 12px; height: 12px; background: #28a745; border-radius: 2px;"></span> Low</div>
+                <div><span style="display: inline-block; width: 12px; height: 12px; background: #ffc107; border-radius: 2px;"></span> Medium</div>
+                <div><span style="display: inline-block; width: 12px; height: 12px; background: #dc3545; border-radius: 2px;"></span> High</div>
+            </div>
+            <div style="margin-top: 10px; font-size: 11px; color: #6c757d; text-align: center;">
+                <em>Colors scale adaptively based on peak workload over the 30-day period</em>
             </div>
         </div>
 
