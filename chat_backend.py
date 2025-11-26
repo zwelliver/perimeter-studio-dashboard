@@ -73,7 +73,7 @@ User is viewing the capacity dashboard and wants to dig deeper into the data."""
 
         # Call Claude API - Claude will use Asana integration as needed
         message = anthropic.messages.create(
-            model="claude-3-5-sonnet-20241022",
+            model="claude-sonnet-4-20250514",
             max_tokens=2048,
             system=system_prompt,
             messages=[
