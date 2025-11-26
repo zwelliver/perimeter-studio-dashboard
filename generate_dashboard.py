@@ -247,6 +247,8 @@ def fetch_detailed_tasks():
 def calculate_workload_forecast(tasks, team_capacity_config):
     """Calculate upcoming workload for 7, 14, and 30 day windows"""
     today = datetime.now().date()
+    DEFAULT_TASK_DURATION_DAYS = 30
+
     windows = {
         '7_days': {'end': today + timedelta(days=7), 'tasks': 0, 'capacity_required': 0},
         '14_days': {'end': today + timedelta(days=14), 'tasks': 0, 'capacity_required': 0},
@@ -257,11 +259,20 @@ def calculate_workload_forecast(tasks, team_capacity_config):
     total_capacity = sum(team_capacity_config[member]['max'] for member in team_capacity_config)
 
     for task in tasks:
-        if task['completed'] or not task['due_on']:
+        if task['completed']:
             continue
 
         try:
-            due_date = datetime.fromisoformat(task['due_on']).date() if isinstance(task['due_on'], str) else task['due_on']
+            # Match heatmap logic for handling missing dates
+            if task['due_on']:
+                due_date = datetime.fromisoformat(task['due_on']).date() if isinstance(task['due_on'], str) else task['due_on']
+            elif task['start_on']:
+                # Has start but no due: assign default duration from start
+                start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
+                due_date = start_date + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+            else:
+                # Neither date exists: assign defaults
+                due_date = today + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
 
             # Check which windows this task falls into
             for window_name, window_info in windows.items():
