@@ -85,7 +85,8 @@ def read_reports():
         project_gids = {
             'Preproduction': '1208336083003480',
             'Production': '1209597979075357',
-            'Post Production': '1209581743268502'
+            'Post Production': '1209581743268502',
+            'Forecast': '1212059678473189'
         }
 
         PERCENT_ALLOCATION_FIELD_GID = '1208923995383367'
@@ -191,7 +192,8 @@ def fetch_detailed_tasks():
     project_gids = {
         'Preproduction': '1208336083003480',
         'Production': '1209597979075357',
-        'Post Production': '1209581743268502'
+        'Post Production': '1209581743268502',
+        'Forecast': '1212059678473189'
     }
 
     PERCENT_ALLOCATION_FIELD_GID = '1208923995383367'
