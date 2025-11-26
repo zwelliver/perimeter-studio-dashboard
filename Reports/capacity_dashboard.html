@@ -198,7 +198,7 @@
         <div class="header">
             <h1>Perimeter Studio Dashboard</h1>
             <div class="subtitle">Video Production Capacity Tracking & Performance Metrics</div>
-            <div class="timestamp">Last Updated: November 25, 2025 at 11:45 PM</div>
+            <div class="timestamp">Last Updated: November 26, 2025 at 12:00 AM</div>
         </div>
 
         <div class="grid">
@@ -320,7 +320,7 @@
                 <h2>Spiritual Formation</h2>
                 <div class="metric">
                     <span class="metric-label">Actual</span>
-                    <span class="metric-value">18.7%</span>
+                    <span class="metric-value">18.3%</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Target</span>
@@ -328,7 +328,7 @@
                 </div>
                 <div class="metric">
                     <span class="metric-label">Variance</span>
-                    <span class="metric-value warning">-6.3%</span>
+                    <span class="metric-value warning">-6.7%</span>
                 </div>
             </div>
 
@@ -336,7 +336,7 @@
                 <h2>Communications</h2>
                 <div class="metric">
                     <span class="metric-label">Actual</span>
-                    <span class="metric-value">30.5%</span>
+                    <span class="metric-value">29.7%</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Target</span>
@@ -344,7 +344,7 @@
                 </div>
                 <div class="metric">
                     <span class="metric-label">Variance</span>
-                    <span class="metric-value positive">+0.5%</span>
+                    <span class="metric-value positive">-0.3%</span>
                 </div>
             </div>
 
@@ -352,7 +352,7 @@
                 <h2>Creative Resources</h2>
                 <div class="metric">
                     <span class="metric-label">Actual</span>
-                    <span class="metric-value">9.4%</span>
+                    <span class="metric-value">6.4%</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Target</span>
@@ -360,7 +360,7 @@
                 </div>
                 <div class="metric">
                     <span class="metric-label">Variance</span>
-                    <span class="metric-value warning">-5.6%</span>
+                    <span class="metric-value warning">-8.6%</span>
                 </div>
             </div>
 
@@ -368,7 +368,7 @@
                 <h2>Pastoral/Strategic</h2>
                 <div class="metric">
                     <span class="metric-label">Actual</span>
-                    <span class="metric-value">37.0%</span>
+                    <span class="metric-value">42.7%</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Target</span>
@@ -376,7 +376,7 @@
                 </div>
                 <div class="metric">
                     <span class="metric-label">Variance</span>
-                    <span class="metric-value negative">+17.0%</span>
+                    <span class="metric-value negative">+22.7%</span>
                 </div>
             </div>
 
@@ -384,7 +384,7 @@
                 <h2>Partners</h2>
                 <div class="metric">
                     <span class="metric-label">Actual</span>
-                    <span class="metric-value">4.4%</span>
+                    <span class="metric-value">3.0%</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Target</span>
@@ -392,7 +392,7 @@
                 </div>
                 <div class="metric">
                     <span class="metric-label">Variance</span>
-                    <span class="metric-value positive">-0.6%</span>
+                    <span class="metric-value positive">-2.0%</span>
                 </div>
             </div>
 
@@ -410,7 +410,7 @@
                 datasets: [
                     {
                         label: 'Actual %',
-                        data: [18.7, 30.5, 9.4, 37.0, 4.4],
+                        data: [18.3, 29.7, 6.4, 42.7, 3.0],
                         backgroundColor: '#60BBE9',
                         borderColor: '#09243F',
                         borderWidth: 1
@@ -460,8 +460,8 @@
         new Chart(trendsCtx, {
             type: 'line',
             data: {
-                labels: ["2025-11-25"],
-                datasets: [{"label": "Spiritual Formation", "data": [18.7], "borderColor": "#60BBE9", "backgroundColor": "#60BBE9", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Communications", "data": [30.5], "borderColor": "#09243F", "backgroundColor": "#09243F", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Creative Resources", "data": [9.4], "borderColor": "#28a745", "backgroundColor": "#28a745", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Pastoral/Strategic", "data": [37.0], "borderColor": "#ffc107", "backgroundColor": "#ffc107", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Partners", "data": [4.4], "borderColor": "#dc3545", "backgroundColor": "#dc3545", "borderWidth": 2, "fill": false, "tension": 0.1}]
+                labels: ["2025-11-25", "2025-11-26"],
+                datasets: [{"label": "Spiritual Formation", "data": [18.7, 18.3], "borderColor": "#60BBE9", "backgroundColor": "#60BBE9", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Communications", "data": [30.5, 29.7], "borderColor": "#09243F", "backgroundColor": "#09243F", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Creative Resources", "data": [9.4, 6.4], "borderColor": "#28a745", "backgroundColor": "#28a745", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Pastoral/Strategic", "data": [37.0, 42.7], "borderColor": "#ffc107", "backgroundColor": "#ffc107", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Partners", "data": [4.4, 3.0], "borderColor": "#dc3545", "backgroundColor": "#dc3545", "borderWidth": 2, "fill": false, "tension": 0.1}]
             },
             options: {
                 responsive: true,
