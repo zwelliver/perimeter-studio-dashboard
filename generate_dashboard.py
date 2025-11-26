@@ -344,8 +344,8 @@ def generate_capacity_heatmap(tasks, team_capacity_config):
     today = datetime.now().date()
     heatmap_data = []
 
-    # Default span for tasks without start dates (assume 7 working days)
-    DEFAULT_TASK_DURATION_DAYS = 7
+    # Default span for tasks without dates (matches video_scorer.py CONFIG)
+    DEFAULT_TASK_DURATION_DAYS = 30
 
     # Match PNG heatmap: MAX_CAPACITY/5 for daily capacity (5-day work week)
     daily_max = sum(team_capacity_config[member]['max'] for member in team_capacity_config) / 5
