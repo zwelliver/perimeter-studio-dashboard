@@ -160,6 +160,7 @@ def process_all_tasks():
             )
 
             # Update the Percent Allocation custom field
+            # Convert to decimal (13% → 0.13) to match video_scorer.py format
             try:
                 update_response = requests.put(
                     f"https://app.asana.com/api/1.0/tasks/{task['gid']}",
@@ -167,7 +168,7 @@ def process_all_tasks():
                     json={
                         "data": {
                             "custom_fields": {
-                                PERCENT_ALLOCATION_FIELD_GID: allocation
+                                PERCENT_ALLOCATION_FIELD_GID: allocation / 100
                             }
                         }
                     }
