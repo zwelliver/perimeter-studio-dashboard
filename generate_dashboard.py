@@ -1367,7 +1367,7 @@ def generate_html_dashboard(data):
 
             try {{
                 // Call backend API
-                const response = await fetch('http://localhost:5000/api/chat', {{
+                const response = await fetch('http://localhost:5001/api/chat', {{
                     method: 'POST',
                     headers: {{
                         'Content-Type': 'application/json'
@@ -1388,7 +1388,7 @@ def generate_html_dashboard(data):
                 addMessage(data.response, 'assistant');
             }} catch (error) {{
                 typingIndicator.classList.remove('show');
-                addMessage('Sorry, I\\'m having trouble connecting to the backend. Make sure the chat backend is running on localhost:5000.', 'system');
+                addMessage('Sorry, I\\'m having trouble connecting to the backend. Make sure the chat backend is running on localhost:5001.', 'system');
             }} finally {{
                 chatSend.disabled = false;
             }}
