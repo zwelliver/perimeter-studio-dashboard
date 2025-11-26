@@ -358,9 +358,9 @@ def generate_capacity_heatmap(tasks, team_capacity_config):
         current_date = today + timedelta(days=day_offset)
         daily_capacity = 0
 
-        # Calculate capacity needed for tasks active on this day
+        # Calculate capacity needed for tasks active on this day (including completed)
         for task in tasks:
-            if task['completed'] or not task['due_on']:
+            if not task['due_on']:
                 continue
 
             try:
