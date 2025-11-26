@@ -332,14 +332,8 @@ def identify_at_risk_tasks(tasks, team_capacity):
             if variance > 20:
                 risk_factors.append(f"Over estimate by {variance:.0f}%")
 
-        # Check if assigned to over-allocated team member
-        assignee = task['assignee']
-        if assignee in team_capacity:
-            capacity_info = team_capacity[assignee]
-            if capacity_info['current'] > capacity_info['max'] * 0.9:  # 90% threshold
-                risk_factors.append(f"{assignee} at {capacity_info['current']:.0f}% capacity")
-
         if risk_factors:
+            assignee = task['assignee']
             at_risk.append({
                 'name': task['name'],
                 'project': task['project'],
