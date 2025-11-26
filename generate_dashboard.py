@@ -338,19 +338,23 @@ def identify_at_risk_tasks(tasks, team_capacity):
     return at_risk
 
 def generate_capacity_heatmap(tasks, team_capacity_config):
-    """Generate capacity utilization heatmap for next 30 days"""
+    """Generate capacity utilization heatmap for next 30 days with adaptive color scaling"""
     today = datetime.now().date()
     heatmap_data = []
 
     # Default span for tasks without start dates (assume 7 working days)
     DEFAULT_TASK_DURATION_DAYS = 7
 
+    # Match PNG heatmap: MAX_CAPACITY/5 for daily capacity (5-day work week)
+    daily_max = sum(team_capacity_config[member]['max'] for member in team_capacity_config) / 5
+
+    # First pass: calculate all utilization values to find the peak
+    utilization_values = []
+
     # Generate next 30 days
     for day_offset in range(30):
         current_date = today + timedelta(days=day_offset)
         daily_capacity = 0
-        # Match PNG heatmap: MAX_CAPACITY/5 for daily capacity (5-day work week)
-        daily_max = sum(team_capacity_config[member]['max'] for member in team_capacity_config) / 5
 
         # Calculate capacity needed for tasks active on this day
         for task in tasks:
@@ -382,14 +386,32 @@ def generate_capacity_heatmap(tasks, team_capacity_config):
 
         # Calculate utilization as percentage of daily team capacity
         utilization = (daily_capacity / daily_max * 100) if daily_max > 0 else 0
+        utilization_values.append(utilization)
 
-        # Categorize
-        if utilization < 70:
-            status = 'low'
-        elif utilization < 90:
-            status = 'medium'
+    # Calculate adaptive vmax using SAME formula as PNG heatmap
+    # video_scorer.py line 863: adaptive_vmax = max(phase_peak * 1.5, 20)
+    peak_utilization = max(utilization_values) if utilization_values else 0
+    adaptive_vmax = max(peak_utilization * 1.5, 20)
+
+    # Second pass: categorize with adaptive thresholds
+    for day_offset in range(30):
+        current_date = today + timedelta(days=day_offset)
+        utilization = utilization_values[day_offset]
+
+        # Use adaptive color scaling matching PNG heatmap
+        # Scale is 0 to adaptive_vmax, divided into color bands
+        threshold_low = adaptive_vmax * 0.2      # 20% of scale
+        threshold_medium = adaptive_vmax * 0.5   # 50% of scale
+        threshold_high = adaptive_vmax * 0.9     # 90% of scale
+
+        if utilization < threshold_low:
+            status = 'low'      # Light green
+        elif utilization < threshold_medium:
+            status = 'low'      # Green
+        elif utilization < threshold_high:
+            status = 'medium'   # Yellow
         else:
-            status = 'high'
+            status = 'high'     # Orange/Red
 
         heatmap_data.append({
             'date': current_date.strftime('%Y-%m-%d'),
