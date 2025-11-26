@@ -398,20 +398,23 @@ def generate_capacity_heatmap(tasks, team_capacity_config):
         current_date = today + timedelta(days=day_offset)
         utilization = utilization_values[day_offset]
 
-        # Use adaptive color scaling matching PNG heatmap
-        # Scale is 0 to adaptive_vmax, divided into color bands
-        threshold_low = adaptive_vmax * 0.2      # 20% of scale
-        threshold_medium = adaptive_vmax * 0.5   # 50% of scale
-        threshold_high = adaptive_vmax * 0.9     # 90% of scale
+        # Use adaptive color scaling matching PNG heatmap with more granular colors
+        # Scale is 0 to adaptive_vmax, divided into 5 color bands for better visualization
+        threshold_very_low = adaptive_vmax * 0.15   # 15% of scale
+        threshold_low = adaptive_vmax * 0.35        # 35% of scale
+        threshold_medium = adaptive_vmax * 0.60     # 60% of scale
+        threshold_high = adaptive_vmax * 0.80       # 80% of scale
 
-        if utilization < threshold_low:
-            status = 'low'      # Light green
+        if utilization < threshold_very_low:
+            status = 'very_low'    # Light green
+        elif utilization < threshold_low:
+            status = 'low'         # Green
         elif utilization < threshold_medium:
-            status = 'low'      # Green
+            status = 'medium'      # Yellow-green
         elif utilization < threshold_high:
-            status = 'medium'   # Yellow
+            status = 'high'        # Orange
         else:
-            status = 'high'     # Orange/Red
+            status = 'very_high'   # Red
 
         heatmap_data.append({
             'date': current_date.strftime('%Y-%m-%d'),
@@ -874,13 +877,17 @@ def generate_html_dashboard(data):
         except:
             display_date = day_abbr
 
-        # Color based on utilization
-        if status == 'high':
-            bg_color = '#dc3545'
+        # Color based on utilization with 5-color gradient
+        if status == 'very_high':
+            bg_color = '#dc3545'  # Red
+        elif status == 'high':
+            bg_color = '#fd7e14'  # Orange
         elif status == 'medium':
-            bg_color = '#ffc107'
-        else:
-            bg_color = '#28a745'
+            bg_color = '#ffc107'  # Yellow
+        elif status == 'low':
+            bg_color = '#28a745'  # Green
+        else:  # very_low
+            bg_color = '#20c997'  # Light teal-green
 
         html += f"""
                 <div style="background: {bg_color}; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="{date_str}: {utilization:.1f}% capacity">
@@ -891,10 +898,12 @@ def generate_html_dashboard(data):
 
     html += """
             </div>
-            <div style="margin-top: 15px; font-size: 12px; color: #6c757d; display: flex; justify-content: center; gap: 20px;">
+            <div style="margin-top: 15px; font-size: 11px; color: #6c757d; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <div><span style="display: inline-block; width: 12px; height: 12px; background: #20c997; border-radius: 2px;"></span> Very Low</div>
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #28a745; border-radius: 2px;"></span> Low</div>
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #ffc107; border-radius: 2px;"></span> Medium</div>
-                <div><span style="display: inline-block; width: 12px; height: 12px; background: #dc3545; border-radius: 2px;"></span> High</div>
+                <div><span style="display: inline-block; width: 12px; height: 12px; background: #fd7e14; border-radius: 2px;"></span> High</div>
+                <div><span style="display: inline-block; width: 12px; height: 12px; background: #dc3545; border-radius: 2px;"></span> Very High</div>
             </div>
             <div style="margin-top: 10px; font-size: 11px; color: #6c757d; text-align: center;">
                 <em>Colors scale adaptively based on peak workload over the 30-day period</em>
