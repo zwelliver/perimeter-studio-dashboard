@@ -1330,17 +1330,18 @@ def generate_html_dashboard(data):
             }}
         }});
 
-        // Chat Widget JavaScript
-        const chatButton = document.getElementById('chatButton');
-        const chatWindow = document.getElementById('chatWindow');
-        const chatClose = document.getElementById('chatClose');
-        const chatInput = document.getElementById('chatInput');
-        const chatSend = document.getElementById('chatSend');
-        const chatMessages = document.getElementById('chatMessages');
-        const typingIndicator = document.getElementById('typingIndicator');
+        // Chat Widget JavaScript - wait for DOM to load
+        document.addEventListener('DOMContentLoaded', function() {{
+            const chatButton = document.getElementById('chatButton');
+            const chatWindow = document.getElementById('chatWindow');
+            const chatClose = document.getElementById('chatClose');
+            const chatInput = document.getElementById('chatInput');
+            const chatSend = document.getElementById('chatSend');
+            const chatMessages = document.getElementById('chatMessages');
+            const typingIndicator = document.getElementById('typingIndicator');
 
-        // Toggle chat window
-        chatButton.addEventListener('click', () => {{
+            // Toggle chat window
+            chatButton.addEventListener('click', () => {{
             chatWindow.classList.toggle('open');
             if (chatWindow.classList.contains('open')) {{
                 chatInput.focus();
@@ -1410,8 +1411,9 @@ def generate_html_dashboard(data):
             }}
         }});
 
-        // Welcome message
-        addMessage('Hi! I\\'m Claude, your capacity dashboard assistant. Ask me anything about team workload, capacity trends, or project planning!', 'assistant');
+            // Welcome message
+            addMessage('Hi! I\\'m Claude, your capacity dashboard assistant. Ask me anything about team workload, capacity trends, or project planning!', 'assistant');
+        }});
 """
 
     html += """
