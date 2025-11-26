@@ -205,7 +205,7 @@ def fetch_detailed_tasks():
         try:
             endpoint = f"https://app.asana.com/api/1.0/projects/{project_gid}/tasks"
             params = {
-                'opt_fields': 'gid,name,completed,created_at,start_on,due_on,assignee,custom_fields'
+                'opt_fields': 'gid,name,completed,created_at,start_on,due_on,assignee.name,custom_fields'
             }
 
             response = requests.get(endpoint, headers=headers, params=params)
