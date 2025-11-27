@@ -326,27 +326,38 @@ def calculate_workload_forecast(tasks, team_capacity_config):
         window_info['tasks'] = len(active_task_set)
         window_info['daily_utilizations'] = daily_utilizations
 
-    # Calculate adaptive thresholds (matches heatmap logic)
+    # Calculate adaptive thresholds for relative context
     peak_utilization = max(all_utilizations) if all_utilizations else 0
     adaptive_vmax = max(peak_utilization * 1.5, 20)
+    adaptive_threshold_low = adaptive_vmax * 0.35
+    adaptive_threshold_medium = adaptive_vmax * 0.60
+    adaptive_threshold_high = adaptive_vmax * 0.80
 
-    # Apply adaptive thresholds to determine status (matches heatmap)
-    threshold_low = adaptive_vmax * 0.35
-    threshold_medium = adaptive_vmax * 0.60
-    threshold_high = adaptive_vmax * 0.80
+    # Fixed thresholds for absolute capacity status
+    FIXED_THRESHOLD_BUSY = 70
+    FIXED_THRESHOLD_OVER = 100
 
     for window_name, window_info in windows.items():
         utilization = window_info['utilization']
 
-        # Use adaptive thresholds matching heatmap
-        if utilization < threshold_low:
-            window_info['status'] = 'good'
-        elif utilization < threshold_medium:
-            window_info['status'] = 'busy'
-        elif utilization < threshold_high:
-            window_info['status'] = 'warning'
-        else:
+        # Use FIXED thresholds for status (absolute capacity)
+        if utilization >= FIXED_THRESHOLD_OVER:
             window_info['status'] = 'over'
+        elif utilization >= FIXED_THRESHOLD_BUSY:
+            window_info['status'] = 'busy'
+        else:
+            window_info['status'] = 'good'
+
+        # Add relative workload context note
+        relative_note = None
+        if utilization >= adaptive_threshold_high:
+            relative_note = "Peak workload period"
+        elif utilization >= adaptive_threshold_medium:
+            relative_note = "Higher than average workload"
+        elif utilization >= adaptive_threshold_low:
+            relative_note = "Moderate workload period"
+
+        window_info['relative_note'] = relative_note
 
     return windows
 
@@ -1226,6 +1237,7 @@ def generate_html_dashboard(data):
         tasks_count = period_data.get('tasks', 0)
         utilization = period_data.get('utilization', 0)
         status = period_data.get('status', 'good')
+        relative_note = period_data.get('relative_note')
 
         # Status color
         if status == 'over':
@@ -1238,6 +1250,14 @@ def generate_html_dashboard(data):
             status_color = '#28a745'
             status_icon = '✅'
 
+        # Build relative note HTML if present
+        relative_note_html = ""
+        if relative_note:
+            relative_note_html = f"""
+                    <div style="font-size: 11px; color: #6c757d; margin-top: 8px; padding-top: 8px; border-top: 1px solid #dee2e6; font-style: italic;">
+                        📊 {relative_note}
+                    </div>"""
+
         html += f"""
                 <div style="border: 2px solid {status_color}; border-radius: 8px; padding: 15px; background: {BRAND_OFF_WHITE};">
                     <div style="font-size: 14px; color: #6c757d; margin-bottom: 5px;">{period_label}</div>
@@ -1249,7 +1269,7 @@ def generate_html_dashboard(data):
                     </div>
                     <div style="font-size: 12px; color: #6c757d;">
                         {status.replace('_', ' ').title() if status != 'over' else 'Over-allocated'}
-                    </div>
+                    </div>{relative_note_html}
                 </div>
         """
 
