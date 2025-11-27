@@ -1248,8 +1248,10 @@ def generate_html_dashboard(data):
         else:
             bar_color = '#28a745'  # Green (low)
 
-        # Calculate bar height (max 100%)
-        bar_height = min(utilization, 100)
+        # Calculate visual bar height with scaling for better visibility
+        # Map utilization to 30-100% visual range so bars are always prominent
+        # This doesn't change the data, just makes low values more visible
+        bar_height = min(30 + (utilization * 0.7), 100)
 
         html += f"""
                     <div style="flex: 1; background: {bar_color}; height: {bar_height}%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
