@@ -1158,6 +1158,43 @@ def generate_html_dashboard(data):
             </div>
         </div>
 
+        <!-- At-Risk Tasks -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>⚠️ At-Risk Tasks</h2>
+    """
+
+    at_risk = data.get('at_risk_tasks', [])
+    if at_risk:
+        html += """
+            <div style="margin-top: 15px;">
+        """
+        for task in at_risk[:10]:  # Show top 10
+            risks_html = "<br>".join([f"• {risk}" for risk in task['risks']])
+            html += f"""
+                <div style="border-left: 4px solid #dc3545; padding: 10px; margin-bottom: 10px; background: {BRAND_OFF_WHITE};">
+                    <div style="font-weight: bold; color: {BRAND_NAVY};">{task['name']}</div>
+                    <div style="font-size: 12px; color: #6c757d; margin-top: 5px;">
+                        {task['project']} | {task['assignee']} | Due: {task['due_on']}
+                    </div>
+                    <div style="font-size: 13px; color: #dc3545; margin-top: 8px;">
+                        {risks_html}
+                    </div>
+                </div>
+            """
+        html += """
+            </div>
+        """
+    else:
+        html += """
+            <div style="text-align: center; padding: 20px; color: #28a745;">
+                <div style="font-size: 48px;">✅</div>
+                <div style="font-size: 18px; margin-top: 10px;">No tasks currently at risk!</div>
+            </div>
+        """
+
+    html += """
+        </div>
+
         <!-- Upcoming Workload Forecast -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>📅 Upcoming Workload Forecast</h2>
@@ -1310,43 +1347,6 @@ def generate_html_dashboard(data):
                     Colors scale adaptively based on peak workload over the 6-month period
                 </div>
             </div>
-        </div>
-
-        <!-- At-Risk Tasks -->
-        <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>⚠️ At-Risk Tasks</h2>
-    """
-
-    at_risk = data.get('at_risk_tasks', [])
-    if at_risk:
-        html += """
-            <div style="margin-top: 15px;">
-        """
-        for task in at_risk[:10]:  # Show top 10
-            risks_html = "<br>".join([f"• {risk}" for risk in task['risks']])
-            html += f"""
-                <div style="border-left: 4px solid #dc3545; padding: 10px; margin-bottom: 10px; background: {BRAND_OFF_WHITE};">
-                    <div style="font-weight: bold; color: {BRAND_NAVY};">{task['name']}</div>
-                    <div style="font-size: 12px; color: #6c757d; margin-top: 5px;">
-                        {task['project']} | {task['assignee']} | Due: {task['due_on']}
-                    </div>
-                    <div style="font-size: 13px; color: #dc3545; margin-top: 8px;">
-                        {risks_html}
-                    </div>
-                </div>
-            """
-        html += """
-            </div>
-        """
-    else:
-        html += """
-            <div style="text-align: center; padding: 20px; color: #28a745;">
-                <div style="font-size: 48px;">✅</div>
-                <div style="font-size: 18px; margin-top: 10px;">No tasks currently at risk!</div>
-            </div>
-        """
-
-    html += """
         </div>
 
         <!-- Capacity Utilization Heatmap -->
