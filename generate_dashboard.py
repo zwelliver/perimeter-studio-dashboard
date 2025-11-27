@@ -260,52 +260,70 @@ def fetch_detailed_tasks():
     return all_tasks
 
 def calculate_workload_forecast(tasks, team_capacity_config):
-    """Calculate upcoming workload for 7, 14, and 30 day windows"""
+    """Calculate upcoming workload for 7, 14, and 30 day windows - matches heatmap/timeline logic"""
     today = datetime.now().date()
     DEFAULT_TASK_DURATION_DAYS = 30
 
+    # Calculate daily team capacity (matches heatmap calculation)
+    daily_max = sum(team_capacity_config[member]['max'] for member in team_capacity_config) / 5
+
     windows = {
-        '7_days': {'end': today + timedelta(days=7), 'tasks': 0, 'capacity_required': 0},
-        '14_days': {'end': today + timedelta(days=14), 'tasks': 0, 'capacity_required': 0},
-        '30_days': {'end': today + timedelta(days=30), 'tasks': 0, 'capacity_required': 0}
+        '7_days': {'days': 7, 'end': today + timedelta(days=7)},
+        '14_days': {'days': 14, 'end': today + timedelta(days=14)},
+        '30_days': {'days': 30, 'end': today + timedelta(days=30)}
     }
 
-    # Calculate total team capacity
-    total_capacity = sum(team_capacity_config[member]['max'] for member in team_capacity_config)
-
-    for task in tasks:
-        if task['completed']:
-            continue
-
-        try:
-            # Match heatmap logic for handling missing dates
-            if task['due_on']:
-                due_date = datetime.fromisoformat(task['due_on']).date() if isinstance(task['due_on'], str) else task['due_on']
-            elif task['start_on']:
-                # Has start but no due: assign default duration from start
-                start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
-                due_date = start_date + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
-            else:
-                # Neither date exists: assign defaults
-                due_date = today + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
-
-            # Check which windows this task falls into
-            for window_name, window_info in windows.items():
-                if today <= due_date <= window_info['end']:
-                    window_info['tasks'] += 1
-                    window_info['capacity_required'] += task['estimated_allocation']
-        except:
-            pass
-
-    # Calculate utilization percentage for each window
+    # Calculate utilization for each window
     for window_name, window_info in windows.items():
-        days_in_window = int(window_name.split('_')[0])
-        # Capacity available = total_capacity * days in window
-        capacity_available = total_capacity * days_in_window / 30  # Normalized to 30-day month
-        window_info['capacity_available'] = capacity_available
-        window_info['utilization'] = (window_info['capacity_required'] / capacity_available * 100) if capacity_available > 0 else 0
+        daily_utilizations = []
+        active_task_set = set()  # Track unique tasks active in this window
 
-        # Status indicator
+        # Check each day in the window
+        for day_offset in range(window_info['days']):
+            current_date = today + timedelta(days=day_offset)
+            daily_capacity = 0
+
+            for task in tasks:
+                if task['completed']:
+                    continue
+
+                try:
+                    # Match heatmap logic for handling missing dates
+                    if task['due_on']:
+                        due_date = datetime.fromisoformat(task['due_on']).date() if isinstance(task['due_on'], str) else task['due_on']
+                        if task['start_on']:
+                            start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
+                        else:
+                            # Has due but no start: work backwards from due date
+                            start_date = max(today, due_date - timedelta(days=DEFAULT_TASK_DURATION_DAYS))
+                    elif task['start_on']:
+                        # Has start but no due: assign default duration from start
+                        start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
+                        due_date = start_date + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+                    else:
+                        # Neither date exists: assign defaults
+                        start_date = today
+                        due_date = today + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+
+                    # Check if task is active on this specific day (matches heatmap logic)
+                    if start_date <= current_date <= due_date:
+                        # Divide by 5 for daily workload (5-day work week) - matches heatmap
+                        daily_workload = task['estimated_allocation'] / 5
+                        daily_capacity += daily_workload
+                        # Track task as active in this window
+                        active_task_set.add(task.get('gid', task.get('name', '')))
+                except:
+                    pass
+
+            # Calculate utilization for this day
+            day_utilization = (daily_capacity / daily_max * 100) if daily_max > 0 else 0
+            daily_utilizations.append(day_utilization)
+
+        # Average the daily utilizations for the window (matches timeline logic)
+        window_info['utilization'] = sum(daily_utilizations) / len(daily_utilizations) if daily_utilizations else 0
+        window_info['tasks'] = len(active_task_set)
+
+        # Status indicator (matches timeline thresholds)
         if window_info['utilization'] < 70:
             window_info['status'] = 'good'
         elif window_info['utilization'] < 100:
