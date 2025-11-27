@@ -273,7 +273,8 @@ def calculate_workload_forecast(tasks, team_capacity_config):
         '30_days': {'days': 30, 'end': today + timedelta(days=30)}
     }
 
-    # Calculate utilization for each window
+    # First pass: Calculate utilizations for all windows and find peak
+    all_utilizations = []
     for window_name, window_info in windows.items():
         daily_utilizations = []
         active_task_set = set()  # Track unique tasks active in this window
@@ -318,16 +319,32 @@ def calculate_workload_forecast(tasks, team_capacity_config):
             # Calculate utilization for this day
             day_utilization = (daily_capacity / daily_max * 100) if daily_max > 0 else 0
             daily_utilizations.append(day_utilization)
+            all_utilizations.append(day_utilization)
 
         # Average the daily utilizations for the window (matches timeline logic)
         window_info['utilization'] = sum(daily_utilizations) / len(daily_utilizations) if daily_utilizations else 0
         window_info['tasks'] = len(active_task_set)
+        window_info['daily_utilizations'] = daily_utilizations
 
-        # Status indicator (matches timeline thresholds)
-        if window_info['utilization'] < 70:
+    # Calculate adaptive thresholds (matches heatmap logic)
+    peak_utilization = max(all_utilizations) if all_utilizations else 0
+    adaptive_vmax = max(peak_utilization * 1.5, 20)
+
+    # Apply adaptive thresholds to determine status (matches heatmap)
+    threshold_low = adaptive_vmax * 0.35
+    threshold_medium = adaptive_vmax * 0.60
+    threshold_high = adaptive_vmax * 0.80
+
+    for window_name, window_info in windows.items():
+        utilization = window_info['utilization']
+
+        # Use adaptive thresholds matching heatmap
+        if utilization < threshold_low:
             window_info['status'] = 'good'
-        elif window_info['utilization'] < 100:
+        elif utilization < threshold_medium:
             window_info['status'] = 'busy'
+        elif utilization < threshold_high:
+            window_info['status'] = 'warning'
         else:
             window_info['status'] = 'over'
 
