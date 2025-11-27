@@ -401,7 +401,7 @@
         <div class="header">
             <h1>Perimeter Studio Dashboard</h1>
             <div class="subtitle">Video Production Capacity Tracking & Performance Metrics</div>
-            <div class="timestamp">Last Updated: November 26, 2025 at 08:15 PM</div>
+            <div class="timestamp">Last Updated: November 26, 2025 at 08:30 PM</div>
         </div>
 
         <div class="grid">
@@ -925,9 +925,9 @@
         <!-- Category Allocation Chart -->
         <div class="grid">
             <div class="card full-width">
-                <h2>Category Allocation: Actual vs Target</h2>
+                <h2>Category Allocation: Cumulative Average vs Target</h2>
                 <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
-                    Current allocation based on today's active tasks
+                    Cumulative average allocation across tracking period: {tracking_period}
                 </div>
                 <div class="chart-container">
                     <canvas id="categoryChart"></canvas>
@@ -952,82 +952,82 @@
         <div class="grid">
 
             <div class="card">
-                <h2>Spiritual Formation</h2>
-                <div class="metric">
-                    <span class="metric-label">Actual</span>
-                    <span class="metric-value">18.3%</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Target</span>
-                    <span class="metric-value">25.0%</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Variance</span>
-                    <span class="metric-value warning">-6.7%</span>
-                </div>
-            </div>
-
-            <div class="card">
                 <h2>Communications</h2>
                 <div class="metric">
-                    <span class="metric-label">Actual</span>
-                    <span class="metric-value">29.7%</span>
+                    <span class="metric-label">Cumulative Avg</span>
+                    <span class="metric-value">30.1%</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Target</span>
+                    <span class="metric-label">Annual Target</span>
                     <span class="metric-value">30.0%</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Variance</span>
-                    <span class="metric-value positive">-0.3%</span>
+                    <span class="metric-label">Avg Variance</span>
+                    <span class="metric-value positive">+0.1%</span>
                 </div>
             </div>
 
             <div class="card">
                 <h2>Creative Resources</h2>
                 <div class="metric">
-                    <span class="metric-label">Actual</span>
-                    <span class="metric-value">6.4%</span>
+                    <span class="metric-label">Cumulative Avg</span>
+                    <span class="metric-value">7.9%</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Target</span>
+                    <span class="metric-label">Annual Target</span>
                     <span class="metric-value">15.0%</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Variance</span>
-                    <span class="metric-value warning">-8.6%</span>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>Pastoral/Strategic</h2>
-                <div class="metric">
-                    <span class="metric-label">Actual</span>
-                    <span class="metric-value">42.7%</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Target</span>
-                    <span class="metric-value">20.0%</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Variance</span>
-                    <span class="metric-value negative">+22.7%</span>
+                    <span class="metric-label">Avg Variance</span>
+                    <span class="metric-value warning">-7.1%</span>
                 </div>
             </div>
 
             <div class="card">
                 <h2>Partners</h2>
                 <div class="metric">
-                    <span class="metric-label">Actual</span>
-                    <span class="metric-value">3.0%</span>
+                    <span class="metric-label">Cumulative Avg</span>
+                    <span class="metric-value">3.7%</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Target</span>
+                    <span class="metric-label">Annual Target</span>
                     <span class="metric-value">5.0%</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Variance</span>
-                    <span class="metric-value positive">-2.0%</span>
+                    <span class="metric-label">Avg Variance</span>
+                    <span class="metric-value positive">-1.3%</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Pastoral/Strategic</h2>
+                <div class="metric">
+                    <span class="metric-label">Cumulative Avg</span>
+                    <span class="metric-value">39.9%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Annual Target</span>
+                    <span class="metric-value">20.0%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Avg Variance</span>
+                    <span class="metric-value negative">+19.9%</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Spiritual Formation</h2>
+                <div class="metric">
+                    <span class="metric-label">Cumulative Avg</span>
+                    <span class="metric-value">18.5%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Annual Target</span>
+                    <span class="metric-value">25.0%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Avg Variance</span>
+                    <span class="metric-value warning">-6.5%</span>
                 </div>
             </div>
 
@@ -1041,18 +1041,18 @@
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ["Spiritual Formation", "Communications", "Creative Resources", "Pastoral/Strategic", "Partners"],
+                labels: ["Communications", "Creative Resources", "Partners", "Pastoral/Strategic", "Spiritual Formation"],
                 datasets: [
                     {
                         label: 'Actual %',
-                        data: [18.3, 29.7, 6.4, 42.7, 3.0],
+                        data: [30.1, 7.9, 3.7, 39.85, 18.5],
                         backgroundColor: '#60BBE9',
                         borderColor: '#09243F',
                         borderWidth: 1
                     },
                     {
                         label: 'Target %',
-                        data: [25.0, 30.0, 15.0, 20.0, 5.0],
+                        data: [30.0, 15.0, 5.0, 20.0, 25.0],
                         backgroundColor: 'rgba(9, 36, 63, 0.3)',
                         borderColor: '#09243F',
                         borderWidth: 2,

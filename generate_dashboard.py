@@ -42,10 +42,15 @@ def read_reports():
     variance_file = os.path.join(reports_dir, 'variance_tracking_history.csv')
     if os.path.exists(variance_file):
         df = pd.read_csv(variance_file)
-        # Get latest day's data
         if not df.empty:
-            latest_date = df['Date'].max()
-            data['variance'] = df[df['Date'] == latest_date]
+            # Calculate cumulative averages across all time
+            cumulative_variance = df.groupby('Category').agg({
+                'Actual %': 'mean',
+                'Target %': 'first',  # Target is constant
+                'Variance': 'mean'
+            }).reset_index()
+
+            data['variance'] = cumulative_variance
             # Keep full history for trends
             data['variance_history'] = df
 
@@ -174,6 +179,9 @@ def read_reports():
     # Generate capacity heatmap for next 30 days
     data['capacity_heatmap'] = generate_capacity_heatmap(detailed_tasks, team_capacity_config)
 
+    # Generate 6-month capacity timeline
+    data['six_month_timeline'] = generate_6month_timeline(detailed_tasks, team_capacity_config)
+
     return data
 
 def fetch_detailed_tasks():
@@ -198,6 +206,7 @@ def fetch_detailed_tasks():
 
     PERCENT_ALLOCATION_FIELD_GID = '1208923995383367'
     ACTUAL_ALLOCATION_FIELD_GID = '1212060330747288'
+    TASK_PROGRESS_FIELD_GID = '1209598240843051'
 
     all_tasks = []
 
@@ -213,9 +222,10 @@ def fetch_detailed_tasks():
                 tasks = response.json().get('data', [])
 
                 for task in tasks:
-                    # Extract allocation fields
+                    # Extract allocation fields and task progress
                     estimated_allocation = 0
                     actual_allocation = 0
+                    task_progress = None
 
                     if 'custom_fields' in task:
                         for field in task['custom_fields']:
@@ -223,6 +233,10 @@ def fetch_detailed_tasks():
                                 estimated_allocation = field.get('number_value', 0) * 100
                             elif field['gid'] == ACTUAL_ALLOCATION_FIELD_GID and field.get('number_value'):
                                 actual_allocation = field.get('number_value', 0) * 100
+                            elif field['gid'] == TASK_PROGRESS_FIELD_GID:
+                                # Task Progress is an enum field, get the display_value
+                                if field.get('display_value'):
+                                    task_progress = field.get('display_value')
 
                     task_info = {
                         'gid': task.get('gid'),
@@ -234,7 +248,8 @@ def fetch_detailed_tasks():
                         'due_on': task.get('due_on'),
                         'assignee': task.get('assignee', {}).get('name', 'Unassigned') if task.get('assignee') else 'Unassigned',
                         'estimated_allocation': estimated_allocation,
-                        'actual_allocation': actual_allocation
+                        'actual_allocation': actual_allocation,
+                        'task_progress': task_progress
                     }
 
                     all_tasks.append(task_info)
@@ -300,8 +315,119 @@ def calculate_workload_forecast(tasks, team_capacity_config):
 
     return windows
 
+def generate_6month_timeline(tasks, team_capacity_config):
+    """Generate 6-month capacity timeline showing weekly utilization"""
+    today = datetime.now().date()
+    DEFAULT_TASK_DURATION_DAYS = 30
+
+    # Calculate daily team capacity (matches heatmap calculation)
+    daily_max = sum(team_capacity_config[member]['max'] for member in team_capacity_config) / 5
+
+    # Generate 26 weeks (6 months)
+    weeks = []
+    for week_num in range(26):
+        week_start = today + timedelta(weeks=week_num)
+        week_end = week_start + timedelta(days=6)
+
+        # Calculate average daily capacity for this week by checking each day
+        daily_utilizations = []
+        for day_offset in range(7):
+            current_date = week_start + timedelta(days=day_offset)
+            daily_capacity = 0
+
+            for task in tasks:
+                if task['completed']:
+                    continue
+
+                try:
+                    # Determine task date range (same logic as heatmap)
+                    if task['due_on']:
+                        due_date = datetime.fromisoformat(task['due_on']).date() if isinstance(task['due_on'], str) else task['due_on']
+                        if task['start_on']:
+                            start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
+                        else:
+                            start_date = max(today, due_date - timedelta(days=DEFAULT_TASK_DURATION_DAYS))
+                    elif task['start_on']:
+                        start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
+                        due_date = start_date + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+                    else:
+                        start_date = today
+                        due_date = today + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+
+                    # Check if task is active on this specific day
+                    if start_date <= current_date <= due_date:
+                        daily_workload = task['estimated_allocation'] / 5
+                        daily_capacity += daily_workload
+                except:
+                    pass
+
+            # Calculate utilization for this day
+            day_utilization = (daily_capacity / daily_max * 100) if daily_max > 0 else 0
+            daily_utilizations.append(day_utilization)
+
+        # Average the daily utilizations for the week
+        utilization = sum(daily_utilizations) / len(daily_utilizations) if daily_utilizations else 0
+
+        # Count unique tasks active during this week
+        task_count = 0
+        for task in tasks:
+            if task['completed']:
+                continue
+            try:
+                if task['due_on']:
+                    due_date = datetime.fromisoformat(task['due_on']).date() if isinstance(task['due_on'], str) else task['due_on']
+                    if task['start_on']:
+                        start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
+                    else:
+                        start_date = max(today, due_date - timedelta(days=DEFAULT_TASK_DURATION_DAYS))
+                elif task['start_on']:
+                    start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
+                    due_date = start_date + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+                else:
+                    start_date = today
+                    due_date = today + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+
+                if start_date <= week_end and due_date >= week_start:
+                    task_count += 1
+            except:
+                pass
+
+        weeks.append({
+            'week_num': week_num + 1,
+            'start_date': week_start.strftime('%Y-%m-%d'),
+            'end_date': week_end.strftime('%Y-%m-%d'),
+            'month': week_start.strftime('%b'),
+            'task_count': task_count,
+            'utilization': utilization,
+            'status': None  # Will be set after calculating adaptive thresholds
+        })
+
+    # Calculate adaptive color thresholds (same logic as heatmap)
+    utilization_values = [week['utilization'] for week in weeks]
+    peak_utilization = max(utilization_values) if utilization_values else 0
+    adaptive_vmax = max(peak_utilization * 1.5, 20)
+
+    # Set adaptive thresholds
+    threshold_low = adaptive_vmax * 0.35        # 35% of scale
+    threshold_medium = adaptive_vmax * 0.60     # 60% of scale
+    threshold_high = adaptive_vmax * 0.80       # 80% of scale
+
+    # Apply adaptive status to each week
+    for week in weeks:
+        utilization = week['utilization']
+        if utilization < threshold_low:
+            week['status'] = 'good'
+        elif utilization < threshold_medium:
+            week['status'] = 'busy'
+        elif utilization < threshold_high:
+            week['status'] = 'warning'
+        else:
+            week['status'] = 'over'
+
+    return weeks
+
 def identify_at_risk_tasks(tasks, team_capacity):
-    """Identify tasks that are at risk of missing deadlines"""
+    """Identify tasks that are at risk of missing deadlines based on Task Progress and project type"""
     at_risk = []
     today = datetime.now().date()
     seven_days = today + timedelta(days=7)
@@ -311,18 +437,28 @@ def identify_at_risk_tasks(tasks, team_capacity):
             continue
 
         risk_factors = []
+        task_progress = task.get('task_progress')
+        project = task.get('project')
 
-        # Check if due soon but not started
+        # Check if task is overdue
         if task['due_on']:
             try:
                 due_date = datetime.fromisoformat(task['due_on']).date() if isinstance(task['due_on'], str) else task['due_on']
 
-                if due_date <= seven_days:
-                    # Due within 7 days
-                    if not task['start_on']:
-                        risk_factors.append(f"Due in {(due_date - today).days} days, not started")
-                    elif due_date < today:
-                        risk_factors.append(f"Overdue by {(today - due_date).days} days")
+                if due_date < today:
+                    risk_factors.append(f"Overdue by {(today - due_date).days} days")
+                elif due_date <= seven_days:
+                    # Due within 7 days - check Task Progress based on project type
+
+                    if project == 'Production':
+                        # Production: at-risk if "Needs Scheduling" and approaching due date
+                        if task_progress == 'Needs Scheduling':
+                            risk_factors.append(f"Due in {(due_date - today).days} days, needs scheduling")
+
+                    elif project == 'Post Production':
+                        # Post Production: at-risk if "Filmed" or "Offloaded" (but NOT "In Progress") and approaching due date
+                        if task_progress in ['Filmed', 'Offloaded']:
+                            risk_factors.append(f"Due in {(due_date - today).days} days, not yet in progress")
             except:
                 pass
 
@@ -449,8 +585,9 @@ def generate_html_dashboard(data):
     # Extract key metrics
     total_tasks = data.get('active_task_count', 0)
 
-    # Category metrics
+    # Category metrics (cumulative)
     category_data = []
+    tracking_period = ""
     if data['variance'] is not None:
         for _, row in data['variance'].iterrows():
             category_data.append({
@@ -459,6 +596,14 @@ def generate_html_dashboard(data):
                 'target': float(row['Target %']),
                 'variance': float(row['Variance'])
             })
+
+        # Calculate tracking period from history
+        if data.get('variance_history') is not None and not data['variance_history'].empty:
+            dates = pd.to_datetime(data['variance_history']['Date'])
+            start_date = dates.min().strftime('%b %d, %Y')
+            end_date = dates.max().strftime('%b %d, %Y')
+            days_tracked = (dates.max() - dates.min()).days + 1
+            tracking_period = f"{start_date} - {end_date} ({days_tracked} days)"
 
     # Delivery metrics
     delivery_metrics = {
@@ -1040,6 +1185,113 @@ def generate_html_dashboard(data):
             </div>
         </div>
 
+        <!-- 6-Month Capacity Timeline -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>📆 6-Month Capacity Timeline</h2>
+            <div style="font-size: 12px; color: #6c757d; margin-bottom: 15px;">
+                Weekly team capacity projection showing workload distribution over the next 26 weeks
+            </div>
+    """
+
+    # Add 6-month timeline data
+    timeline = data.get('six_month_timeline', [])
+
+    html += """
+            <div style="margin-top: 15px;">
+                <!-- Timeline header with month labels -->
+                <div style="display: flex; margin-bottom: 10px; font-size: 12px; font-weight: bold; color: #6c757d;">
+    """
+
+    # Group weeks by month for header labels
+    current_month = None
+    month_week_count = 0
+    for week in timeline:
+        if week['month'] != current_month:
+            if current_month is not None:
+                # Close previous month label
+                html += f"""
+                    <div style="flex: {month_week_count}; text-align: center; border-right: 1px solid #dee2e6;">{current_month}</div>
+                """
+            current_month = week['month']
+            month_week_count = 1
+        else:
+            month_week_count += 1
+
+    # Close last month label
+    if current_month:
+        html += f"""
+                    <div style="flex: {month_week_count}; text-align: center;">{current_month}</div>
+        """
+
+    html += """
+                </div>
+
+                <!-- Timeline bars -->
+                <div style="display: flex; gap: 3px; height: 60px; align-items: flex-end;">
+    """
+
+    # Add timeline bars
+    for week in timeline:
+        utilization = week.get('utilization', 0)
+        status = week.get('status', 'good')
+        task_count = week.get('task_count', 0)
+        week_num = week.get('week_num', 0)
+        start_date = week.get('start_date', '')
+
+        # Color based on status (adaptive scaling like heatmap)
+        if status == 'over':
+            bar_color = '#dc3545'  # Red (very high)
+        elif status == 'warning':
+            bar_color = '#fd7e14'  # Orange (high)
+        elif status == 'busy':
+            bar_color = '#ffc107'  # Yellow (medium)
+        else:
+            bar_color = '#28a745'  # Green (low)
+
+        # Calculate bar height (max 100%)
+        bar_height = min(utilization, 100)
+
+        html += f"""
+                    <div style="flex: 1; background: {bar_color}; height: {bar_height}%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week {week_num} ({start_date}): {utilization:.0f}% capacity, {task_count} tasks">
+                    </div>
+        """
+
+    html += """
+                </div>
+
+                <!-- Week number labels (show every 4th week) -->
+                <div style="display: flex; gap: 3px; margin-top: 5px; font-size: 9px; color: #6c757d;">
+    """
+
+    for i, week in enumerate(timeline):
+        week_num = week.get('week_num', 0)
+        # Show label every 4 weeks
+        if i % 4 == 0:
+            html += f"""
+                    <div style="flex: 1; text-align: center; min-width: 8px;">W{week_num}</div>
+            """
+        else:
+            html += """
+                    <div style="flex: 1; min-width: 8px;"></div>
+            """
+
+    html += """
+                </div>
+
+                <!-- Legend -->
+                <div style="margin-top: 15px; font-size: 11px; color: #6c757d; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: #28a745; border-radius: 2px;"></span> Low</div>
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: #ffc107; border-radius: 2px;"></span> Medium</div>
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: #fd7e14; border-radius: 2px;"></span> High</div>
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: #dc3545; border-radius: 2px;"></span> Very High</div>
+                </div>
+                <div style="margin-top: 5px; font-size: 10px; color: #6c757d; text-align: center; font-style: italic;">
+                    Colors scale adaptively based on peak workload over the 6-month period
+                </div>
+            </div>
+        </div>
+
         <!-- At-Risk Tasks -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>⚠️ At-Risk Tasks</h2>
@@ -1134,9 +1386,9 @@ def generate_html_dashboard(data):
         <!-- Category Allocation Chart -->
         <div class="grid">
             <div class="card full-width">
-                <h2>Category Allocation: Actual vs Target</h2>
+                <h2>Category Allocation: Cumulative Average vs Target</h2>
                 <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
-                    Current allocation based on today's active tasks
+                    Cumulative average allocation across tracking period: {tracking_period}
                 </div>
                 <div class="chart-container">
                     <canvas id="categoryChart"></canvas>
@@ -1169,15 +1421,15 @@ def generate_html_dashboard(data):
             <div class="card">
                 <h2>{cat['name']}</h2>
                 <div class="metric">
-                    <span class="metric-label">Actual</span>
+                    <span class="metric-label">Cumulative Avg</span>
                     <span class="metric-value">{cat['actual']:.1f}%</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Target</span>
+                    <span class="metric-label">Annual Target</span>
                     <span class="metric-value">{cat['target']:.1f}%</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Variance</span>
+                    <span class="metric-label">Avg Variance</span>
                     <span class="metric-value {variance_class}">{cat['variance']:+.1f}%</span>
                 </div>
             </div>
