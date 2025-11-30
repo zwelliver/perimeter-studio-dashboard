@@ -1091,6 +1091,24 @@ def generate_html_dashboard(data):
                 max-width: 85%;
                 font-size: 14px;
             }}
+
+            /* Fix forecast grid - single column on mobile */
+            .forecast-grid {{
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+            }}
+
+            /* Fix heatmap - fewer columns on mobile */
+            .heatmap-grid {{
+                grid-template-columns: repeat(5, 1fr) !important;
+                gap: 3px !important;
+                font-size: 10px !important;
+            }}
+
+            .heatmap-grid > div {{
+                padding: 6px 4px !important;
+                font-size: 10px !important;
+            }}
         }}
 
         /* Extra small mobile devices (iPhone SE, etc.) */
@@ -1123,6 +1141,17 @@ def generate_html_dashboard(data):
 
             .chat-window {{
                 height: 450px;
+            }}
+
+            /* Even more compact heatmap for small screens */
+            .heatmap-grid {{
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 2px !important;
+            }}
+
+            .heatmap-grid > div {{
+                padding: 5px 2px !important;
+                font-size: 9px !important;
             }}
         }}
 
@@ -1584,7 +1613,7 @@ def generate_html_dashboard(data):
         <!-- Upcoming Workload Forecast -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>📅 Upcoming Workload Forecast</h2>
-            <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px;">
+            <div class="forecast-grid" style="grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; display: grid;">
     """
 
     # Add workload forecast data
@@ -1747,7 +1776,7 @@ def generate_html_dashboard(data):
         <!-- Capacity Utilization Heatmap -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>📊 Capacity Utilization - Next 30 Days</h2>
-            <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px;">
+            <div class="heatmap-grid" style="margin-top: 15px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px;">
     """
 
     heatmap = data.get('capacity_heatmap', [])
