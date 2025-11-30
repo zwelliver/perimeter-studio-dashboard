@@ -994,6 +994,22 @@ def generate_html_dashboard(data):
             grid-column: 1 / -1;
         }}
 
+        /* Forecast grid default styles */
+        .forecast-grid {{
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }}
+
+        /* Heatmap grid default styles */
+        .heatmap-grid {{
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 5px;
+        }}
+
         @media print {{
             body {{
                 background: white;
@@ -1613,7 +1629,7 @@ def generate_html_dashboard(data):
         <!-- Upcoming Workload Forecast -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>📅 Upcoming Workload Forecast</h2>
-            <div class="forecast-grid" style="grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; display: grid;">
+            <div class="forecast-grid">
     """
 
     # Add workload forecast data
@@ -1776,7 +1792,7 @@ def generate_html_dashboard(data):
         <!-- Capacity Utilization Heatmap -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>📊 Capacity Utilization - Next 30 Days</h2>
-            <div class="heatmap-grid" style="margin-top: 15px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px;">
+            <div class="heatmap-grid">
     """
 
     heatmap = data.get('capacity_heatmap', [])
