@@ -1829,7 +1829,7 @@ def generate_html_dashboard(data):
                 </div>
         """
 
-    html += """
+    html += f"""
             </div>
             <div style="margin-top: 15px; font-size: 11px; color: #6c757d; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #20c997; border-radius: 2px;"></span> Very Low</div>
