@@ -7,7 +7,7 @@ import pandas as pd
 import os
 import json
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 # Perimeter Church Brand Colors
 BRAND_NAVY = '#09243F'
@@ -71,7 +71,7 @@ def read_reports():
     team_capacity_config = {
         'Zach Welliver': {'max': 50},
         'Nick Clark': {'max': 100},
-        'Adriel Abella': {'max': 120},
+        'Adriel Abella': {'max': 100},
         'John Meyer': {'max': 30}
     }
 
@@ -181,6 +181,102 @@ def read_reports():
 
     # Generate 6-month capacity timeline
     data['six_month_timeline'] = generate_6month_timeline(detailed_tasks, team_capacity_config)
+
+    # Fetch upcoming shoots from Asana
+    data['upcoming_shoots'] = []
+    if ASANA_PAT:
+        try:
+            FILM_DATE_FIELD_GID = os.getenv('FILM_DATE_FIELD_GID')
+            if FILM_DATE_FIELD_GID:
+                upcoming_shoots = []
+                now = datetime.now(timezone.utc)
+
+                # Search for tasks with Film Date set across all production projects
+                for project_name, project_gid in project_gids.items():
+                    endpoint = f"https://app.asana.com/api/1.0/projects/{project_gid}/tasks"
+                    params = {
+                        'opt_fields': 'gid,name,custom_fields'
+                    }
+
+                    response = requests.get(endpoint, headers=headers, params=params)
+
+                    if response.status_code == 200:
+                        tasks = response.json().get('data', [])
+
+                        for task in tasks:
+                            # Find Film Date custom field
+                            for field in task.get('custom_fields', []):
+                                if field.get('gid') == FILM_DATE_FIELD_GID:
+                                    date_value = field.get('date_value')
+                                    if date_value and date_value.get('date_time'):
+                                        # Parse the datetime
+                                        film_datetime_str = date_value.get('date_time')
+                                        film_datetime = datetime.fromisoformat(film_datetime_str.replace('Z', '+00:00'))
+
+                                        # Only include future shoots
+                                        if film_datetime >= now:
+                                            upcoming_shoots.append({
+                                                'name': task.get('name', 'Untitled'),
+                                                'datetime': film_datetime,
+                                                'project': project_name,
+                                                'gid': task.get('gid')
+                                            })
+                                        break
+
+                # Sort by datetime (earliest first) and limit to 10
+                upcoming_shoots.sort(key=lambda x: x['datetime'])
+                data['upcoming_shoots'] = upcoming_shoots[:10]
+        except Exception as e:
+            print(f"Warning: Could not fetch upcoming shoots: {e}")
+
+    # Fetch upcoming project deadlines (due within next 10 days)
+    data['upcoming_deadlines'] = []
+    if ASANA_PAT:
+        try:
+            upcoming_deadlines = []
+            now = datetime.now(timezone.utc).date()
+            cutoff_date = now + timedelta(days=10)
+
+            # Search for tasks with due dates across all production projects
+            for project_name, project_gid in project_gids.items():
+                endpoint = f"https://app.asana.com/api/1.0/projects/{project_gid}/tasks"
+                params = {
+                    'opt_fields': 'gid,name,due_on,due_at,completed'
+                }
+
+                response = requests.get(endpoint, headers=headers, params=params)
+
+                if response.status_code == 200:
+                    tasks = response.json().get('data', [])
+
+                    for task in tasks:
+                        if task.get('completed', False):
+                            continue
+
+                        # Extract due date (can be due_on or due_at)
+                        due_date = None
+                        if task.get('due_on'):
+                            due_date = datetime.strptime(task['due_on'], '%Y-%m-%d').date()
+                        elif task.get('due_at'):
+                            due_datetime = datetime.fromisoformat(task['due_at'].replace('Z', '+00:00'))
+                            due_date = due_datetime.date()
+
+                        # Only include if due within next 10 days
+                        if due_date and now <= due_date <= cutoff_date:
+                            days_until = (due_date - now).days
+                            upcoming_deadlines.append({
+                                'name': task.get('name', 'Untitled'),
+                                'due_date': due_date,
+                                'days_until': days_until,
+                                'project': project_name,
+                                'gid': task.get('gid')
+                            })
+
+            # Sort by due date (earliest first)
+            upcoming_deadlines.sort(key=lambda x: x['due_date'])
+            data['upcoming_deadlines'] = upcoming_deadlines
+        except Exception as e:
+            print(f"Warning: Could not fetch upcoming deadlines: {e}")
 
     return data
 
@@ -909,6 +1005,138 @@ def generate_html_dashboard(data):
             }}
         }}
 
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {{
+            body {{
+                padding: 10px;
+            }}
+
+            .header {{
+                padding: 20px 15px;
+            }}
+
+            .header h1 {{
+                font-size: 24px;
+            }}
+
+            .header .subtitle {{
+                font-size: 12px;
+            }}
+
+            .grid {{
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }}
+
+            .card {{
+                padding: 15px;
+            }}
+
+            .card h2 {{
+                font-size: 16px;
+                margin-bottom: 12px;
+            }}
+
+            .metric {{
+                padding: 10px 0;
+            }}
+
+            .metric-label {{
+                font-size: 13px;
+            }}
+
+            .metric-value {{
+                font-size: 20px;
+            }}
+
+            .chart-container {{
+                height: 250px;
+            }}
+
+            .team-member-name {{
+                font-size: 13px;
+            }}
+
+            .alert {{
+                padding: 12px;
+                font-size: 13px;
+            }}
+
+            /* Make chat widget more mobile-friendly */
+            .chat-widget {{
+                bottom: 15px;
+                right: 15px;
+            }}
+
+            .chat-button {{
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }}
+
+            .chat-window {{
+                bottom: 75px;
+                right: 10px;
+                left: 10px;
+                width: auto;
+                max-width: none;
+                height: 500px;
+            }}
+
+            .chat-messages {{
+                padding: 15px;
+            }}
+
+            .chat-message {{
+                max-width: 85%;
+                font-size: 14px;
+            }}
+        }}
+
+        /* Extra small mobile devices (iPhone SE, etc.) */
+        @media (max-width: 375px) {{
+            .header h1 {{
+                font-size: 20px;
+            }}
+
+            .card {{
+                padding: 12px;
+            }}
+
+            .card h2 {{
+                font-size: 15px;
+            }}
+
+            .metric-value {{
+                font-size: 18px;
+            }}
+
+            .chart-container {{
+                height: 220px;
+            }}
+
+            .chat-button {{
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }}
+
+            .chat-window {{
+                height: 450px;
+            }}
+        }}
+
+        /* Landscape mobile optimization */
+        @media (max-width: 768px) and (orientation: landscape) {{
+            .chart-container {{
+                height: 200px;
+            }}
+
+            .chat-window {{
+                height: 350px;
+            }}
+        }}
+
         /* Chat Widget Styles */
         .chat-widget {{
             position: fixed;
@@ -1217,6 +1445,136 @@ def generate_html_dashboard(data):
             <div style="text-align: center; padding: 20px; color: #28a745;">
                 <div style="font-size: 48px;">✅</div>
                 <div style="font-size: 18px; margin-top: 10px;">No tasks currently at risk!</div>
+            </div>
+        """
+
+    html += """
+        </div>
+
+        <!-- Upcoming Shoots -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>🎬 Upcoming Shoots</h2>
+    """
+
+    upcoming_shoots = data.get('upcoming_shoots', [])
+    if upcoming_shoots:
+        html += """
+            <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
+        """
+        for shoot in upcoming_shoots:
+            # Format date and time
+            shoot_datetime = shoot['datetime']
+
+            # Convert from UTC to local time
+            from datetime import timezone
+            local_datetime = shoot_datetime.astimezone()
+
+            # Format date as "Mon, Dec 4"
+            date_str = local_datetime.strftime('%a, %b %-d')
+            # Format time as "3:45 PM"
+            time_str = local_datetime.strftime('%-I:%M %p')
+
+            # Generate Asana task URL
+            task_url = f"https://app.asana.com/0/0/{shoot['gid']}/f"
+
+            html += f"""
+                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; background: {BRAND_OFF_WHITE}; transition: box-shadow 0.2s;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <div>
+                            <div style="font-size: 14px; font-weight: bold; color: {BRAND_NAVY};">{date_str}</div>
+                            <div style="font-size: 18px; font-weight: 600; color: {BRAND_BLUE};">{time_str}</div>
+                        </div>
+                        <span style="display: inline-block; padding: 4px 10px; background: {BRAND_NAVY}; color: white; font-size: 11px; border-radius: 12px; white-space: nowrap;">{shoot['project']}</span>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <a href="{task_url}" target="_blank" style="color: {BRAND_NAVY}; text-decoration: none; font-weight: 500; font-size: 15px; line-height: 1.4; display: block; hover: text-decoration: underline;">
+                            {shoot['name']}
+                        </a>
+                    </div>
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #dee2e6;">
+                        <a href="{task_url}" target="_blank" style="color: {BRAND_BLUE}; text-decoration: none; font-size: 12px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            """
+        html += """
+            </div>
+        """
+    else:
+        html += f"""
+            <div style="text-align: center; padding: 30px; color: #6c757d;">
+                <div style="font-size: 48px; margin-bottom: 10px;">📅</div>
+                <div style="font-size: 16px;">No upcoming shoots scheduled</div>
+            </div>
+        """
+
+    html += """
+        </div>
+
+        <!-- Upcoming Project Deadlines -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>⏰ Upcoming Project Deadlines</h2>
+            <p style="color: #6c757d; margin-top: 5px; font-size: 14px;">Projects due within the next 10 days</p>
+    """
+
+    upcoming_deadlines = data.get('upcoming_deadlines', [])
+    if upcoming_deadlines:
+        html += """
+            <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
+        """
+        for deadline in upcoming_deadlines:
+            # Format date
+            due_date = deadline['due_date']
+            date_str = due_date.strftime('%a, %b %-d, %Y')
+
+            # Generate Asana task URL
+            task_url = f"https://app.asana.com/0/0/{deadline['gid']}/f"
+
+            # Determine urgency color
+            days_until = deadline['days_until']
+            if days_until == 0:
+                urgency_color = '#dc3545'  # Red for today
+                urgency_text = 'DUE TODAY'
+            elif days_until == 1:
+                urgency_color = '#fd7e14'  # Orange for tomorrow
+                urgency_text = 'DUE TOMORROW'
+            elif days_until <= 3:
+                urgency_color = '#ffc107'  # Yellow for within 3 days
+                urgency_text = f'{days_until} DAYS'
+            else:
+                urgency_color = BRAND_BLUE
+                urgency_text = f'{days_until} DAYS'
+
+            html += f"""
+                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; background: {BRAND_OFF_WHITE}; transition: box-shadow 0.2s;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <div>
+                            <div style="font-size: 14px; font-weight: bold; color: {BRAND_NAVY};">{date_str}</div>
+                            <div style="font-size: 24px; font-weight: 600; color: {urgency_color}; margin-top: 5px;">{urgency_text}</div>
+                        </div>
+                        <span style="display: inline-block; padding: 4px 10px; background: {BRAND_NAVY}; color: white; font-size: 11px; border-radius: 12px; white-space: nowrap;">{deadline['project']}</span>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <a href="{task_url}" target="_blank" style="color: {BRAND_NAVY}; text-decoration: none; font-weight: 500; font-size: 15px; line-height: 1.4; display: block; hover: text-decoration: underline;">
+                            {deadline['name']}
+                        </a>
+                    </div>
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #dee2e6;">
+                        <a href="{task_url}" target="_blank" style="color: {BRAND_BLUE}; text-decoration: none; font-size: 12px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            """
+        html += """
+            </div>
+        """
+    else:
+        html += f"""
+            <div style="text-align: center; padding: 30px; color: #6c757d;">
+                <div style="font-size: 48px; margin-bottom: 10px;">✅</div>
+                <div style="font-size: 16px;">No upcoming deadlines in the next 10 days</div>
             </div>
         """
 
