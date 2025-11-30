@@ -192,6 +192,138 @@
             }
         }
 
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .header .subtitle {
+                font-size: 12px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .card h2 {
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+
+            .metric {
+                padding: 10px 0;
+            }
+
+            .metric-label {
+                font-size: 13px;
+            }
+
+            .metric-value {
+                font-size: 20px;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+
+            .team-member-name {
+                font-size: 13px;
+            }
+
+            .alert {
+                padding: 12px;
+                font-size: 13px;
+            }
+
+            /* Make chat widget more mobile-friendly */
+            .chat-widget {
+                bottom: 15px;
+                right: 15px;
+            }
+
+            .chat-button {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            .chat-window {
+                bottom: 75px;
+                right: 10px;
+                left: 10px;
+                width: auto;
+                max-width: none;
+                height: 500px;
+            }
+
+            .chat-messages {
+                padding: 15px;
+            }
+
+            .chat-message {
+                max-width: 85%;
+                font-size: 14px;
+            }
+        }
+
+        /* Extra small mobile devices (iPhone SE, etc.) */
+        @media (max-width: 375px) {
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .card {
+                padding: 12px;
+            }
+
+            .card h2 {
+                font-size: 15px;
+            }
+
+            .metric-value {
+                font-size: 18px;
+            }
+
+            .chart-container {
+                height: 220px;
+            }
+
+            .chat-button {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+
+            .chat-window {
+                height: 450px;
+            }
+        }
+
+        /* Landscape mobile optimization */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .chart-container {
+                height: 200px;
+            }
+
+            .chat-window {
+                height: 350px;
+            }
+        }
+
         /* Chat Widget Styles */
         .chat-widget {
             position: fixed;
@@ -401,7 +533,7 @@
         <div class="header">
             <h1>Perimeter Studio Dashboard</h1>
             <div class="subtitle">Video Production Capacity Tracking & Performance Metrics</div>
-            <div class="timestamp">Last Updated: November 30, 2025 at 01:30 PM</div>
+            <div class="timestamp">Last Updated: November 30, 2025 at 01:45 PM</div>
         </div>
 
         <div class="grid">
