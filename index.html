@@ -578,7 +578,7 @@
         <div class="header">
             <h1>Perimeter Studio Dashboard</h1>
             <div class="subtitle">Video Production Capacity Tracking & Performance Metrics</div>
-            <div class="timestamp">Last Updated: December 01, 2025 at 09:21 AM</div>
+            <div class="timestamp">Last Updated: December 01, 2025 at 09:30 AM</div>
         </div>
 
         <div class="grid">
@@ -1273,6 +1273,24 @@
             <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
                 Team utilization percentage over the last 30 days
             </div>
+            <div style="margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 15px; align-items: center;">
+                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
+                    <input type="checkbox" id="filter-zach" checked onchange="toggleCapacityLine('Zach Welliver')">
+                    <span style="color: #FF6384;">Zach Welliver</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
+                    <input type="checkbox" id="filter-nick" checked onchange="toggleCapacityLine('Nick Clark')">
+                    <span style="color: #36A2EB;">Nick Clark</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
+                    <input type="checkbox" id="filter-adriel" checked onchange="toggleCapacityLine('Adriel Abella')">
+                    <span style="color: #FFCE56;">Adriel Abella</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
+                    <input type="checkbox" id="filter-john" checked onchange="toggleCapacityLine('John Meyer')">
+                    <span style="color: #4BC0C0;">John Meyer</span>
+                </label>
+            </div>
             <div class="chart-container">
                 <canvas id="capacityHistoryChart"></canvas>
             </div>
@@ -1495,7 +1513,7 @@
         // Historical Capacity Utilization Chart
         if (document.getElementById('capacityHistoryChart')) {
             const historyCtx = document.getElementById('capacityHistoryChart').getContext('2d');
-            const historyData = [{"date": "2025-11-02", "utilization_percent": 77.4}, {"date": "2025-11-03", "utilization_percent": 54.3}, {"date": "2025-11-04", "utilization_percent": 71.0}, {"date": "2025-11-05", "utilization_percent": 74.1}, {"date": "2025-11-06", "utilization_percent": 70.6}, {"date": "2025-11-07", "utilization_percent": 68.1}, {"date": "2025-11-08", "utilization_percent": 75.7}, {"date": "2025-11-09", "utilization_percent": 69.9}, {"date": "2025-11-10", "utilization_percent": 63.6}, {"date": "2025-11-11", "utilization_percent": 74.8}, {"date": "2025-11-12", "utilization_percent": 87.8}, {"date": "2025-11-13", "utilization_percent": 80.0}, {"date": "2025-11-14", "utilization_percent": 78.5}, {"date": "2025-11-15", "utilization_percent": 61.7}, {"date": "2025-11-16", "utilization_percent": 82.5}, {"date": "2025-11-17", "utilization_percent": 73.2}, {"date": "2025-11-18", "utilization_percent": 84.6}, {"date": "2025-11-19", "utilization_percent": 70.7}, {"date": "2025-11-20", "utilization_percent": 65.3}, {"date": "2025-11-21", "utilization_percent": 75.6}, {"date": "2025-11-22", "utilization_percent": 70.1}, {"date": "2025-11-23", "utilization_percent": 64.8}, {"date": "2025-11-24", "utilization_percent": 80.1}, {"date": "2025-11-25", "utilization_percent": 62.5}, {"date": "2025-11-26", "utilization_percent": 69.4}, {"date": "2025-11-27", "utilization_percent": 66.1}, {"date": "2025-11-28", "utilization_percent": 67.6}, {"date": "2025-11-29", "utilization_percent": 62.6}, {"date": "2025-11-30", "utilization_percent": 70.4}, {"date": "2025-12-01", "utilization_percent": 72.9}, {"date": "2025-12-01", "utilization_percent": 64.6}];
+            const historyData = [];
             if (historyData.length > 0) {
                 new Chart(historyCtx, {
                     type: 'line',
