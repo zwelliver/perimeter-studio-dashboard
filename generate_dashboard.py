@@ -1475,17 +1475,6 @@ def generate_html_dashboard(data):
             </div>
         </div>
 
-        <!-- Historical Capacity Utilization -->
-        <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>📈 Historical Capacity Utilization</h2>
-            <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
-                Team utilization percentage over the last 30 days
-            </div>
-            <div class="chart-container">
-                <canvas id="capacityHistoryChart"></canvas>
-            </div>
-        </div>
-
         <!-- At-Risk Tasks -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>⚠️ At-Risk Tasks</h2>
@@ -1867,6 +1856,17 @@ def generate_html_dashboard(data):
             </div>
             <div style="margin-top: 10px; font-size: 11px; color: #6c757d; text-align: center;">
                 <em>Colors scale adaptively based on peak workload over the 30-day period</em>
+            </div>
+        </div>
+
+        <!-- Historical Capacity Utilization -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>📈 Historical Capacity Utilization</h2>
+            <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
+                Team utilization percentage over the last 30 days
+            </div>
+            <div class="chart-container">
+                <canvas id="capacityHistoryChart"></canvas>
             </div>
         </div>
 
