@@ -578,7 +578,7 @@
         <div class="header">
             <h1>Perimeter Studio Dashboard</h1>
             <div class="subtitle">Video Production Capacity Tracking & Performance Metrics</div>
-            <div class="timestamp">Last Updated: December 01, 2025 at 09:39 AM</div>
+            <div class="timestamp">Last Updated: December 01, 2025 at 09:43 AM</div>
         </div>
 
         <div class="grid">
@@ -1271,25 +1271,7 @@
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>📈 Historical Capacity Utilization</h2>
             <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
-                Team utilization percentage over the last 30 days
-            </div>
-            <div style="margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 15px; align-items: center;">
-                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
-                    <input type="checkbox" id="filter-zach" checked onchange="toggleCapacityLine('Zach Welliver')">
-                    <span style="color: #9B59B6;">Zach Welliver</span>
-                </label>
-                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
-                    <input type="checkbox" id="filter-nick" checked onchange="toggleCapacityLine('Nick Clark')">
-                    <span style="color: #36A2EB;">Nick Clark</span>
-                </label>
-                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
-                    <input type="checkbox" id="filter-adriel" checked onchange="toggleCapacityLine('Adriel Abella')">
-                    <span style="color: #FFCE56;">Adriel Abella</span>
-                </label>
-                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
-                    <input type="checkbox" id="filter-john" checked onchange="toggleCapacityLine('John Meyer')">
-                    <span style="color: #4BC0C0;">John Meyer</span>
-                </label>
+                Team utilization percentage over the last 30 days (click legend items to filter)
             </div>
             <div class="chart-container">
                 <canvas id="capacityHistoryChart"></canvas>
@@ -1573,6 +1555,11 @@
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
+                            layout: {
+                                padding: {
+                                    top: 20
+                                }
+                            },
                             interaction: {
                                 mode: 'index',
                                 intersect: false
@@ -1614,35 +1601,6 @@
                 }
             }
         });
-
-        // Function to toggle individual team member lines
-        function toggleCapacityLine(memberName) {
-            if (!window.capacityHistoryChart) return;
-
-            // Find the dataset for this member
-            const datasetIndex = window.capacityHistoryChart.data.datasets.findIndex(
-                ds => ds.label === memberName
-            );
-
-            if (datasetIndex === -1) return;
-
-            // Never hide Team Total
-            if (memberName === 'Team Total') {
-                // Re-check the checkbox if user tries to uncheck Team Total
-                const checkboxes = document.querySelectorAll('[onchange*="toggleCapacityLine"]');
-                checkboxes.forEach(cb => {
-                    if (cb.getAttribute('onchange').includes('Team Total')) {
-                        cb.checked = true;
-                    }
-                });
-                return;
-            }
-
-            // Toggle visibility
-            const meta = window.capacityHistoryChart.getDatasetMeta(datasetIndex);
-            meta.hidden = !meta.hidden;
-            window.capacityHistoryChart.update();
-        }
 
         // Chat Widget JavaScript - wait for DOM to load
         document.addEventListener('DOMContentLoaded', function() {
