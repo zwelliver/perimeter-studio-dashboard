@@ -30,7 +30,8 @@ def read_reports():
         'delivery_log': None,
         'delivery_summary': None,
         'timestamp': datetime.now().strftime('%B %d, %Y at %I:%M %p'),
-        'team_capacity': []
+        'team_capacity': [],
+        'capacity_history': None
     }
 
     # Read allocation report
@@ -66,6 +67,21 @@ def read_reports():
         with open(delivery_summary_file, 'r') as f:
             content = f.read()
             data['delivery_summary'] = content
+
+    # Read capacity history
+    capacity_history_file = os.path.join(reports_dir, 'capacity_history.csv')
+    if os.path.exists(capacity_history_file):
+        capacity_df = pd.read_csv(capacity_history_file)
+        # Filter for Team Total to get overall team utilization
+        team_total_data = capacity_df[capacity_df['team_member'] == 'Team Total']
+        if not team_total_data.empty:
+            # Sort by date to ensure chronological order
+            team_total_data = team_total_data.sort_values('date')
+            data['capacity_history'] = team_total_data.to_dict('records')
+        else:
+            data['capacity_history'] = None
+    else:
+        data['capacity_history'] = None
 
     # Fetch active tasks from Asana to calculate team capacity accurately
     team_capacity_config = {
@@ -1459,6 +1475,17 @@ def generate_html_dashboard(data):
             </div>
         </div>
 
+        <!-- Historical Capacity Utilization -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>📈 Historical Capacity Utilization</h2>
+            <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
+                Team utilization percentage over the last 30 days
+            </div>
+            <div class="chart-container">
+                <canvas id="capacityHistoryChart"></canvas>
+            </div>
+        </div>
+
         <!-- At-Risk Tasks -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>⚠️ At-Risk Tasks</h2>
@@ -1907,6 +1934,15 @@ def generate_html_dashboard(data):
     actual_values = [cat['actual'] for cat in category_data]
     target_values = [cat['target'] for cat in category_data]
 
+    # Prepare capacity history data for chart
+    capacity_history_chart_data = []
+    if data.get('capacity_history'):
+        for record in data['capacity_history']:
+            capacity_history_chart_data.append({
+                'date': record.get('date', ''),
+                'utilization_percent': float(record.get('utilization_percent', 0))
+            })
+
     html += f"""
         // Category Chart
         const ctx = document.getElementById('categoryChart').getContext('2d');
@@ -2041,6 +2077,73 @@ def generate_html_dashboard(data):
                 }}
             }}
         }});
+"""
+
+    # Add Historical Capacity Utilization Chart
+    html += f"""
+        // Historical Capacity Utilization Chart
+        if (document.getElementById('capacityHistoryChart')) {{
+            const historyCtx = document.getElementById('capacityHistoryChart').getContext('2d');
+            const historyData = {json.dumps(capacity_history_chart_data)};
+            if (historyData.length > 0) {{
+                new Chart(historyCtx, {{
+                    type: 'line',
+                    data: {{
+                        labels: historyData.map(d => d.date),
+                        datasets: [{{
+                            label: 'Team Utilization %',
+                            data: historyData.map(d => d.utilization_percent),
+                            borderColor: '{BRAND_BLUE}',
+                            backgroundColor: 'rgba(96, 187, 233, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 4,
+                            pointBackgroundColor: '{BRAND_NAVY}',
+                            pointBorderColor: '{BRAND_BLUE}',
+                            pointBorderWidth: 2
+                        }}]
+                    }},
+                    options: {{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {{
+                            mode: 'index',
+                            intersect: false
+                        }},
+                        scales: {{
+                            y: {{
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: {{
+                                    callback: function(value) {{
+                                        return value + '%';
+                                    }}
+                                }}
+                            }},
+                            x: {{
+                                ticks: {{
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                }}
+                            }}
+                        }},
+                        plugins: {{
+                            legend: {{
+                                position: 'top'
+                            }},
+                            tooltip: {{
+                                callbacks: {{
+                                    label: function(context) {{
+                                        return 'Utilization: ' + context.parsed.y.toFixed(1) + '%';
+                                    }}
+                                }}
+                            }}
+                        }}
+                    }}
+                }});
+            }}
+        }}
 
         // Chat Widget JavaScript - wait for DOM to load
         document.addEventListener('DOMContentLoaded', function() {{
