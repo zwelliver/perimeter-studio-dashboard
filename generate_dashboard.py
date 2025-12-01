@@ -72,16 +72,21 @@ def read_reports():
     capacity_history_file = os.path.join(reports_dir, 'capacity_history.csv')
     if os.path.exists(capacity_history_file):
         capacity_df = pd.read_csv(capacity_history_file)
-        # Filter for Team Total to get overall team utilization
-        team_total_data = capacity_df[capacity_df['team_member'] == 'Team Total']
-        if not team_total_data.empty:
-            # Sort by date to ensure chronological order
-            team_total_data = team_total_data.sort_values('date')
-            data['capacity_history'] = team_total_data.to_dict('records')
-        else:
-            data['capacity_history'] = None
+        # Sort by date to ensure chronological order
+        capacity_df = capacity_df.sort_values('date')
+
+        # Organize data by team member
+        capacity_history_by_member = {}
+        team_members = ['Zach Welliver', 'Nick Clark', 'Adriel Abella', 'John Meyer', 'Team Total']
+
+        for member in team_members:
+            member_data = capacity_df[capacity_df['team_member'] == member]
+            if not member_data.empty:
+                capacity_history_by_member[member] = member_data[['date', 'utilization_percent']].to_dict('records')
+
+        data['capacity_history_by_member'] = capacity_history_by_member
     else:
-        data['capacity_history'] = None
+        data['capacity_history_by_member'] = {}
 
     # Fetch active tasks from Asana to calculate team capacity accurately
     team_capacity_config = {
@@ -1865,6 +1870,24 @@ def generate_html_dashboard(data):
             <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
                 Team utilization percentage over the last 30 days
             </div>
+            <div style="margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 15px; align-items: center;">
+                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
+                    <input type="checkbox" id="filter-zach" checked onchange="toggleCapacityLine('Zach Welliver')">
+                    <span style="color: #FF6384;">Zach Welliver</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
+                    <input type="checkbox" id="filter-nick" checked onchange="toggleCapacityLine('Nick Clark')">
+                    <span style="color: #36A2EB;">Nick Clark</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
+                    <input type="checkbox" id="filter-adriel" checked onchange="toggleCapacityLine('Adriel Abella')">
+                    <span style="color: #FFCE56;">Adriel Abella</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
+                    <input type="checkbox" id="filter-john" checked onchange="toggleCapacityLine('John Meyer')">
+                    <span style="color: #4BC0C0;">John Meyer</span>
+                </label>
+            </div>
             <div class="chart-container">
                 <canvas id="capacityHistoryChart"></canvas>
             </div>
@@ -1933,15 +1956,6 @@ def generate_html_dashboard(data):
     category_names = [cat['name'] for cat in category_data]
     actual_values = [cat['actual'] for cat in category_data]
     target_values = [cat['target'] for cat in category_data]
-
-    # Prepare capacity history data for chart
-    capacity_history_chart_data = []
-    if data.get('capacity_history'):
-        for record in data['capacity_history']:
-            capacity_history_chart_data.append({
-                'date': record.get('date', ''),
-                'utilization_percent': float(record.get('utilization_percent', 0))
-            })
 
     html += f"""
         // Category Chart
@@ -2079,30 +2093,68 @@ def generate_html_dashboard(data):
         }});
 """
 
-    # Add Historical Capacity Utilization Chart
+    # Add Historical Capacity Utilization Chart with per-member data
+    capacity_history_by_member = data.get('capacity_history_by_member', {})
+
     html += f"""
-        // Historical Capacity Utilization Chart
+        // Historical Capacity Utilization Chart with per-member datasets
         if (document.getElementById('capacityHistoryChart')) {{
             const historyCtx = document.getElementById('capacityHistoryChart').getContext('2d');
-            const historyData = {json.dumps(capacity_history_chart_data)};
-            if (historyData.length > 0) {{
-                new Chart(historyCtx, {{
+            const capacityHistoryByMember = {json.dumps(capacity_history_by_member)};
+
+            // Build datasets for each team member
+            const datasets = [];
+            const memberColors = {{
+                'Zach Welliver': '#FF6384',
+                'Nick Clark': '#36A2EB',
+                'Adriel Abella': '#FFCE56',
+                'John Meyer': '#4BC0C0',
+                'Team Total': '{BRAND_BLUE}'
+            }};
+
+            // Extract all unique dates from Team Total (or first available member)
+            let allDates = [];
+            if (capacityHistoryByMember['Team Total']) {{
+                allDates = capacityHistoryByMember['Team Total'].map(d => d.date);
+            }} else {{
+                // Fallback to first member with data
+                const firstMember = Object.keys(capacityHistoryByMember)[0];
+                if (firstMember) {{
+                    allDates = capacityHistoryByMember[firstMember].map(d => d.date);
+                }}
+            }}
+
+            // Create dataset for each team member
+            const memberOrder = ['Zach Welliver', 'Nick Clark', 'Adriel Abella', 'John Meyer', 'Team Total'];
+            memberOrder.forEach(memberName => {{
+                if (capacityHistoryByMember[memberName]) {{
+                    const memberData = capacityHistoryByMember[memberName];
+                    const color = memberColors[memberName] || '#999999';
+                    const isTeamTotal = memberName === 'Team Total';
+
+                    datasets.push({{
+                        label: memberName,
+                        data: memberData.map(d => parseFloat(d.utilization_percent)),
+                        borderColor: color,
+                        backgroundColor: isTeamTotal ? `${{color}}33` : 'transparent',
+                        borderWidth: isTeamTotal ? 3 : 2,
+                        fill: isTeamTotal,
+                        tension: 0.3,
+                        pointRadius: isTeamTotal ? 5 : 3,
+                        pointBackgroundColor: color,
+                        pointBorderColor: color,
+                        pointBorderWidth: 2,
+                        hidden: false
+                    }});
+                }}
+            }});
+
+            if (datasets.length > 0) {{
+                window.capacityHistoryChart = new Chart(historyCtx, {{
                     type: 'line',
                     data: {{
-                        labels: historyData.map(d => d.date),
-                        datasets: [{{
-                            label: 'Team Utilization %',
-                            data: historyData.map(d => d.utilization_percent),
-                            borderColor: '{BRAND_BLUE}',
-                            backgroundColor: 'rgba(96, 187, 233, 0.1)',
-                            borderWidth: 2,
-                            fill: true,
-                            tension: 0.3,
-                            pointRadius: 4,
-                            pointBackgroundColor: '{BRAND_NAVY}',
-                            pointBorderColor: '{BRAND_BLUE}',
-                            pointBorderWidth: 2
-                        }}]
+                        labels: allDates,
+                        datasets: datasets
                     }},
                     options: {{
                         responsive: true,
@@ -2130,12 +2182,15 @@ def generate_html_dashboard(data):
                         }},
                         plugins: {{
                             legend: {{
-                                position: 'top'
+                                position: 'top',
+                                labels: {{
+                                    usePointStyle: true
+                                }}
                             }},
                             tooltip: {{
                                 callbacks: {{
                                     label: function(context) {{
-                                        return 'Utilization: ' + context.parsed.y.toFixed(1) + '%';
+                                        return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
                                     }}
                                 }}
                             }}
@@ -2143,6 +2198,35 @@ def generate_html_dashboard(data):
                     }}
                 }});
             }}
+        }}
+
+        // Function to toggle individual team member lines
+        function toggleCapacityLine(memberName) {{
+            if (!window.capacityHistoryChart) return;
+
+            // Find the dataset for this member
+            const datasetIndex = window.capacityHistoryChart.data.datasets.findIndex(
+                ds => ds.label === memberName
+            );
+
+            if (datasetIndex === -1) return;
+
+            // Never hide Team Total
+            if (memberName === 'Team Total') {{
+                // Re-check the checkbox if user tries to uncheck Team Total
+                const checkboxes = document.querySelectorAll('[onchange*="toggleCapacityLine"]');
+                checkboxes.forEach(cb => {{
+                    if (cb.getAttribute('onchange').includes('Team Total')) {{
+                        cb.checked = true;
+                    }}
+                }});
+                return;
+            }}
+
+            // Toggle visibility
+            const meta = window.capacityHistoryChart.getDatasetMeta(datasetIndex);
+            meta.hidden = !meta.hidden;
+            window.capacityHistoryChart.update();
         }}
 
         // Chat Widget JavaScript - wait for DOM to load
