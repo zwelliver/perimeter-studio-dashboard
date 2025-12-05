@@ -578,7 +578,7 @@
         <div class="header">
             <h1>Perimeter Studio Dashboard</h1>
             <div class="subtitle">Video Production Capacity Tracking & Performance Metrics</div>
-            <div class="timestamp">Last Updated: December 05, 2025 at 12:17 PM</div>
+            <div class="timestamp">Last Updated: December 05, 2025 at 12:32 PM</div>
         </div>
 
         <div class="grid">
@@ -1373,7 +1373,7 @@
                 <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
                     Current workload distribution across ministry categories
                 </div>
-                <div class="chart-container" style="max-width: 500px; margin: 0 auto;">
+                <div class="chart-container" style="max-width: 800px; margin: 0 auto; height: 400px;">
                     <canvas id="categoryDonutChart"></canvas>
                 </div>
             </div>
@@ -1615,17 +1615,17 @@
                     },
                     options: {
                         responsive: true,
-                        maintainAspectRatio: true,
+                        maintainAspectRatio: false,
                         plugins: {
                             legend: {
-                                position: 'bottom',
+                                position: 'right',
                                 labels: {
-                                    padding: 20,
+                                    padding: 15,
                                     font: {
-                                        size: 12
+                                        size: 13
                                     },
-                                    boxWidth: 15,
-                                    boxHeight: 15,
+                                    boxWidth: 20,
+                                    boxHeight: 20,
                                     usePointStyle: false,
                                     generateLabels: function(chart) {
                                         const data = chart.data;
@@ -1642,8 +1642,7 @@
                                         }
                                         return [];
                                     }
-                                },
-                                maxWidth: 600
+                                }
                             },
                             tooltip: {
                                 callbacks: {
