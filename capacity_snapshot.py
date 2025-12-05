@@ -26,11 +26,17 @@ ASANA_HEADERS = {
     "Content-Type": "application/json"
 }
 
+# Internal projects (affect team capacity)
 PROJECT_GIDS = {
     'Preproduction': '1208336083003480',
     'Production': '1209597979075357',
     'Post Production': '1209581743268502',
     'Forecast': '1212059678473189'
+}
+
+# External projects (tracking only, do not affect team capacity)
+EXTERNAL_PROJECT_GIDS = {
+    'Contracted/Outsourced': '1212319598244265'
 }
 
 PERCENT_ALLOCATION_FIELD_GID = '1208923995383367'

@@ -107,12 +107,17 @@ def read_reports():
             "Content-Type": "application/json"
         }
 
-        # Project GIDs
+        # Internal projects (affect team capacity)
         project_gids = {
             'Preproduction': '1208336083003480',
             'Production': '1209597979075357',
             'Post Production': '1209581743268502',
             'Forecast': '1212059678473189'
+        }
+
+        # External projects (tracking only, do not affect team capacity)
+        external_project_gids = {
+            'Contracted/Outsourced': '1212319598244265'
         }
 
         PERCENT_ALLOCATION_FIELD_GID = '1208923995383367'
@@ -180,6 +185,32 @@ def read_reports():
                     data['active_task_count'] += sum(1 for task in tasks if not task.get('completed', False))
             except Exception as e:
                 print(f"Warning: Could not count tasks from {project_name}: {e}")
+                continue
+
+    # Fetch external project tasks (contracted/outsourced)
+    data['external_projects'] = []
+    if ASANA_PAT:
+        for project_name, project_gid in external_project_gids.items():
+            try:
+                endpoint = f"https://app.asana.com/api/1.0/projects/{project_gid}/tasks"
+                params = {'opt_fields': 'name,completed,due_on'}
+
+                response = requests.get(endpoint, headers=headers, params=params)
+
+                if response.status_code == 200:
+                    tasks = response.json().get('data', [])
+                    active_tasks = [t for t in tasks if not t.get('completed', False)]
+                    completed_tasks = [t for t in tasks if t.get('completed', False)]
+
+                    data['external_projects'].append({
+                        'name': project_name,
+                        'active_count': len(active_tasks),
+                        'completed_count': len(completed_tasks),
+                        'total_count': len(tasks),
+                        'tasks': [{'name': t.get('name', 'Untitled'), 'due_on': t.get('due_on')} for t in active_tasks[:5]]  # Show first 5
+                    })
+            except Exception as e:
+                print(f"Warning: Could not fetch external project {project_name}: {e}")
                 continue
 
     # Fetch detailed task data for advanced analytics
@@ -1478,6 +1509,43 @@ def generate_html_dashboard(data):
 
     html += """
             </div>
+
+            <!-- External Projects (Contracted/Outsourced) -->
+            <div class="card">
+                <h2>Contracted/Outsourced Projects</h2>
+"""
+
+    # Add external projects
+    external_projects = data.get('external_projects', [])
+    if external_projects:
+        for project in external_projects:
+            html += f"""
+                <div class="metric">
+                    <span class="metric-label">{project['name']}</span>
+                    <span class="metric-value">{project['active_count']} Active</span>
+                </div>
+"""
+            if project.get('tasks'):
+                html += """
+                <div style="margin-top: 10px; padding-left: 10px; border-left: 2px solid """ + BRAND_BLUE + """;">
+"""
+                for task in project['tasks']:
+                    due_text = f" (Due: {task['due_on']})" if task.get('due_on') else ""
+                    html += f"""
+                    <div style="font-size: 12px; color: #6c757d; margin: 4px 0;">• {task['name']}{due_text}</div>
+"""
+                html += """
+                </div>
+"""
+    else:
+        html += """
+                <div style="text-align: center; padding: 20px; color: #6c757d;">
+                    <div style="font-size: 14px;">No external projects</div>
+                </div>
+"""
+
+    html += """
+            </div>
         </div>
 
         <!-- At-Risk Tasks -->
@@ -1868,25 +1936,7 @@ def generate_html_dashboard(data):
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>📈 Historical Capacity Utilization</h2>
             <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
-                Team utilization percentage over the last 30 days
-            </div>
-            <div style="margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 15px; align-items: center;">
-                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
-                    <input type="checkbox" id="filter-zach" checked onchange="toggleCapacityLine('Zach Welliver')">
-                    <span style="color: #FF6384;">Zach Welliver</span>
-                </label>
-                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
-                    <input type="checkbox" id="filter-nick" checked onchange="toggleCapacityLine('Nick Clark')">
-                    <span style="color: #36A2EB;">Nick Clark</span>
-                </label>
-                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
-                    <input type="checkbox" id="filter-adriel" checked onchange="toggleCapacityLine('Adriel Abella')">
-                    <span style="color: #FFCE56;">Adriel Abella</span>
-                </label>
-                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px;">
-                    <input type="checkbox" id="filter-john" checked onchange="toggleCapacityLine('John Meyer')">
-                    <span style="color: #4BC0C0;">John Meyer</span>
-                </label>
+                Team utilization percentage over the last 30 days (click legend items to filter)
             </div>
             <div class="chart-container">
                 <canvas id="capacityHistoryChart"></canvas>
@@ -2098,136 +2148,114 @@ def generate_html_dashboard(data):
 
     html += f"""
         // Historical Capacity Utilization Chart with per-member datasets
-        if (document.getElementById('capacityHistoryChart')) {{
-            const historyCtx = document.getElementById('capacityHistoryChart').getContext('2d');
-            const capacityHistoryByMember = {json.dumps(capacity_history_by_member)};
+        document.addEventListener('DOMContentLoaded', function() {{
+            if (document.getElementById('capacityHistoryChart')) {{
+                const historyCtx = document.getElementById('capacityHistoryChart').getContext('2d');
+                const capacityHistoryByMember = {json.dumps(capacity_history_by_member)};
 
-            // Build datasets for each team member
-            const datasets = [];
-            const memberColors = {{
-                'Zach Welliver': '#FF6384',
-                'Nick Clark': '#36A2EB',
-                'Adriel Abella': '#FFCE56',
-                'John Meyer': '#4BC0C0',
-                'Team Total': '{BRAND_BLUE}'
-            }};
+                // Build datasets for each team member
+                const datasets = [];
+                const memberColors = {{
+                    'Zach Welliver': '#9B59B6',
+                    'Nick Clark': '#36A2EB',
+                    'Adriel Abella': '#FFCE56',
+                    'John Meyer': '#4BC0C0',
+                    'Team Total': '{BRAND_BLUE}'
+                }};
 
-            // Extract all unique dates from Team Total (or first available member)
-            let allDates = [];
-            if (capacityHistoryByMember['Team Total']) {{
-                allDates = capacityHistoryByMember['Team Total'].map(d => d.date);
-            }} else {{
-                // Fallback to first member with data
-                const firstMember = Object.keys(capacityHistoryByMember)[0];
-                if (firstMember) {{
-                    allDates = capacityHistoryByMember[firstMember].map(d => d.date);
+                // Extract all unique dates from Team Total (or first available member)
+                let allDates = [];
+                if (capacityHistoryByMember['Team Total']) {{
+                    allDates = capacityHistoryByMember['Team Total'].map(d => d.date);
+                }} else {{
+                    // Fallback to first member with data
+                    const firstMember = Object.keys(capacityHistoryByMember)[0];
+                    if (firstMember) {{
+                        allDates = capacityHistoryByMember[firstMember].map(d => d.date);
+                    }}
                 }}
-            }}
 
-            // Create dataset for each team member
-            const memberOrder = ['Zach Welliver', 'Nick Clark', 'Adriel Abella', 'John Meyer', 'Team Total'];
-            memberOrder.forEach(memberName => {{
-                if (capacityHistoryByMember[memberName]) {{
-                    const memberData = capacityHistoryByMember[memberName];
-                    const color = memberColors[memberName] || '#999999';
-                    const isTeamTotal = memberName === 'Team Total';
+                // Create dataset for each team member
+                const memberOrder = ['Zach Welliver', 'Nick Clark', 'Adriel Abella', 'John Meyer', 'Team Total'];
+                memberOrder.forEach(memberName => {{
+                    if (capacityHistoryByMember[memberName]) {{
+                        const memberData = capacityHistoryByMember[memberName];
+                        const color = memberColors[memberName] || '#999999';
+                        const isTeamTotal = memberName === 'Team Total';
 
-                    datasets.push({{
-                        label: memberName,
-                        data: memberData.map(d => parseFloat(d.utilization_percent)),
-                        borderColor: color,
-                        backgroundColor: isTeamTotal ? `${{color}}33` : 'transparent',
-                        borderWidth: isTeamTotal ? 3 : 2,
-                        fill: isTeamTotal,
-                        tension: 0.3,
-                        pointRadius: isTeamTotal ? 5 : 3,
-                        pointBackgroundColor: color,
-                        pointBorderColor: color,
-                        pointBorderWidth: 2,
-                        hidden: false
-                    }});
-                }}
-            }});
+                        datasets.push({{
+                            label: memberName,
+                            data: memberData.map(d => parseFloat(d.utilization_percent)),
+                            borderColor: color,
+                            backgroundColor: isTeamTotal ? `${{color}}33` : 'transparent',
+                            borderWidth: isTeamTotal ? 3 : 2,
+                            fill: isTeamTotal,
+                            tension: 0.3,
+                            pointRadius: isTeamTotal ? 5 : 3,
+                            pointBackgroundColor: color,
+                            pointBorderColor: color,
+                            pointBorderWidth: 2,
+                            hidden: false
+                        }});
+                    }}
+                }});
 
-            if (datasets.length > 0) {{
-                window.capacityHistoryChart = new Chart(historyCtx, {{
-                    type: 'line',
-                    data: {{
-                        labels: allDates,
-                        datasets: datasets
-                    }},
-                    options: {{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: {{
-                            mode: 'index',
-                            intersect: false
+                if (datasets.length > 0) {{
+                    window.capacityHistoryChart = new Chart(historyCtx, {{
+                        type: 'line',
+                        data: {{
+                            labels: allDates,
+                            datasets: datasets
                         }},
-                        scales: {{
-                            y: {{
-                                beginAtZero: true,
-                                max: 100,
-                                ticks: {{
-                                    callback: function(value) {{
-                                        return value + '%';
+                        options: {{
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            layout: {{
+                                padding: {{
+                                    top: 20
+                                }}
+                            }},
+                            interaction: {{
+                                mode: 'index',
+                                intersect: false
+                            }},
+                            scales: {{
+                                y: {{
+                                    beginAtZero: true,
+                                    suggestedMax: 100,
+                                    ticks: {{
+                                        callback: function(value) {{
+                                            return value + '%';
+                                        }}
+                                    }}
+                                }},
+                                x: {{
+                                    ticks: {{
+                                        maxRotation: 45,
+                                        minRotation: 45
                                     }}
                                 }}
                             }},
-                            x: {{
-                                ticks: {{
-                                    maxRotation: 45,
-                                    minRotation: 45
-                                }}
-                            }}
-                        }},
-                        plugins: {{
-                            legend: {{
-                                position: 'top',
-                                labels: {{
-                                    usePointStyle: true
-                                }}
-                            }},
-                            tooltip: {{
-                                callbacks: {{
-                                    label: function(context) {{
-                                        return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
+                            plugins: {{
+                                legend: {{
+                                    position: 'top',
+                                    labels: {{
+                                        usePointStyle: true
+                                    }}
+                                }},
+                                tooltip: {{
+                                    callbacks: {{
+                                        label: function(context) {{
+                                            return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
+                                        }}
                                     }}
                                 }}
                             }}
                         }}
-                    }}
-                }});
+                    }});
+                }}
             }}
-        }}
-
-        // Function to toggle individual team member lines
-        function toggleCapacityLine(memberName) {{
-            if (!window.capacityHistoryChart) return;
-
-            // Find the dataset for this member
-            const datasetIndex = window.capacityHistoryChart.data.datasets.findIndex(
-                ds => ds.label === memberName
-            );
-
-            if (datasetIndex === -1) return;
-
-            // Never hide Team Total
-            if (memberName === 'Team Total') {{
-                // Re-check the checkbox if user tries to uncheck Team Total
-                const checkboxes = document.querySelectorAll('[onchange*="toggleCapacityLine"]');
-                checkboxes.forEach(cb => {{
-                    if (cb.getAttribute('onchange').includes('Team Total')) {{
-                        cb.checked = true;
-                    }}
-                }});
-                return;
-            }}
-
-            // Toggle visibility
-            const meta = window.capacityHistoryChart.getDatasetMeta(datasetIndex);
-            meta.hidden = !meta.hidden;
-            window.capacityHistoryChart.update();
-        }}
+        }});
 
         // Chat Widget JavaScript - wait for DOM to load
         document.addEventListener('DOMContentLoaded', function() {{
