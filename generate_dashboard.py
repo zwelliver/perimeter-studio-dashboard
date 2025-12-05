@@ -190,10 +190,11 @@ def read_reports():
     # Fetch external project tasks (contracted/outsourced)
     data['external_projects'] = []
     if ASANA_PAT:
+        VIDEOGRAPHER_FIELD_GID = '1209693890455555'
         for project_name, project_gid in external_project_gids.items():
             try:
                 endpoint = f"https://app.asana.com/api/1.0/projects/{project_gid}/tasks"
-                params = {'opt_fields': 'name,completed,due_on'}
+                params = {'opt_fields': 'name,completed,due_on,custom_fields'}
 
                 response = requests.get(endpoint, headers=headers, params=params)
 
@@ -202,12 +203,28 @@ def read_reports():
                     active_tasks = [t for t in tasks if not t.get('completed', False)]
                     completed_tasks = [t for t in tasks if t.get('completed', False)]
 
+                    # Extract task info including videographer
+                    task_list = []
+                    for t in active_tasks[:5]:  # Show first 5
+                        videographer = None
+                        # Extract videographer from custom fields
+                        for field in t.get('custom_fields', []):
+                            if field.get('gid') == VIDEOGRAPHER_FIELD_GID:
+                                videographer = field.get('text_value')
+                                break
+
+                        task_list.append({
+                            'name': t.get('name', 'Untitled'),
+                            'due_on': t.get('due_on'),
+                            'videographer': videographer
+                        })
+
                     data['external_projects'].append({
                         'name': project_name,
                         'active_count': len(active_tasks),
                         'completed_count': len(completed_tasks),
                         'total_count': len(tasks),
-                        'tasks': [{'name': t.get('name', 'Untitled'), 'due_on': t.get('due_on')} for t in active_tasks[:5]]  # Show first 5
+                        'tasks': task_list
                     })
             except Exception as e:
                 print(f"Warning: Could not fetch external project {project_name}: {e}")
@@ -355,6 +372,7 @@ def fetch_detailed_tasks():
     PERCENT_ALLOCATION_FIELD_GID = '1208923995383367'
     ACTUAL_ALLOCATION_FIELD_GID = '1212060330747288'
     TASK_PROGRESS_FIELD_GID = '1209598240843051'
+    VIDEOGRAPHER_FIELD_GID = '1209693890455555'
 
     all_tasks = []
 
@@ -374,6 +392,7 @@ def fetch_detailed_tasks():
                     estimated_allocation = 0
                     actual_allocation = 0
                     task_progress = None
+                    videographer = None
 
                     if 'custom_fields' in task:
                         for field in task['custom_fields']:
@@ -385,6 +404,9 @@ def fetch_detailed_tasks():
                                 # Task Progress is an enum field, get the display_value
                                 if field.get('display_value'):
                                     task_progress = field.get('display_value')
+                            elif field['gid'] == VIDEOGRAPHER_FIELD_GID:
+                                # Videographer is a text field
+                                videographer = field.get('text_value')
 
                     task_info = {
                         'gid': task.get('gid'),
@@ -397,7 +419,8 @@ def fetch_detailed_tasks():
                         'assignee': task.get('assignee', {}).get('name', 'Unassigned') if task.get('assignee') else 'Unassigned',
                         'estimated_allocation': estimated_allocation,
                         'actual_allocation': actual_allocation,
-                        'task_progress': task_progress
+                        'task_progress': task_progress,
+                        'videographer': videographer
                     }
 
                     all_tasks.append(task_info)
@@ -664,10 +687,12 @@ def identify_at_risk_tasks(tasks, team_capacity):
 
         if risk_factors:
             assignee = task['assignee']
+            videographer = task.get('videographer', 'N/A')
             at_risk.append({
                 'name': task['name'],
                 'project': task['project'],
                 'assignee': assignee,
+                'videographer': videographer,
                 'due_on': task.get('due_on', 'No due date'),
                 'risks': risk_factors
             })
@@ -1531,8 +1556,9 @@ def generate_html_dashboard(data):
 """
                 for task in project['tasks']:
                     due_text = f" (Due: {task['due_on']})" if task.get('due_on') else ""
+                    videographer_text = f" | Videographer: {task['videographer']}" if task.get('videographer') else ""
                     html += f"""
-                    <div style="font-size: 12px; color: #6c757d; margin: 4px 0;">• {task['name']}{due_text}</div>
+                    <div style="font-size: 12px; color: #6c757d; margin: 4px 0;">• {task['name']}{videographer_text}{due_text}</div>
 """
                 html += """
                 </div>
@@ -1560,11 +1586,12 @@ def generate_html_dashboard(data):
         """
         for task in at_risk[:10]:  # Show top 10
             risks_html = "<br>".join([f"• {risk}" for risk in task['risks']])
+            videographer_display = f" | Videographer: {task.get('videographer', 'N/A')}" if task.get('videographer') else ""
             html += f"""
                 <div style="border-left: 4px solid #dc3545; padding: 10px; margin-bottom: 10px; background: {BRAND_OFF_WHITE};">
                     <div style="font-weight: bold; color: {BRAND_NAVY};">{task['name']}</div>
                     <div style="font-size: 12px; color: #6c757d; margin-top: 5px;">
-                        {task['project']} | {task['assignee']} | Due: {task['due_on']}
+                        {task['project']} | {task['assignee']}{videographer_display} | Due: {task['due_on']}
                     </div>
                     <div style="font-size: 13px; color: #dc3545; margin-top: 8px;">
                         {risks_html}
@@ -1997,6 +2024,28 @@ def generate_html_dashboard(data):
 
     html += """
         </div>
+
+        <!-- Category Distribution Donut Charts -->
+        <div class="grid">
+            <div class="card">
+                <h2>📊 Current Period Distribution</h2>
+                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
+                    Today's workload distribution
+                </div>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="currentDonutChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h2>📊 Cumulative Average Distribution</h2>
+                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
+                    Average allocation over tracking period
+                </div>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="cumulativeDonutChart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -2004,8 +2053,27 @@ def generate_html_dashboard(data):
 
     # Add Chart.js data
     category_names = [cat['name'] for cat in category_data]
-    actual_values = [cat['actual'] for cat in category_data]
+    actual_values = [cat['actual'] for cat in category_data]  # Cumulative averages
     target_values = [cat['target'] for cat in category_data]
+
+    # Extract current period data (latest day from variance_history)
+    current_values = []
+    if 'variance_history' in data and data['variance_history'] is not None:
+        history_df = data['variance_history']
+        if not history_df.empty:
+            latest_date = history_df['Date'].max()
+            latest_data = history_df[history_df['Date'] == latest_date]
+            # Match category order
+            for cat_name in category_names:
+                cat_row = latest_data[latest_data['Category'] == cat_name]
+                if not cat_row.empty:
+                    current_values.append(float(cat_row['Actual %'].iloc[0]))
+                else:
+                    current_values.append(0)
+        else:
+            current_values = actual_values  # Fallback to cumulative
+    else:
+        current_values = actual_values  # Fallback to cumulative
 
     html += f"""
         // Category Chart
@@ -2254,6 +2322,98 @@ def generate_html_dashboard(data):
                         }}
                     }});
                 }}
+            }}
+        }});
+
+        // Category Distribution Donut Charts
+        const categoryColors = [
+            '{BRAND_BLUE}',      // Communications
+            '#28a745',           // Spiritual Formation
+            '#ffc107',           // Creative Resources
+            '{BRAND_NAVY}',      // Pastoral/Strategic
+            '#dc3545'            // Partners
+        ];
+
+        const donutChartOptions = {{
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {{
+                legend: {{
+                    position: 'right',
+                    labels: {{
+                        padding: 12,
+                        font: {{
+                            size: 11
+                        }},
+                        boxWidth: 15,
+                        boxHeight: 15,
+                        usePointStyle: false,
+                        generateLabels: function(chart) {{
+                            const data = chart.data;
+                            if (data.labels.length && data.datasets.length) {{
+                                return data.labels.map((label, i) => {{
+                                    const value = data.datasets[0].data[i];
+                                    return {{
+                                        text: label + ' (' + value.toFixed(1) + '%)',
+                                        fillStyle: data.datasets[0].backgroundColor[i],
+                                        hidden: false,
+                                        index: i
+                                    }};
+                                }});
+                            }}
+                            return [];
+                        }}
+                    }}
+                }},
+                tooltip: {{
+                    callbacks: {{
+                        label: function(context) {{
+                            const label = context.label || '';
+                            const value = context.parsed || 0;
+                            return label + ': ' + value.toFixed(1) + '%';
+                        }}
+                    }}
+                }}
+            }}
+        }};
+
+        // Current Period Donut Chart
+        document.addEventListener('DOMContentLoaded', function() {{
+            if (document.getElementById('currentDonutChart')) {{
+                const currentCtx = document.getElementById('currentDonutChart').getContext('2d');
+                new Chart(currentCtx, {{
+                    type: 'doughnut',
+                    data: {{
+                        labels: {json.dumps(category_names)},
+                        datasets: [{{
+                            data: {json.dumps(current_values)},
+                            backgroundColor: categoryColors,
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }}]
+                    }},
+                    options: donutChartOptions
+                }});
+            }}
+        }});
+
+        // Cumulative Average Donut Chart
+        document.addEventListener('DOMContentLoaded', function() {{
+            if (document.getElementById('cumulativeDonutChart')) {{
+                const cumulativeCtx = document.getElementById('cumulativeDonutChart').getContext('2d');
+                new Chart(cumulativeCtx, {{
+                    type: 'doughnut',
+                    data: {{
+                        labels: {json.dumps(category_names)},
+                        datasets: [{{
+                            data: {json.dumps(actual_values)},
+                            backgroundColor: categoryColors,
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }}]
+                    }},
+                    options: donutChartOptions
+                }});
             }}
         }});
 
