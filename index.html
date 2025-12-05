@@ -578,7 +578,7 @@
         <div class="header">
             <h1>Perimeter Studio Dashboard</h1>
             <div class="subtitle">Video Production Capacity Tracking & Performance Metrics</div>
-            <div class="timestamp">Last Updated: December 05, 2025 at 11:46 AM</div>
+            <div class="timestamp">Last Updated: December 05, 2025 at 12:03 PM</div>
         </div>
 
         <div class="grid">
@@ -1365,6 +1365,19 @@
             </div>
 
         </div>
+
+        <!-- Category Distribution Donut Chart -->
+        <div class="grid">
+            <div class="card full-width">
+                <h2>📊 Category Distribution</h2>
+                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
+                    Current workload distribution across ministry categories
+                </div>
+                <div class="chart-container" style="max-width: 500px; margin: 0 auto;">
+                    <canvas id="categoryDonutChart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1576,6 +1589,74 @@
                         }
                     });
                 }
+            }
+        });
+
+        // Category Distribution Donut Chart
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('categoryDonutChart')) {
+                const donutCtx = document.getElementById('categoryDonutChart').getContext('2d');
+                new Chart(donutCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ["Communications", "Creative Resources", "Partners", "Pastoral/Strategic", "Spiritual Formation"],
+                        datasets: [{
+                            data: [32.02727272727273, 10.799999999999999, 0.6727272727272727, 43.23636363636364, 12.372727272727273],
+                            backgroundColor: [
+                                '#60BBE9',      // Communications
+                                '#28a745',           // Spiritual Formation
+                                '#ffc107',           // Creative Resources
+                                '#09243F',      // Pastoral/Strategic
+                                '#dc3545'            // Partners
+                            ],
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    font: {
+                                        size: 12
+                                    },
+                                    boxWidth: 15,
+                                    boxHeight: 15,
+                                    usePointStyle: false,
+                                    generateLabels: function(chart) {
+                                        const data = chart.data;
+                                        if (data.labels.length && data.datasets.length) {
+                                            return data.labels.map((label, i) => {
+                                                const value = data.datasets[0].data[i];
+                                                return {
+                                                    text: label + ' (' + value.toFixed(1) + '%)',
+                                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                                    hidden: false,
+                                                    index: i
+                                                };
+                                            });
+                                        }
+                                        return [];
+                                    }
+                                },
+                                maxWidth: 600
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.parsed || 0;
+                                        return label + ': ' + value.toFixed(1) + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
             }
         });
 
