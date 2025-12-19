@@ -75,6 +75,10 @@ def read_reports():
         # Sort by date to ensure chronological order
         capacity_df = capacity_df.sort_values('date')
 
+        # Filter to show only last 30 days for cleaner chart display
+        cutoff_date = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+        capacity_df = capacity_df[capacity_df['date'] >= cutoff_date]
+
         # Organize data by team member
         capacity_history_by_member = {}
         team_members = ['Zach Welliver', 'Nick Clark', 'Adriel Abella', 'John Meyer', 'Team Total']
@@ -827,6 +831,7 @@ def generate_html_dashboard(data):
     # Delivery metrics
     delivery_metrics = {
         'total_completed': 0,
+        'completed_this_year': 0,
         'on_time_rate': 0,
         'avg_capacity_variance': 0,
         'projects_delayed_capacity': 0,
@@ -836,6 +841,20 @@ def generate_html_dashboard(data):
     if data['delivery_log'] is not None:
         df = data['delivery_log']
         delivery_metrics['total_completed'] = len(df)
+
+        # Calculate projects completed this year
+        current_year = datetime.now().year
+        tasks_with_completion_date = df[df['Completed Date'].notna()]
+        completed_this_year = 0
+        for _, task in tasks_with_completion_date.iterrows():
+            try:
+                # Parse completion date (format: YYYY-MM-DD)
+                completion_date = pd.to_datetime(task['Completed Date'])
+                if completion_date.year == current_year:
+                    completed_this_year += 1
+            except (ValueError, TypeError):
+                pass
+        delivery_metrics['completed_this_year'] = completed_this_year
 
         # On-time completion rate (only count tasks with due dates)
         # Filter out tasks where Delivery Status is null/NaN (no due date)
@@ -1484,6 +1503,10 @@ def generate_html_dashboard(data):
                     <span class="metric-value">{delivery_metrics['total_completed']}</span>
                 </div>
                 <div class="metric">
+                    <span class="metric-label">Total Projects This Year</span>
+                    <span class="metric-value">{delivery_metrics['completed_this_year']}</span>
+                </div>
+                <div class="metric">
                     <span class="metric-label">Avg Days Variance</span>
                     <span class="metric-value {'positive' if delivery_metrics['avg_days_variance'] <= 0 else 'warning' if delivery_metrics['avg_days_variance'] <= 3 else 'negative'}">{delivery_metrics['avg_days_variance']:+.1f}</span>
                 </div>
@@ -1503,6 +1526,10 @@ def generate_html_dashboard(data):
                 <div class="metric">
                     <span class="metric-label">Projects Completed (30d)</span>
                     <span class="metric-value">{delivery_metrics['total_completed']}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Projects Completed This Year</span>
+                    <span class="metric-value">{delivery_metrics['completed_this_year']}</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Delayed Due to Capacity</span>
@@ -1920,7 +1947,6 @@ def generate_html_dashboard(data):
 
         # Format date for display (show month/day)
         try:
-            from datetime import datetime
             date_obj = datetime.strptime(date_str, '%Y-%m-%d')
             display_date = date_obj.strftime('%m/%d')  # Shows as "11/26"
         except:
@@ -2266,6 +2292,20 @@ def generate_html_dashboard(data):
                             hidden: false
                         }});
                     }}
+                }});
+
+                // Add 100% capacity redline
+                datasets.push({{
+                    label: '100% Capacity Threshold',
+                    data: Array(allDates.length).fill(100),
+                    borderColor: '#dc3545',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    borderDash: [10, 5],
+                    fill: false,
+                    tension: 0,
+                    pointRadius: 0,
+                    pointHoverRadius: 0
                 }});
 
                 if (datasets.length > 0) {{

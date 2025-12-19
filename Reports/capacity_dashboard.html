@@ -578,7 +578,7 @@
         <div class="header">
             <h1>Perimeter Studio Dashboard</h1>
             <div class="subtitle">Video Production Capacity Tracking & Performance Metrics</div>
-            <div class="timestamp">Last Updated: December 18, 2025 at 09:30 PM</div>
+            <div class="timestamp">Last Updated: December 18, 2025 at 09:39 PM</div>
         </div>
 
         <div class="grid">
@@ -1467,6 +1467,20 @@
                             hidden: false
                         });
                     }
+                });
+
+                // Add 100% capacity redline
+                datasets.push({
+                    label: '100% Capacity Threshold',
+                    data: Array(allDates.length).fill(100),
+                    borderColor: '#dc3545',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    borderDash: [10, 5],
+                    fill: false,
+                    tension: 0,
+                    pointRadius: 0,
+                    pointHoverRadius: 0
                 });
 
                 if (datasets.length > 0) {
