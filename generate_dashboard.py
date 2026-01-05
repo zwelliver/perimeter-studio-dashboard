@@ -2497,37 +2497,12 @@ def generate_html_dashboard(data):
         </div>
 
         <div class="grid">
-            <!-- Quick Stats -->
+            <!-- Performance Overview -->
             <div class="card">
-                <h2>Quick Stats</h2>
+                <h2>Performance Overview</h2>
                 <div class="metric">
                     <span class="metric-label">Active Tasks</span>
                     <span class="metric-value">{total_tasks}</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Completed (30 days)</span>
-                    <span class="metric-value">{delivery_metrics['total_completed']}</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Total Projects This Year</span>
-                    <span class="metric-value">{delivery_metrics['completed_this_year']}</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Avg Days Variance</span>
-                    <span class="metric-value {'positive' if delivery_metrics['avg_days_variance'] <= 0 else 'warning' if delivery_metrics['avg_days_variance'] <= 3 else 'negative'}">{delivery_metrics['avg_days_variance']:+.1f}</span>
-                </div>
-            </div>
-
-            <!-- Delivery Performance -->
-            <div class="card">
-                <h2>Delivery Performance</h2>
-                <div class="metric">
-                    <span class="metric-label">On-Time Completion Rate</span>
-                    <span class="metric-value {'positive' if delivery_metrics['on_time_rate'] >= 80 else 'warning' if delivery_metrics['on_time_rate'] >= 60 else 'negative'}">{delivery_metrics['on_time_rate']:.0f}%</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Average Capacity Variance</span>
-                    <span class="metric-value {'positive' if not math.isnan(delivery_metrics['avg_capacity_variance']) and delivery_metrics['avg_capacity_variance'] <= 10 else 'warning' if not math.isnan(delivery_metrics['avg_capacity_variance']) and delivery_metrics['avg_capacity_variance'] <= 20 else 'negative' if not math.isnan(delivery_metrics['avg_capacity_variance']) else ''}">{'N/A' if delivery_metrics['avg_capacity_variance'] == 0 or math.isnan(delivery_metrics['avg_capacity_variance']) else f"{delivery_metrics['avg_capacity_variance']:+.0f}%"}</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Projects Completed (30d)</span>
@@ -2536,6 +2511,10 @@ def generate_html_dashboard(data):
                 <div class="metric">
                     <span class="metric-label">Projects Completed This Year</span>
                     <span class="metric-value">{delivery_metrics['completed_this_year']}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Avg Days Variance</span>
+                    <span class="metric-value {'positive' if delivery_metrics['avg_days_variance'] <= 0 else 'warning' if delivery_metrics['avg_days_variance'] <= 3 else 'negative'}">{delivery_metrics['avg_days_variance']:+.1f}</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Delayed Due to Capacity</span>
@@ -2851,60 +2830,6 @@ def generate_html_dashboard(data):
     html += """
         </div>
 
-        <!-- Upcoming Workload Forecast -->
-        <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>📅 Upcoming Workload Forecast</h2>
-            <div class="forecast-grid">
-    """
-
-    # Add workload forecast data
-    workload = data.get('workload_forecast', {})
-    for period_key in ['7_days', '14_days', '30_days']:
-        period_data = workload.get(period_key, {})
-        period_label = period_key.replace('_', ' ').title()
-        tasks_count = period_data.get('tasks', 0)
-        utilization = period_data.get('utilization', 0)
-        status = period_data.get('status', 'good')
-        relative_note = period_data.get('relative_note')
-
-        # Status color
-        if status == 'over':
-            status_color = '#dc3545'
-            status_icon = '⚠️'
-        elif status == 'busy':
-            status_color = '#ffc107'
-            status_icon = '⚡'
-        else:
-            status_color = '#28a745'
-            status_icon = '✅'
-
-        # Build relative note HTML if present
-        relative_note_html = ""
-        if relative_note:
-            relative_note_html = f"""
-                    <div style="font-size: 11px; color: #6c757d; margin-top: 8px; padding-top: 8px; border-top: 1px solid #dee2e6; font-style: italic;">
-                        📊 {relative_note}
-                    </div>"""
-
-        html += f"""
-                <div style="border: 2px solid {status_color}; border-radius: 8px; padding: 15px; background: {BRAND_OFF_WHITE};">
-                    <div style="font-size: 14px; color: #6c757d; margin-bottom: 5px;">{period_label}</div>
-                    <div style="font-size: 24px; font-weight: bold; color: {BRAND_NAVY}; margin-bottom: 10px;">
-                        {tasks_count} tasks
-                    </div>
-                    <div style="font-size: 18px; color: {status_color}; font-weight: bold; margin-bottom: 5px;">
-                        {status_icon} {utilization:.0f}% capacity
-                    </div>
-                    <div style="font-size: 12px; color: #6c757d;">
-                        {status.replace('_', ' ').title() if status != 'over' else 'Over-allocated'}
-                    </div>{relative_note_html}
-                </div>
-        """
-
-    html += """
-            </div>
-        </div>
-
         <!-- 6-Month Capacity Timeline -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>📆 6-Month Capacity Timeline</h2>
@@ -3078,19 +3003,6 @@ def generate_html_dashboard(data):
             </div>
         </div>
 
-        <!-- Category Allocation Chart -->
-        <div class="grid">
-            <div class="card full-width">
-                <h2>Category Allocation: Cumulative Average vs Target</h2>
-                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
-                    Cumulative average allocation across tracking period: {tracking_period}
-                </div>
-                <div class="chart-container">
-                    <canvas id="categoryChart"></canvas>
-                </div>
-            </div>
-        </div>
-
         <!-- Historical Trends Chart -->
         <div class="grid">
             <div class="card full-width">
@@ -3132,28 +3044,6 @@ def generate_html_dashboard(data):
 
     html += """
         </div>
-
-        <!-- Category Distribution Donut Charts -->
-        <div class="grid">
-            <div class="card">
-                <h2>📊 Current Period Distribution</h2>
-                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
-                    Today's workload distribution
-                </div>
-                <div class="chart-container" style="height: 350px;">
-                    <canvas id="currentDonutChart"></canvas>
-                </div>
-            </div>
-            <div class="card">
-                <h2>📊 Cumulative Average Distribution</h2>
-                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
-                    Average allocation over tracking period
-                </div>
-                <div class="chart-container" style="height: 350px;">
-                    <canvas id="cumulativeDonutChart"></canvas>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -3184,59 +3074,6 @@ def generate_html_dashboard(data):
         current_values = actual_values  # Fallback to cumulative
 
     html += f"""
-        // Category Chart
-        const ctx = document.getElementById('categoryChart').getContext('2d');
-        new Chart(ctx, {{
-            type: 'bar',
-            data: {{
-                labels: {json.dumps(category_names)},
-                datasets: [
-                    {{
-                        label: 'Actual %',
-                        data: {json.dumps(actual_values)},
-                        backgroundColor: '{BRAND_BLUE}',
-                        borderColor: '{BRAND_NAVY}',
-                        borderWidth: 1
-                    }},
-                    {{
-                        label: 'Target %',
-                        data: {json.dumps(target_values)},
-                        backgroundColor: 'rgba(9, 36, 63, 0.3)',
-                        borderColor: '{BRAND_NAVY}',
-                        borderWidth: 2,
-                        borderDash: [5, 5]
-                    }}
-                ]
-            }},
-            options: {{
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {{
-                    y: {{
-                        beginAtZero: true,
-                        max: 50,
-                        ticks: {{
-                            callback: function(value) {{
-                                return value + '%';
-                            }}
-                        }}
-                    }}
-                }},
-                plugins: {{
-                    legend: {{
-                        position: 'top'
-                    }},
-                    tooltip: {{
-                        callbacks: {{
-                            label: function(context) {{
-                                return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
-                            }}
-                        }}
-                    }}
-                }}
-            }}
-        }});
-
         // Historical Trends Chart
 """
 
@@ -3444,98 +3281,6 @@ def generate_html_dashboard(data):
                         }}
                     }});
                 }}
-            }}
-        }});
-
-        // Category Distribution Donut Charts
-        const categoryColors = [
-            '{BRAND_BLUE}',      // Communications
-            '#28a745',           // Spiritual Formation
-            '#ffc107',           // Creative Resources
-            '{BRAND_NAVY}',      // Pastoral/Strategic
-            '#dc3545'            // Partners
-        ];
-
-        const donutChartOptions = {{
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {{
-                legend: {{
-                    position: 'right',
-                    labels: {{
-                        padding: 12,
-                        font: {{
-                            size: 11
-                        }},
-                        boxWidth: 15,
-                        boxHeight: 15,
-                        usePointStyle: false,
-                        generateLabels: function(chart) {{
-                            const data = chart.data;
-                            if (data.labels.length && data.datasets.length) {{
-                                return data.labels.map((label, i) => {{
-                                    const value = data.datasets[0].data[i];
-                                    return {{
-                                        text: label + ' (' + value.toFixed(1) + '%)',
-                                        fillStyle: data.datasets[0].backgroundColor[i],
-                                        hidden: false,
-                                        index: i
-                                    }};
-                                }});
-                            }}
-                            return [];
-                        }}
-                    }}
-                }},
-                tooltip: {{
-                    callbacks: {{
-                        label: function(context) {{
-                            const label = context.label || '';
-                            const value = context.parsed || 0;
-                            return label + ': ' + value.toFixed(1) + '%';
-                        }}
-                    }}
-                }}
-            }}
-        }};
-
-        // Current Period Donut Chart
-        document.addEventListener('DOMContentLoaded', function() {{
-            if (document.getElementById('currentDonutChart')) {{
-                const currentCtx = document.getElementById('currentDonutChart').getContext('2d');
-                new Chart(currentCtx, {{
-                    type: 'doughnut',
-                    data: {{
-                        labels: {json.dumps(category_names)},
-                        datasets: [{{
-                            data: {json.dumps(current_values)},
-                            backgroundColor: categoryColors,
-                            borderColor: '#ffffff',
-                            borderWidth: 2
-                        }}]
-                    }},
-                    options: donutChartOptions
-                }});
-            }}
-        }});
-
-        // Cumulative Average Donut Chart
-        document.addEventListener('DOMContentLoaded', function() {{
-            if (document.getElementById('cumulativeDonutChart')) {{
-                const cumulativeCtx = document.getElementById('cumulativeDonutChart').getContext('2d');
-                new Chart(cumulativeCtx, {{
-                    type: 'doughnut',
-                    data: {{
-                        labels: {json.dumps(category_names)},
-                        datasets: [{{
-                            data: {json.dumps(actual_values)},
-                            backgroundColor: categoryColors,
-                            borderColor: '#ffffff',
-                            borderWidth: 2
-                        }}]
-                    }},
-                    options: donutChartOptions
-                }});
             }}
         }});
 
