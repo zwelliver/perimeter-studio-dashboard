@@ -3500,11 +3500,11 @@ def generate_html_dashboard(data):
 
             // Add shoots
             shoots.forEach(shoot => {{
-                // Use start_on to due_on range if available, otherwise use film date as 1-day event
+                // Use start_on to due_on range if available, otherwise estimate duration
                 let startDate, endDate, duration;
 
                 if (shoot.start_on && shoot.due_on) {{
-                    // Project has date range
+                    // Project has full date range
                     startDate = new Date(shoot.start_on);
                     endDate = new Date(shoot.due_on);
                 }} else if (shoot.start_on) {{
@@ -3512,13 +3512,17 @@ def generate_html_dashboard(data):
                     startDate = new Date(shoot.start_on);
                     endDate = new Date(shoot.datetime);
                 }} else if (shoot.due_on) {{
-                    // Has due but no start - use film date as start
-                    startDate = new Date(shoot.datetime);
-                    endDate = new Date(shoot.due_on);
+                    // Has due but no start - estimate 5 days before due date
+                    const dueDate = new Date(shoot.due_on);
+                    startDate = new Date(dueDate);
+                    startDate.setDate(startDate.getDate() - 5);
+                    endDate = dueDate;
                 }} else {{
-                    // No date range - use film date as 1-day event
-                    startDate = new Date(shoot.datetime);
-                    endDate = new Date(shoot.datetime);
+                    // No date range - estimate 3 days before film date to film date
+                    const filmDate = new Date(shoot.datetime);
+                    startDate = new Date(filmDate);
+                    startDate.setDate(startDate.getDate() - 3);
+                    endDate = filmDate;
                 }}
 
                 const daysFromNow = Math.floor((startDate - now) / (1000 * 60 * 60 * 24));
@@ -3543,7 +3547,7 @@ def generate_html_dashboard(data):
 
             // Add deadlines
             deadlines.forEach(deadline => {{
-                // Use start_on to due_date range if available, otherwise use due date as 1-day event
+                // Use start_on to due_date range if available, otherwise estimate duration
                 let startDate, endDate, duration;
 
                 if (deadline.start_on) {{
@@ -3551,9 +3555,11 @@ def generate_html_dashboard(data):
                     startDate = new Date(deadline.start_on);
                     endDate = new Date(deadline.due_date);
                 }} else {{
-                    // No start date - use due date as 1-day event
-                    startDate = new Date(deadline.due_date);
-                    endDate = new Date(deadline.due_date);
+                    // No start date - estimate 7 days before due date
+                    const dueDate = new Date(deadline.due_date);
+                    startDate = new Date(dueDate);
+                    startDate.setDate(startDate.getDate() - 7);
+                    endDate = dueDate;
                 }}
 
                 const daysFromNow = Math.floor((startDate - now) / (1000 * 60 * 60 * 24));
