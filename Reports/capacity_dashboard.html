@@ -12,688 +12,43 @@
             box-sizing: border-box;
         }
 
-        @keyframes stars-float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-
-        @keyframes glow-pulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(96, 187, 233, 0.3), 0 0 40px rgba(96, 187, 233, 0.1), inset 0 0 20px rgba(96, 187, 233, 0.05); }
-            50% { box-shadow: 0 0 30px rgba(96, 187, 233, 0.5), 0 0 60px rgba(96, 187, 233, 0.2), inset 0 0 30px rgba(96, 187, 233, 0.1); }
-        }
-
-        @keyframes nebula-shift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        @keyframes shooting-star {
-            0% {
-                transform: translateX(0) translateY(0) rotate(-45deg);
-                opacity: 1;
-            }
-            70% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateX(-1000px) translateY(1000px) rotate(-45deg);
-                opacity: 0;
-            }
-        }
-
-        @keyframes float-particles {
-            0%, 100% { transform: translateY(0px) translateX(0px); }
-            25% { transform: translateY(-30px) translateX(10px); }
-            50% { transform: translateY(-60px) translateX(-10px); }
-            75% { transform: translateY(-30px) translateX(5px); }
-        }
-
-        @keyframes scanline {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100vh); }
-        }
-
-        @keyframes holo-border {
-            0%, 100% { border-color: rgba(96, 187, 233, 0.5); }
-            25% { border-color: rgba(168, 139, 250, 0.5); }
-            50% { border-color: rgba(255, 107, 157, 0.5); }
-            75% { border-color: rgba(78, 204, 163, 0.5); }
-        }
-
-        @keyframes orbit-spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes fade-in-up {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% {
-                text-shadow: 0 0 10px rgba(96, 187, 233, 0.5), 0 0 20px rgba(96, 187, 233, 0.3);
-                transform: scale(1);
-            }
-            50% {
-                text-shadow: 0 0 20px rgba(96, 187, 233, 0.8), 0 0 40px rgba(96, 187, 233, 0.5), 0 0 60px rgba(96, 187, 233, 0.3);
-                transform: scale(1.05);
-            }
-        }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1645 25%, #09243F 50%, #0d1b2a 75%, #000000 100%);
-            background-size: 400% 400%;
-            animation: nebula-shift 30s ease infinite;
-            color: #e0e6ed;
+            background-color: #f8f9fa;
+            color: #09243F;
             padding: 20px;
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                radial-gradient(2px 2px at 20% 30%, white, transparent),
-                radial-gradient(2px 2px at 60% 70%, white, transparent),
-                radial-gradient(1px 1px at 50% 50%, white, transparent),
-                radial-gradient(1px 1px at 80% 10%, white, transparent),
-                radial-gradient(2px 2px at 90% 60%, white, transparent),
-                radial-gradient(1px 1px at 33% 80%, white, transparent),
-                radial-gradient(1px 1px at 15% 90%, white, transparent);
-            background-size: 200% 200%, 200% 200%, 300% 300%, 250% 250%, 200% 200%, 280% 280%, 260% 260%;
-            background-position: 0% 0%, 40% 60%, 60% 20%, 80% 80%, 20% 90%, 70% 30%, 50% 70%;
-            opacity: 0.5;
-            animation: stars-float 60s ease-in-out infinite;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
-            top: -50%;
-            right: -20%;
-            width: 80%;
-            height: 80%;
-            background: radial-gradient(circle, rgba(96, 187, 233, 0.15) 0%, transparent 70%);
-            border-radius: 50%;
-            filter: blur(80px);
-            z-index: 0;
-            pointer-events: none;
-            animation: nebula-shift 20s ease-in-out infinite alternate;
-        }
-
-        /* Scanline overlay - DISABLED */
-        .scanline {
-            display: none;
-        }
-
-        /* Additional nebula clouds */
-        .nebula-purple {
-            position: fixed;
-            bottom: -30%;
-            left: -20%;
-            width: 70%;
-            height: 70%;
-            background: radial-gradient(circle, rgba(168, 139, 250, 0.12) 0%, transparent 70%);
-            border-radius: 50%;
-            filter: blur(90px);
-            z-index: 0;
-            pointer-events: none;
-            animation: nebula-shift 25s ease-in-out infinite alternate-reverse;
-        }
-
-        .nebula-pink {
-            position: fixed;
-            top: 20%;
-            left: 50%;
-            width: 60%;
-            height: 60%;
-            background: radial-gradient(circle, rgba(255, 107, 157, 0.08) 0%, transparent 70%);
-            border-radius: 50%;
-            filter: blur(100px);
-            z-index: 0;
-            pointer-events: none;
-            animation: nebula-shift 30s ease-in-out infinite;
-        }
-
-        /* Shooting stars */
-        .shooting-star {
-            position: fixed;
-            width: 3px;
-            height: 3px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8);
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .shooting-star::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 3px;
-            height: 2px;
-            width: 100px;
-            background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), transparent);
-        }
-
-        .shooting-star:nth-child(1) {
-            top: 10%;
-            right: 10%;
-            animation: shooting-star 3s ease-in infinite;
-            animation-delay: 2s;
-        }
-
-        .shooting-star:nth-child(2) {
-            top: 30%;
-            right: 50%;
-            animation: shooting-star 2.5s ease-in infinite;
-            animation-delay: 5s;
-        }
-
-        .shooting-star:nth-child(3) {
-            top: 60%;
-            right: 20%;
-            animation: shooting-star 3.5s ease-in infinite;
-            animation-delay: 8s;
-        }
-
-        /* Orbital rings */
-        .orbital-ring {
-            position: fixed;
-            border: 1px solid rgba(96, 187, 233, 0.1);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .orbital-ring-1 {
-            width: 300px;
-            height: 300px;
-            top: 10%;
-            right: 5%;
-            animation: orbit-spin 40s linear infinite;
-        }
-
-        .orbital-ring-2 {
-            width: 450px;
-            height: 450px;
-            bottom: 10%;
-            left: 5%;
-            animation: orbit-spin 60s linear infinite reverse;
-        }
-
-        /* Floating particles */
-        .particle {
-            position: fixed;
-            width: 4px;
-            height: 4px;
-            background: rgba(96, 187, 233, 0.4);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 1;
-            box-shadow: 0 0 10px rgba(96, 187, 233, 0.6);
-        }
-
-        .particle:nth-child(1) { top: 20%; left: 15%; animation: float-particles 15s ease-in-out infinite; }
-        .particle:nth-child(2) { top: 50%; left: 80%; animation: float-particles 12s ease-in-out infinite 2s; }
-        .particle:nth-child(3) { top: 70%; left: 30%; animation: float-particles 18s ease-in-out infinite 4s; }
-        .particle:nth-child(4) { top: 35%; left: 60%; animation: float-particles 14s ease-in-out infinite 1s; }
-        .particle:nth-child(5) { top: 80%; left: 70%; animation: float-particles 16s ease-in-out infinite 3s; }
-
-        /* Constellation patterns - DISABLED */
-        .constellation {
-            display: none;
         }
 
         .dashboard-container {
-            max-width: 95%;
+            max-width: 1400px;
             margin: 0 auto;
-            position: relative;
-            z-index: 1;
         }
 
         .header {
-            background: rgba(9, 36, 63, 0.4);
-            backdrop-filter: blur(20px);
+            background: white;
             padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 0 30px rgba(96, 187, 233, 0.3), 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
-            border: 1px solid rgba(96, 187, 233, 0.3);
-            border-left: 4px solid #60BBE9;
-            position: relative;
-            overflow: hidden;
-            animation: glow-pulse 4s ease-in-out infinite;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(96, 187, 233, 0.1), transparent);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        /* ===== GAUGE CHART STYLES ===== */
-        .gauge-container {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            margin: 20px auto;
-        }
-
-        .gauge-svg {
-            transform: rotate(-90deg);
-            filter: drop-shadow(0 0 10px rgba(96, 187, 233, 0.5));
-        }
-
-        .gauge-background {
-            fill: none;
-            stroke: rgba(9, 36, 63, 0.5);
-            stroke-width: 20;
-        }
-
-        .gauge-progress {
-            fill: none;
-            stroke-width: 20;
-            stroke-linecap: round;
-            transition: stroke-dashoffset 2s ease;
-        }
-
-        .gauge-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
-
-        .gauge-value {
-            font-size: 48px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #60BBE9, #a78bfa);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 15px rgba(96, 187, 233, 0.6));
-        }
-
-        .gauge-label {
-            font-size: 12px;
-            color: #a8c5da;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 5px;
-        }
-
-        /* ===== PROGRESS RING STYLES ===== */
-        .progress-rings-container {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 30px;
-            margin: 20px 0;
-            padding: 20px;
-            overflow: visible;
-        }
-
-        .progress-ring {
-            position: relative;
-            width: 160px;
-            height: 160px;
-        }
-
-        .progress-ring-svg {
-            transform: rotate(-90deg);
-        }
-
-        .progress-ring-circle {
-            fill: none;
-            stroke-width: 12;
-            stroke-linecap: round;
-        }
-
-        .progress-ring-bg {
-            stroke: rgba(9, 36, 63, 0.5);
-        }
-
-        .progress-ring-progress {
-            transition: stroke-dashoffset 2s ease;
-            filter: drop-shadow(0 0 8px currentColor);
-        }
-
-        .progress-ring-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
-
-        .progress-ring-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #e0e6ed;
-            display: block;
-        }
-
-        .progress-ring-label {
-            font-size: 11px;
-            color: #a8c5da;
-            display: block;
-            margin-top: 4px;
-        }
-
-        /* ===== TIMELINE GANTT STYLES ===== */
-        .timeline-container {
-            margin: 20px 0;
-            overflow-x: auto;
-            position: relative;
-        }
-
-        .timeline-header {
-            display: flex;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(96, 187, 233, 0.2);
-        }
-
-        .timeline-project-col {
-            min-width: 200px;
-            font-weight: 600;
-            color: #60BBE9;
-        }
-
-        .timeline-dates {
-            display: flex;
-            flex: 1;
-            min-width: 600px;
-        }
-
-        .timeline-date {
-            flex: 1;
-            text-align: center;
-            font-size: 11px;
-            color: #a8c5da;
-        }
-
-        .timeline-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            min-height: 40px;
-        }
-
-        .timeline-project-name {
-            min-width: 200px;
-            font-size: 13px;
-            color: #e0e6ed;
-            padding-right: 15px;
-        }
-
-        .timeline-bars {
-            display: flex;
-            flex: 1;
-            min-width: 600px;
-            position: relative;
-            height: 40px;
-        }
-
-        .timeline-bar {
-            position: absolute;
-            height: 24px;
             border-radius: 12px;
-            background: linear-gradient(90deg, rgba(96, 187, 233, 0.4), rgba(96, 187, 233, 0.7));
-            border: 2px solid #60BBE9;
-            box-shadow: 0 0 15px rgba(96, 187, 233, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            overflow: hidden;
-        }
-
-        .timeline-bar:hover {
-            transform: scaleY(1.2);
-            box-shadow: 0 0 25px rgba(96, 187, 233, 0.8);
-        }
-
-        .timeline-bar.critical {
-            background: linear-gradient(90deg, rgba(255, 107, 157, 0.4), rgba(255, 107, 157, 0.7));
-            border-color: #ff6b9d;
-            box-shadow: 0 0 15px rgba(255, 107, 157, 0.5);
-        }
-
-        .timeline-bar.critical:hover {
-            box-shadow: 0 0 25px rgba(255, 107, 157, 0.8);
-        }
-
-        .timeline-bar.warning {
-            background: linear-gradient(90deg, rgba(255, 217, 61, 0.4), rgba(255, 217, 61, 0.7));
-            border-color: #ffd93d;
-            box-shadow: 0 0 15px rgba(255, 217, 61, 0.5);
-        }
-
-        .timeline-bar.warning:hover {
-            box-shadow: 0 0 25px rgba(255, 217, 61, 0.8);
-        }
-
-        /* ===== RADAR/SPIDER CHART STYLES ===== */
-        .radar-container {
-            position: relative;
-            width: 500px;
-            height: 500px;
-            margin: 20px auto;
-        }
-
-        .radar-svg {
-            filter: drop-shadow(0 0 10px rgba(96, 187, 233, 0.3));
-        }
-
-        .radar-grid {
-            fill: none;
-            stroke: rgba(96, 187, 233, 0.2);
-            stroke-width: 1;
-        }
-
-        .radar-axis {
-            stroke: rgba(96, 187, 233, 0.3);
-            stroke-width: 1;
-        }
-
-        .radar-area {
-            fill: rgba(96, 187, 233, 0.3);
-            stroke: #60BBE9;
-            stroke-width: 2;
-        }
-
-        .radar-target {
-            fill: rgba(255, 107, 157, 0.2);
-            stroke: #ff6b9d;
-            stroke-width: 2;
-            stroke-dasharray: 5, 5;
-        }
-
-        .radar-label {
-            fill: #e0e6ed;
-            font-size: 12px;
-            font-weight: 600;
-            text-anchor: middle;
-        }
-
-        /* ===== SUNBURST CHART STYLES ===== */
-        .sunburst-container {
-            position: relative;
-            width: 400px;
-            height: 400px;
-            margin: 20px auto;
-        }
-
-        .sunburst-svg {
-            filter: drop-shadow(0 0 15px rgba(96, 187, 233, 0.3));
-        }
-
-        .sunburst-slice {
-            cursor: pointer;
-            transition: all 0.3s;
-            stroke: rgba(0, 0, 0, 0.5);
-            stroke-width: 2;
-        }
-
-        .sunburst-slice:hover {
-            filter: brightness(1.3) drop-shadow(0 0 10px currentColor);
-            transform: scale(1.05);
-        }
-
-        .sunburst-text {
-            fill: white;
-            font-size: 11px;
-            font-weight: 600;
-            pointer-events: none;
-            text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
-        }
-
-        .sunburst-center-text {
-            fill: #60BBE9;
-            font-size: 24px;
-            font-weight: 700;
-            text-anchor: middle;
-            text-shadow: 0 0 15px rgba(96, 187, 233, 0.6);
-        }
-
-        /* ===== VELOCITY TREND CHART ===== */
-        .velocity-container {
-            position: relative;
-            height: 300px;
-            margin: 20px 0;
-        }
-
-        /* ===== HEAT MAP CALENDAR STYLES ===== */
-        .heatmap-calendar {
-            display: grid;
-            grid-template-columns: auto repeat(10, 1fr);
-            gap: 4px;
-            margin: 20px 0;
-        }
-
-        .heatmap-day-label {
-            font-size: 11px;
-            color: #a8c5da;
-            padding: 8px 12px;
-            text-align: right;
-        }
-
-        .heatmap-date {
-            font-size: 10px;
-            color: #a8c5da;
-            text-align: center;
-            margin-bottom: 4px;
-        }
-
-        .heatmap-cell {
-            aspect-ratio: 1;
-            border-radius: 6px;
-            border: 1px solid rgba(96, 187, 233, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .heatmap-cell:hover {
-            transform: scale(1.15);
-            z-index: 10;
-        }
-
-        .heatmap-cell.intensity-0 {
-            background: rgba(9, 36, 63, 0.3);
-            color: #a8c5da;
-        }
-
-        .heatmap-cell.intensity-1 {
-            background: rgba(96, 187, 233, 0.2);
-            box-shadow: 0 0 10px rgba(96, 187, 233, 0.3);
-            color: #60BBE9;
-        }
-
-        .heatmap-cell.intensity-2 {
-            background: rgba(96, 187, 233, 0.4);
-            box-shadow: 0 0 15px rgba(96, 187, 233, 0.5);
-            color: #fff;
-        }
-
-        .heatmap-cell.intensity-3 {
-            background: rgba(255, 217, 61, 0.4);
-            box-shadow: 0 0 15px rgba(255, 217, 61, 0.5);
-            color: #fff;
-            border-color: #ffd93d;
-        }
-
-        .heatmap-cell.intensity-4 {
-            background: rgba(255, 107, 157, 0.5);
-            box-shadow: 0 0 20px rgba(255, 107, 157, 0.6);
-            color: #fff;
-            border-color: #ff6b9d;
-            animation: pulse-glow 2s ease-in-out infinite;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border-left: 5px solid #60BBE9;
         }
 
         .header h1 {
-            color: #60BBE9;
+            color: #09243F;
             font-size: 32px;
             margin-bottom: 10px;
             font-weight: 600;
-            text-shadow: 0 0 20px rgba(96, 187, 233, 0.5), 0 0 40px rgba(96, 187, 233, 0.3);
-            position: relative;
-            z-index: 1;
         }
 
         .header .subtitle {
-            color: #a8c5da;
+            color: #6c757d;
             font-size: 14px;
-            position: relative;
-            z-index: 1;
         }
 
         .header .timestamp {
             color: #60BBE9;
             font-size: 13px;
             margin-top: 5px;
-            text-shadow: 0 0 10px rgba(96, 187, 233, 0.5);
-            position: relative;
-            z-index: 1;
         }
 
         .grid {
@@ -704,58 +59,19 @@
         }
 
         .card {
-            background: rgba(9, 36, 63, 0.3);
-            backdrop-filter: blur(15px);
+            background: white;
             padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 0 20px rgba(96, 187, 233, 0.2), 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(96, 187, 233, 0.3);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: visible;
-            opacity: 0;
-            animation: fade-in-up 0.8s ease forwards, holo-border 8s ease-in-out infinite;
-        }
-
-        .card:nth-child(1) { animation-delay: 0.1s, 0s; }
-        .card:nth-child(2) { animation-delay: 0.2s, 0s; }
-        .card:nth-child(3) { animation-delay: 0.3s, 0s; }
-        .card:nth-child(4) { animation-delay: 0.4s, 0s; }
-        .card:nth-child(5) { animation-delay: 0.5s, 0s; }
-        .card:nth-child(6) { animation-delay: 0.6s, 0s; }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(96, 187, 233, 0.05) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .card:hover {
-            border-color: rgba(96, 187, 233, 0.5);
-            box-shadow: 0 0 30px rgba(96, 187, 233, 0.4), 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .card:hover::before {
-            opacity: 1;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .card h2 {
-            color: #60BBE9;
+            color: #09243F;
             font-size: 18px;
             margin-bottom: 15px;
             font-weight: 600;
-            border-bottom: 2px solid rgba(96, 187, 233, 0.5);
+            border-bottom: 2px solid #60BBE9;
             padding-bottom: 10px;
-            text-shadow: 0 0 15px rgba(96, 187, 233, 0.4);
-            position: relative;
-            z-index: 1;
         }
 
         .metric {
@@ -763,9 +79,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 0;
-            border-bottom: 1px solid rgba(96, 187, 233, 0.1);
-            position: relative;
-            z-index: 1;
+            border-bottom: 1px solid #e9ecef;
         }
 
         .metric:last-child {
@@ -774,74 +88,40 @@
 
         .metric-label {
             font-size: 14px;
-            color: #a8c5da;
+            color: #6c757d;
         }
 
         .metric-value {
             font-size: 24px;
             font-weight: 600;
-            background: linear-gradient(135deg, #60BBE9, #a78bfa, #60BBE9);
-            background-size: 200% 200%;
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: nebula-shift 6s ease infinite;
-            filter: drop-shadow(0 0 10px rgba(96, 187, 233, 0.4));
-            transition: all 0.3s ease;
-        }
-
-        .metric-value:hover {
-            filter: drop-shadow(0 0 2px #ff0000) drop-shadow(2px 0 0px #00ffff) drop-shadow(0 0 20px rgba(96, 187, 233, 0.6));
-            transform: scale(1.05);
+            color: #09243F;
         }
 
         .metric-value.positive {
-            background: linear-gradient(135deg, #4ecca3, #60BBE9, #4ecca3);
-            background-size: 200% 200%;
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 15px rgba(78, 204, 163, 0.6));
-            animation: pulse-glow 3s ease-in-out infinite, nebula-shift 6s ease infinite;
+            color: #28a745;
         }
 
         .metric-value.negative {
-            background: linear-gradient(135deg, #ff6b9d, #dc3545, #ff6b9d);
-            background-size: 200% 200%;
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 15px rgba(255, 107, 157, 0.6));
-            animation: pulse-glow 2s ease-in-out infinite, nebula-shift 6s ease infinite;
+            color: #dc3545;
         }
 
         .metric-value.warning {
-            background: linear-gradient(135deg, #ffd93d, #ffa500, #ffd93d);
-            background-size: 200% 200%;
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 15px rgba(255, 217, 61, 0.6));
-            animation: pulse-glow 2.5s ease-in-out infinite, nebula-shift 6s ease infinite;
+            color: #ffc107;
         }
 
         .progress-bar {
             width: 100%;
             height: 30px;
-            background: rgba(9, 36, 63, 0.5);
+            background: #e9ecef;
             border-radius: 15px;
             overflow: hidden;
             position: relative;
             margin-top: 8px;
-            border: 1px solid rgba(96, 187, 233, 0.2);
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #60BBE9, #4a9fd8, #60BBE9);
-            background-size: 200% 100%;
-            animation: progress-glow 2s ease-in-out infinite;
+            background: linear-gradient(90deg, #60BBE9, #4a9fd8);
             transition: width 0.3s ease;
             display: flex;
             align-items: center;
@@ -849,50 +129,29 @@
             color: white;
             font-size: 12px;
             font-weight: 600;
-            box-shadow: 0 0 20px rgba(96, 187, 233, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-            position: relative;
-        }
-
-        @keyframes progress-glow {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
         }
 
         .progress-fill.over-capacity {
-            background: linear-gradient(90deg, #ff6b9d, #dc3545, #ff6b9d);
-            background-size: 200% 100%;
-            animation: progress-glow 2s ease-in-out infinite;
-            box-shadow: 0 0 20px rgba(255, 107, 157, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            background: linear-gradient(90deg, #dc3545, #c82333);
         }
 
         .alert {
-            background: rgba(255, 217, 61, 0.1);
-            border-left: 4px solid #ffd93d;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 10px;
             font-size: 14px;
-            border: 1px solid rgba(255, 217, 61, 0.3);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 20px rgba(255, 217, 61, 0.2);
-            color: #ffd93d;
         }
 
         .alert.danger {
-            background: rgba(255, 107, 157, 0.1);
-            border-left-color: #ff6b9d;
-            border-color: rgba(255, 107, 157, 0.3);
-            box-shadow: 0 0 20px rgba(255, 107, 157, 0.2);
-            color: #ff6b9d;
+            background: #f8d7da;
+            border-left-color: #dc3545;
         }
 
         .alert.success {
-            background: rgba(78, 204, 163, 0.1);
-            border-left-color: #4ecca3;
-            border-color: rgba(78, 204, 163, 0.3);
-            box-shadow: 0 0 20px rgba(78, 204, 163, 0.2);
-            color: #4ecca3;
+            background: #d4edda;
+            border-left-color: #28a745;
         }
 
         .chart-container {
@@ -903,21 +162,18 @@
 
         .team-member {
             margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
         }
 
         .team-member-name {
             font-size: 14px;
             font-weight: 600;
-            color: #60BBE9;
+            color: #09243F;
             margin-bottom: 5px;
-            text-shadow: 0 0 10px rgba(96, 187, 233, 0.3);
         }
 
         .team-member-capacity {
             font-size: 12px;
-            color: #a8c5da;
+            color: #6c757d;
             margin-bottom: 5px;
         }
 
@@ -1113,187 +369,6 @@
             }
         }
 
-        /* Large Screen Optimizations */
-        @media (min-width: 1920px) {
-            body {
-                font-size: 18px;
-                padding: 30px;
-            }
-
-            .header h1 {
-                font-size: 48px;
-            }
-
-            .header .subtitle {
-                font-size: 20px;
-            }
-
-            .header .timestamp {
-                font-size: 16px;
-            }
-
-            .grid {
-                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-                gap: 25px;
-            }
-
-            .card h2 {
-                font-size: 24px;
-            }
-
-            .metric-label {
-                font-size: 16px;
-            }
-
-            .metric-value {
-                font-size: 36px;
-            }
-
-            .chart-container {
-                height: 400px;
-            }
-        }
-
-        @media (min-width: 2560px) {
-            body {
-                font-size: 20px;
-                padding: 40px;
-            }
-
-            .header h1 {
-                font-size: 56px;
-            }
-
-            .header .subtitle {
-                font-size: 24px;
-            }
-
-            .header .timestamp {
-                font-size: 18px;
-            }
-
-            .grid {
-                grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-                gap: 30px;
-            }
-
-            .card {
-                padding: 35px;
-            }
-
-            .card h2 {
-                font-size: 28px;
-            }
-
-            .metric-label {
-                font-size: 18px;
-            }
-
-            .metric-value {
-                font-size: 42px;
-            }
-
-            .chart-container {
-                height: 500px;
-            }
-
-            .progress-ring {
-                transform: scale(1.25);
-            }
-
-            .progress-ring-value {
-                font-size: 36px;
-            }
-
-            .progress-ring-label {
-                font-size: 14px;
-            }
-
-            .progress-rings-container {
-                gap: 50px !important;
-            }
-        }
-
-        @media (min-width: 3840px) {
-            body {
-                font-size: 24px;
-                padding: 50px;
-            }
-
-            .header h1 {
-                font-size: 72px;
-            }
-
-            .header .subtitle {
-                font-size: 32px;
-            }
-
-            .header .timestamp {
-                font-size: 22px;
-            }
-
-            .grid {
-                grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-                gap: 40px;
-            }
-
-            .card {
-                padding: 45px;
-                border-radius: 20px;
-            }
-
-            .card h2 {
-                font-size: 36px;
-                margin-bottom: 25px;
-            }
-
-            .metric-label {
-                font-size: 22px;
-            }
-
-            .metric-value {
-                font-size: 52px;
-            }
-
-            .chart-container {
-                height: 600px;
-            }
-
-            .progress-ring {
-                transform: scale(1.5);
-            }
-
-            .progress-ring-value {
-                font-size: 44px;
-            }
-
-            .progress-ring-label {
-                font-size: 16px;
-            }
-
-            .progress-rings-container {
-                gap: 70px !important;
-                padding: 40px !important;
-            }
-
-            .team-member-name {
-                font-size: 20px;
-            }
-
-            .team-member-capacity {
-                font-size: 16px;
-            }
-
-            .progress-bar {
-                height: 35px;
-            }
-
-            .progress-fill {
-                font-size: 18px;
-                line-height: 35px;
-            }
-        }
-
         /* Chat Widget Styles */
         .chat-widget {
             position: fixed;
@@ -1306,11 +381,11 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #60BBE9, #4a9fd8);
+            background: #60BBE9;
             color: white;
-            border: 2px solid rgba(96, 187, 233, 0.5);
+            border: none;
             cursor: pointer;
-            box-shadow: 0 0 25px rgba(96, 187, 233, 0.5), 0 4px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             font-size: 24px;
             display: flex;
             align-items: center;
@@ -1319,10 +394,8 @@
         }
 
         .chat-button:hover {
-            background: linear-gradient(135deg, #09243F, #1a1645);
-            border-color: #60BBE9;
+            background: #09243F;
             transform: scale(1.05);
-            box-shadow: 0 0 35px rgba(96, 187, 233, 0.7), 0 6px 25px rgba(0,0,0,0.4);
         }
 
         .chat-window {
@@ -1334,11 +407,9 @@
             max-width: calc(100vw - 40px);
             height: 600px;
             max-height: calc(100vh - 120px);
-            background: rgba(9, 36, 63, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 16px;
-            box-shadow: 0 0 30px rgba(96, 187, 233, 0.3), 0 8px 32px rgba(0,0,0,0.5);
-            border: 1px solid rgba(96, 187, 233, 0.3);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
             flex-direction: column;
             overflow: hidden;
         }
@@ -1348,14 +419,12 @@
         }
 
         .chat-header {
-            background: linear-gradient(135deg, rgba(9, 36, 63, 0.8), rgba(26, 22, 69, 0.8));
-            color: #60BBE9;
+            background: #09243F;
+            color: white;
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(96, 187, 233, 0.3);
-            text-shadow: 0 0 10px rgba(96, 187, 233, 0.5);
         }
 
         .chat-header h3 {
@@ -1387,7 +456,7 @@
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            background: rgba(0, 0, 0, 0.2);
+            background: #f8f9fa;
         }
 
         .chat-message {
@@ -1399,37 +468,32 @@
         }
 
         .chat-message.user {
-            background: linear-gradient(135deg, #60BBE9, #4a9fd8);
+            background: #60BBE9;
             color: white;
             margin-left: auto;
             border-bottom-right-radius: 4px;
-            box-shadow: 0 0 15px rgba(96, 187, 233, 0.4);
-            border: 1px solid rgba(96, 187, 233, 0.3);
         }
 
         .chat-message.assistant {
-            background: rgba(9, 36, 63, 0.6);
-            backdrop-filter: blur(10px);
-            color: #e0e6ed;
+            background: white;
+            color: #09243F;
             margin-right: auto;
             border-bottom-left-radius: 4px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-            border: 1px solid rgba(96, 187, 233, 0.2);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .chat-message.system {
-            background: rgba(255, 217, 61, 0.2);
-            color: #ffd93d;
+            background: #ffe69c;
+            color: #856404;
             margin: 0 auto;
             text-align: center;
             font-size: 13px;
-            border: 1px solid rgba(255, 217, 61, 0.3);
         }
 
         .chat-input-container {
             padding: 15px;
-            background: rgba(9, 36, 63, 0.5);
-            border-top: 1px solid rgba(96, 187, 233, 0.3);
+            background: white;
+            border-top: 1px solid #e9ecef;
             display: flex;
             gap: 10px;
         }
@@ -1437,57 +501,44 @@
         .chat-input {
             flex: 1;
             padding: 10px 15px;
-            border: 1px solid rgba(96, 187, 233, 0.3);
+            border: 1px solid #dee2e6;
             border-radius: 8px;
             font-size: 14px;
             font-family: inherit;
-            background: rgba(9, 36, 63, 0.4);
-            color: #e0e6ed;
-            backdrop-filter: blur(10px);
-        }
-
-        .chat-input::placeholder {
-            color: #a8c5da;
         }
 
         .chat-input:focus {
             outline: none;
             border-color: #60BBE9;
-            box-shadow: 0 0 15px rgba(96, 187, 233, 0.3);
         }
 
         .chat-send {
             padding: 10px 20px;
-            background: linear-gradient(135deg, #60BBE9, #4a9fd8);
+            background: #60BBE9;
             color: white;
-            border: 1px solid rgba(96, 187, 233, 0.5);
+            border: none;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s;
-            box-shadow: 0 0 15px rgba(96, 187, 233, 0.3);
+            transition: background 0.2s;
         }
 
         .chat-send:hover {
-            background: linear-gradient(135deg, #09243F, #1a1645);
-            box-shadow: 0 0 25px rgba(96, 187, 233, 0.5);
+            background: #09243F;
         }
 
         .chat-send:disabled {
-            background: rgba(108, 117, 125, 0.5);
+            background: #6c757d;
             cursor: not-allowed;
-            box-shadow: none;
         }
 
         .typing-indicator {
             display: none;
             padding: 10px 16px;
-            background: rgba(9, 36, 63, 0.6);
-            backdrop-filter: blur(10px);
+            background: white;
             border-radius: 12px;
             max-width: 60px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-            border: 1px solid rgba(96, 187, 233, 0.2);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .typing-indicator.show {
@@ -1523,68 +574,45 @@
     </style>
 </head>
 <body>
-    <!-- Space visual effects -->
-    <div class="scanline"></div>
-    <div class="nebula-purple"></div>
-    <div class="nebula-pink"></div>
-
-    <!-- Shooting stars -->
-    <div class="shooting-star"></div>
-    <div class="shooting-star"></div>
-    <div class="shooting-star"></div>
-
-    <!-- Orbital rings -->
-    <div class="orbital-ring orbital-ring-1"></div>
-    <div class="orbital-ring orbital-ring-2"></div>
-
-    <!-- Floating particles -->
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-
-    <!-- Constellation pattern -->
-    <div class="constellation">
-        <svg>
-            <line x1="10%" y1="15%" x2="25%" y2="20%"></line>
-            <line x1="25%" y1="20%" x2="35%" y2="25%"></line>
-            <line x1="35%" y1="25%" x2="30%" y2="40%"></line>
-            <line x1="30%" y1="40%" x2="15%" y2="35%"></line>
-            <line x1="15%" y1="35%" x2="10%" y2="15%"></line>
-            <circle cx="10%" cy="15%" r="2"></circle>
-            <circle cx="25%" cy="20%" r="3"></circle>
-            <circle cx="35%" cy="25%" r="2"></circle>
-            <circle cx="30%" cy="40%" r="2"></circle>
-            <circle cx="15%" cy="35%" r="2"></circle>
-
-            <line x1="70%" y1="60%" x2="80%" y2="55%"></line>
-            <line x1="80%" y1="55%" x2="90%" y2="65%"></line>
-            <line x1="90%" y1="65%" x2="85%" y2="75%"></line>
-            <line x1="85%" y1="75%" x2="70%" y2="70%"></line>
-            <line x1="70%" y1="70%" x2="70%" y2="60%"></line>
-            <circle cx="70%" cy="60%" r="2"></circle>
-            <circle cx="80%" cy="55%" r="3"></circle>
-            <circle cx="90%" cy="65%" r="2"></circle>
-            <circle cx="85%" cy="75%" r="2"></circle>
-            <circle cx="70%" cy="70%" r="2"></circle>
-        </svg>
-    </div>
-
     <div class="dashboard-container">
         <div class="header">
-            <h1>✦ Perimeter Studio Dashboard ✦</h1>
+            <h1>Perimeter Studio Dashboard</h1>
             <div class="subtitle">Video Production Capacity Tracking & Performance Metrics</div>
-            <div class="timestamp">⟡ Last Updated: January 05, 2026 at 09:00 AM</div>
+            <div class="timestamp">Last Updated: January 05, 2026 at 11:15 AM</div>
         </div>
 
         <div class="grid">
-            <!-- Performance Overview -->
+            <!-- Quick Stats -->
             <div class="card">
-                <h2>Performance Overview</h2>
+                <h2>Quick Stats</h2>
                 <div class="metric">
                     <span class="metric-label">Active Tasks</span>
-                    <span class="metric-value">28</span>
+                    <span class="metric-value">30</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Completed (30 days)</span>
+                    <span class="metric-value">7</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Total Projects This Year</span>
+                    <span class="metric-value">0</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Avg Days Variance</span>
+                    <span class="metric-value positive">-1.0</span>
+                </div>
+            </div>
+
+            <!-- Delivery Performance -->
+            <div class="card">
+                <h2>Delivery Performance</h2>
+                <div class="metric">
+                    <span class="metric-label">On-Time Completion Rate</span>
+                    <span class="metric-value positive">100%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Average Capacity Variance</span>
+                    <span class="metric-value ">N/A</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Projects Completed (30d)</span>
@@ -1593,10 +621,6 @@
                 <div class="metric">
                     <span class="metric-label">Projects Completed This Year</span>
                     <span class="metric-value">0</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Avg Days Variance</span>
-                    <span class="metric-value positive">-1.0</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Delayed Due to Capacity</span>
@@ -1610,10 +634,10 @@
 
                 <div class="team-member">
                     <div class="team-member-name">Zach Welliver</div>
-                    <div class="team-member-capacity">88% / 50% capacity</div>
+                    <div class="team-member-capacity">103% / 50% capacity</div>
                     <div class="progress-bar">
                         <div class="progress-fill over-capacity" style="width: 100%">
-                            176%
+                            206%
                         </div>
                     </div>
                 </div>
@@ -1677,7 +701,7 @@
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>🎬 Upcoming Shoots</h2>
     
-            <div style="text-align: center; padding: 30px; color: #a8c5da;">
+            <div style="text-align: center; padding: 30px; color: #6c757d;">
                 <div style="font-size: 48px; margin-bottom: 10px;">📅</div>
                 <div style="font-size: 16px;">No upcoming shoots scheduled</div>
             </div>
@@ -1687,180 +711,174 @@
         <!-- Upcoming Project Deadlines -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>⏰ Upcoming Project Deadlines</h2>
-            <p style="color: #a8c5da; margin-top: 5px; font-size: 14px;">Projects due within the next 10 days</p>
-
+            <p style="color: #6c757d; margin-top: 5px; font-size: 14px;">Projects due within the next 10 days</p>
+    
             <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
-
-                <div style="border: 1px solid rgba(96, 187, 233, 0.3); border-radius: 12px; padding: 15px; background: rgba(9, 36, 63, 0.4); backdrop-filter: blur(10px); transition: all 0.3s; box-shadow: 0 0 15px rgba(96, 187, 233, 0.2);">
+        
+                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; background: #f8f9fa; transition: box-shadow 0.2s;">
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                         <div>
-                            <div style="font-size: 14px; font-weight: bold; color: #e0e6ed;">Mon, Jan 5, 2026</div>
+                            <div style="font-size: 14px; font-weight: bold; color: #09243F;">Mon, Jan 5, 2026</div>
                             <div style="font-size: 24px; font-weight: 600; color: #dc3545; margin-top: 5px;">DUE TODAY</div>
                         </div>
                         <span style="display: inline-block; padding: 4px 10px; background: #09243F; color: white; font-size: 11px; border-radius: 12px; white-space: nowrap;">Post Production</span>
                     </div>
                     <div style="margin-bottom: 10px;">
-                        <a href="https://app.asana.com/0/0/1211997186982728/f" target="_blank" style="color: #e0e6ed; text-decoration: none; font-weight: 500; font-size: 15px; line-height: 1.4; display: block; hover: text-decoration: underline;">
+                        <a href="https://app.asana.com/0/0/1211997186982728/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 15px; line-height: 1.4; display: block; hover: text-decoration: underline;">
                             Perimeter Live Worship Album Songs
                         </a>
                     </div>
-                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(96, 187, 233, 0.2);">
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #dee2e6;">
                         <a href="https://app.asana.com/0/0/1211997186982728/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 12px;">
                             View in Asana →
                         </a>
                     </div>
                 </div>
-
-                <div style="border: 1px solid rgba(96, 187, 233, 0.3); border-radius: 12px; padding: 15px; background: rgba(9, 36, 63, 0.4); backdrop-filter: blur(10px); transition: all 0.3s; box-shadow: 0 0 15px rgba(96, 187, 233, 0.2);">
+            
+                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; background: #f8f9fa; transition: box-shadow 0.2s;">
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                         <div>
-                            <div style="font-size: 14px; font-weight: bold; color: #e0e6ed;">Tue, Jan 6, 2026</div>
+                            <div style="font-size: 14px; font-weight: bold; color: #09243F;">Tue, Jan 6, 2026</div>
                             <div style="font-size: 24px; font-weight: 600; color: #fd7e14; margin-top: 5px;">DUE TOMORROW</div>
                         </div>
                         <span style="display: inline-block; padding: 4px 10px; background: #09243F; color: white; font-size: 11px; border-radius: 12px; white-space: nowrap;">Post Production</span>
                     </div>
                     <div style="margin-bottom: 10px;">
-                        <a href="https://app.asana.com/0/0/1212006197671084/f" target="_blank" style="color: #e0e6ed; text-decoration: none; font-weight: 500; font-size: 15px; line-height: 1.4; display: block; hover: text-decoration: underline;">
+                        <a href="https://app.asana.com/0/0/1212006197671084/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 15px; line-height: 1.4; display: block; hover: text-decoration: underline;">
                             Unlimited Grace - Bryan Chapell, Jeff Norris, Randy Pope Podcast
                         </a>
                     </div>
-                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(96, 187, 233, 0.2);">
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #dee2e6;">
                         <a href="https://app.asana.com/0/0/1212006197671084/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 12px;">
                             View in Asana →
                         </a>
                     </div>
                 </div>
-
-                <div style="border: 1px solid rgba(96, 187, 233, 0.3); border-radius: 12px; padding: 15px; background: rgba(9, 36, 63, 0.4); backdrop-filter: blur(10px); transition: all 0.3s; box-shadow: 0 0 15px rgba(96, 187, 233, 0.2);">
+            
+                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; background: #f8f9fa; transition: box-shadow 0.2s;">
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                         <div>
-                            <div style="font-size: 14px; font-weight: bold; color: #e0e6ed;">Sun, Jan 11, 2026</div>
+                            <div style="font-size: 14px; font-weight: bold; color: #09243F;">Sun, Jan 11, 2026</div>
                             <div style="font-size: 24px; font-weight: 600; color: #60BBE9; margin-top: 5px;">6 DAYS</div>
                         </div>
                         <span style="display: inline-block; padding: 4px 10px; background: #09243F; color: white; font-size: 11px; border-radius: 12px; white-space: nowrap;">Production</span>
                     </div>
                     <div style="margin-bottom: 10px;">
-                        <a href="https://app.asana.com/0/0/1211881314340223/f" target="_blank" style="color: #e0e6ed; text-decoration: none; font-weight: 500; font-size: 15px; line-height: 1.4; display: block; hover: text-decoration: underline;">
+                        <a href="https://app.asana.com/0/0/1211881314340223/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 15px; line-height: 1.4; display: block; hover: text-decoration: underline;">
                             Advent Christmas Volunteer Thank you in WOV
                         </a>
                     </div>
-                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(96, 187, 233, 0.2);">
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #dee2e6;">
                         <a href="https://app.asana.com/0/0/1211881314340223/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 12px;">
                             View in Asana →
                         </a>
                     </div>
                 </div>
-
-                <div style="border: 1px solid rgba(96, 187, 233, 0.3); border-radius: 12px; padding: 15px; background: rgba(9, 36, 63, 0.4); backdrop-filter: blur(10px); transition: all 0.3s; box-shadow: 0 0 15px rgba(96, 187, 233, 0.2);">
+            
+                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; background: #f8f9fa; transition: box-shadow 0.2s;">
                     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                         <div>
-                            <div style="font-size: 14px; font-weight: bold; color: #e0e6ed;">Mon, Jan 12, 2026</div>
+                            <div style="font-size: 14px; font-weight: bold; color: #09243F;">Mon, Jan 12, 2026</div>
                             <div style="font-size: 24px; font-weight: 600; color: #60BBE9; margin-top: 5px;">7 DAYS</div>
                         </div>
                         <span style="display: inline-block; padding: 4px 10px; background: #09243F; color: white; font-size: 11px; border-radius: 12px; white-space: nowrap;">Post Production</span>
                     </div>
                     <div style="margin-bottom: 10px;">
-                        <a href="https://app.asana.com/0/0/1211995020691865/f" target="_blank" style="color: #e0e6ed; text-decoration: none; font-weight: 500; font-size: 15px; line-height: 1.4; display: block; hover: text-decoration: underline;">
+                        <a href="https://app.asana.com/0/0/1211995020691865/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 15px; line-height: 1.4; display: block; hover: text-decoration: underline;">
                             Radical Dependence Teaching Series
                         </a>
                     </div>
-                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(96, 187, 233, 0.2);">
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #dee2e6;">
                         <a href="https://app.asana.com/0/0/1211995020691865/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 12px;">
                             View in Asana →
                         </a>
                     </div>
                 </div>
-
-            </div>
-
-        </div>
-
-        <!-- Progress Rings -->
-        <div class="card full-width" style="margin-bottom: 30px; overflow: visible !important; padding: 40px 50px;">
-            <h2>📊 Key Performance Metrics</h2>
-            <div class="progress-rings-container" style="overflow: visible !important;">
-                <div class="progress-ring">
-                    <svg class="progress-ring-svg" width="160" height="160">
-                        <circle class="progress-ring-circle progress-ring-bg" cx="80" cy="80" r="60"></circle>
-                        <circle class="progress-ring-circle progress-ring-progress" cx="80" cy="80" r="60"
-                                stroke="#4ecca3" id="ringOnTime"></circle>
-                    </svg>
-                    <div class="progress-ring-text">
-                        <span class="progress-ring-value" id="ringOnTimeValue">0%</span>
-                        <span class="progress-ring-label">On-Time Delivery</span>
+            
+                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; background: #f8f9fa; transition: box-shadow 0.2s;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <div>
+                            <div style="font-size: 14px; font-weight: bold; color: #09243F;">Tue, Jan 13, 2026</div>
+                            <div style="font-size: 24px; font-weight: 600; color: #60BBE9; margin-top: 5px;">8 DAYS</div>
+                        </div>
+                        <span style="display: inline-block; padding: 4px 10px; background: #09243F; color: white; font-size: 11px; border-radius: 12px; white-space: nowrap;">Production</span>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <a href="https://app.asana.com/0/0/1212660234608733/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 15px; line-height: 1.4; display: block; hover: text-decoration: underline;">
+                            Fully Furnished Broll Filming
+                        </a>
+                    </div>
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1212660234608733/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 12px;">
+                            View in Asana →
+                        </a>
                     </div>
                 </div>
-                <div class="progress-ring">
-                    <svg class="progress-ring-svg" width="160" height="160">
-                        <circle class="progress-ring-circle progress-ring-bg" cx="80" cy="80" r="60"></circle>
-                        <circle class="progress-ring-circle progress-ring-progress" cx="80" cy="80" r="60"
-                                stroke="#60BBE9" id="ringUtilization"></circle>
-                    </svg>
-                    <div class="progress-ring-text">
-                        <span class="progress-ring-value" id="ringUtilizationValue">0%</span>
-                        <span class="progress-ring-label">Team Utilization</span>
+            
+            </div>
+        
+        </div>
+
+        <!-- Upcoming Workload Forecast -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>📅 Upcoming Workload Forecast</h2>
+            <div class="forecast-grid">
+    
+                <div style="border: 2px solid #28a745; border-radius: 8px; padding: 15px; background: #f8f9fa;">
+                    <div style="font-size: 14px; color: #6c757d; margin-bottom: 5px;">7 Days</div>
+                    <div style="font-size: 24px; font-weight: bold; color: #09243F; margin-bottom: 10px;">
+                        9 tasks
+                    </div>
+                    <div style="font-size: 18px; color: #28a745; font-weight: bold; margin-bottom: 5px;">
+                        ✅ 39% capacity
+                    </div>
+                    <div style="font-size: 12px; color: #6c757d;">
+                        Good
+                    </div>
+                    <div style="font-size: 11px; color: #6c757d; margin-top: 8px; padding-top: 8px; border-top: 1px solid #dee2e6; font-style: italic;">
+                        📊 Moderate workload period
                     </div>
                 </div>
-                <div class="progress-ring">
-                    <svg class="progress-ring-svg" width="160" height="160">
-                        <circle class="progress-ring-circle progress-ring-bg" cx="80" cy="80" r="60"></circle>
-                        <circle class="progress-ring-circle progress-ring-progress" cx="80" cy="80" r="60"
-                                stroke="#a78bfa" id="ringProjects"></circle>
-                    </svg>
-                    <div class="progress-ring-text">
-                        <span class="progress-ring-value" id="ringProjectsValue">0</span>
-                        <span class="progress-ring-label">Active Projects</span>
+        
+                <div style="border: 2px solid #28a745; border-radius: 8px; padding: 15px; background: #f8f9fa;">
+                    <div style="font-size: 14px; color: #6c757d; margin-bottom: 5px;">14 Days</div>
+                    <div style="font-size: 24px; font-weight: bold; color: #09243F; margin-bottom: 10px;">
+                        9 tasks
+                    </div>
+                    <div style="font-size: 18px; color: #28a745; font-weight: bold; margin-bottom: 5px;">
+                        ✅ 28% capacity
+                    </div>
+                    <div style="font-size: 12px; color: #6c757d;">
+                        Good
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Timeline Gantt -->
-        <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>🛸 Project Timeline</h2>
-            <p style="color: #a8c5da; margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Next 10 days</p>
-            <div class="timeline-container" id="projectTimeline">
-                <!-- Timeline will be generated by JavaScript -->
-            </div>
-        </div>
-
-        <!-- Radar/Spider Chart -->
-        <div class="card full-width" style="margin-bottom: 30px; overflow: visible;">
-            <h2>🕸️ Workload Balance</h2>
-            <p style="color: #a8c5da; margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Actual vs Target distribution across categories</p>
-            <div class="radar-container" id="radarChart">
-                <!-- Radar will be generated by JavaScript -->
-            </div>
-        </div>
-
-        <!-- Velocity Trend Chart -->
-        <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>📈 Team Velocity Trend</h2>
-            <p style="color: #a8c5da; margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Projects completed per week over the last 8 weeks</p>
-            <div class="velocity-container">
-                <canvas id="velocityChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Heat Map Calendar -->
-        <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>🔥 Workload Heat Map</h2>
-            <p style="color: #a8c5da; margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Daily capacity intensity - Next 10 days</p>
-            <div class="heatmap-calendar" id="heatmapCalendar">
-                <!-- Heatmap will be generated by JavaScript -->
+        
+                <div style="border: 2px solid #28a745; border-radius: 8px; padding: 15px; background: #f8f9fa;">
+                    <div style="font-size: 14px; color: #6c757d; margin-bottom: 5px;">30 Days</div>
+                    <div style="font-size: 24px; font-weight: bold; color: #09243F; margin-bottom: 10px;">
+                        15 tasks
+                    </div>
+                    <div style="font-size: 18px; color: #28a745; font-weight: bold; margin-bottom: 5px;">
+                        ✅ 25% capacity
+                    </div>
+                    <div style="font-size: 12px; color: #6c757d;">
+                        Good
+                    </div>
+                </div>
+        
             </div>
         </div>
 
         <!-- 6-Month Capacity Timeline -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>📆 6-Month Capacity Timeline</h2>
-            <div style="font-size: 12px; color: #a8c5da; margin-bottom: 15px;">
+            <div style="font-size: 12px; color: #6c757d; margin-bottom: 15px;">
                 Weekly team capacity projection showing workload distribution over the next 26 weeks
             </div>
     
             <div style="margin-top: 15px;">
                 <!-- Timeline header with month labels -->
-                <div style="display: flex; margin-bottom: 10px; font-size: 12px; font-weight: bold; color: #a8c5da;">
+                <div style="display: flex; margin-bottom: 10px; font-size: 12px; font-weight: bold; color: #6c757d;">
     
                     <div style="flex: 4; text-align: center; border-right: 1px solid #dee2e6;">Jan</div>
                 
@@ -1879,31 +897,31 @@
                 <!-- Timeline bars -->
                 <div style="display: flex; gap: 3px; height: 60px; align-items: flex-end;">
     
-                    <div style="flex: 1; background: #fd7e14; height: 43.17857142857143%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 1 (2026-01-05): 33% capacity, 7 tasks">
+                    <div style="flex: 1; background: #fd7e14; height: 50.14285714285714%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 1 (2026-01-05): 39% capacity, 9 tasks">
                     </div>
         
-                    <div style="flex: 1; background: #28a745; height: 16.714285714285715%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 2 (2026-01-12): 13% capacity, 4 tasks">
+                    <div style="flex: 1; background: #28a745; height: 22.020408163265305%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 2 (2026-01-12): 17% capacity, 6 tasks">
                     </div>
         
-                    <div style="flex: 1; background: #ffc107; height: 23.47959183673469%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 3 (2026-01-19): 18% capacity, 7 tasks">
+                    <div style="flex: 1; background: #ffc107; height: 28.12244897959184%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 3 (2026-01-19): 22% capacity, 8 tasks">
                     </div>
         
-                    <div style="flex: 1; background: #ffc107; height: 24.673469387755105%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 4 (2026-01-26): 19% capacity, 8 tasks">
+                    <div style="flex: 1; background: #ffc107; height: 29.316326530612244%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 4 (2026-01-26): 23% capacity, 9 tasks">
                     </div>
         
-                    <div style="flex: 1; background: #ffc107; height: 26.0%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 5 (2026-02-02): 20% capacity, 6 tasks">
+                    <div style="flex: 1; background: #ffc107; height: 27.98979591836735%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 5 (2026-02-02): 22% capacity, 7 tasks">
                     </div>
         
-                    <div style="flex: 1; background: #ffc107; height: 26.0%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                    <div style="flex: 1; background: #28a745; height: 26.0%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
                          title="Week 6 (2026-02-09): 20% capacity, 6 tasks">
                     </div>
         
-                    <div style="flex: 1; background: #ffc107; height: 23.54591836734694%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                    <div style="flex: 1; background: #28a745; height: 23.54591836734694%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
                          title="Week 7 (2026-02-16): 18% capacity, 7 tasks">
                     </div>
         
@@ -1986,7 +1004,7 @@
                 </div>
 
                 <!-- Week number labels (show every 4th week) -->
-                <div style="display: flex; gap: 3px; margin-top: 5px; font-size: 9px; color: #a8c5da;">
+                <div style="display: flex; gap: 3px; margin-top: 5px; font-size: 9px; color: #6c757d;">
     
                     <div style="flex: 1; text-align: center; min-width: 8px;">W1</div>
             
@@ -2043,13 +1061,13 @@
                 </div>
 
                 <!-- Legend -->
-                <div style="margin-top: 15px; font-size: 11px; color: #a8c5da; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <div style="margin-top: 15px; font-size: 11px; color: #6c757d; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                     <div><span style="display: inline-block; width: 12px; height: 12px; background: #28a745; border-radius: 2px;"></span> Low</div>
                     <div><span style="display: inline-block; width: 12px; height: 12px; background: #ffc107; border-radius: 2px;"></span> Medium</div>
                     <div><span style="display: inline-block; width: 12px; height: 12px; background: #fd7e14; border-radius: 2px;"></span> High</div>
                     <div><span style="display: inline-block; width: 12px; height: 12px; background: #dc3545; border-radius: 2px;"></span> Very High</div>
                 </div>
-                <div style="margin-top: 5px; font-size: 10px; color: #a8c5da; text-align: center; font-style: italic;">
+                <div style="margin-top: 5px; font-size: 10px; color: #6c757d; text-align: center; font-style: italic;">
                     Colors scale adaptively based on peak workload over the 6-month period
                 </div>
             </div>
@@ -2060,165 +1078,165 @@
             <h2>📊 Capacity Utilization - Next 30 Days</h2>
             <div class="heatmap-grid">
     
-                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-05: 47.9% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-05: 53.2% capacity">
                     <div style="font-weight: bold;">01/05</div>
-                    <div style="font-size: 9px; margin-top: 2px;">48%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">53%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-06: 38.2% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-06: 43.6% capacity">
                     <div style="font-weight: bold;">01/06</div>
-                    <div style="font-size: 9px; margin-top: 2px;">38%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">44%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-07: 29.3% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-07: 34.6% capacity">
                     <div style="font-weight: bold;">01/07</div>
-                    <div style="font-size: 9px; margin-top: 2px;">29%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">35%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-08: 29.3% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-08: 34.6% capacity">
                     <div style="font-weight: bold;">01/08</div>
-                    <div style="font-size: 9px; margin-top: 2px;">29%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">35%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-09: 29.3% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-09: 34.6% capacity">
                     <div style="font-weight: bold;">01/09</div>
-                    <div style="font-size: 9px; margin-top: 2px;">29%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">35%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-10: 29.3% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-10: 34.6% capacity">
                     <div style="font-weight: bold;">01/10</div>
-                    <div style="font-size: 9px; margin-top: 2px;">29%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">35%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-11: 29.3% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-11: 34.6% capacity">
                     <div style="font-weight: bold;">01/11</div>
-                    <div style="font-size: 9px; margin-top: 2px;">29%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">35%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-12: 25.7% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-12: 31.1% capacity">
                     <div style="font-weight: bold;">01/12</div>
-                    <div style="font-size: 9px; margin-top: 2px;">26%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">31%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-13: 10.7% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-13: 16.1% capacity">
                     <div style="font-weight: bold;">01/13</div>
-                    <div style="font-size: 9px; margin-top: 2px;">11%</div>
-                </div>
-        
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-14: 10.7% capacity">
-                    <div style="font-weight: bold;">01/14</div>
-                    <div style="font-size: 9px; margin-top: 2px;">11%</div>
-                </div>
-        
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-15: 10.7% capacity">
-                    <div style="font-weight: bold;">01/15</div>
-                    <div style="font-size: 9px; margin-top: 2px;">11%</div>
-                </div>
-        
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-16: 10.7% capacity">
-                    <div style="font-weight: bold;">01/16</div>
-                    <div style="font-size: 9px; margin-top: 2px;">11%</div>
-                </div>
-        
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-17: 10.7% capacity">
-                    <div style="font-weight: bold;">01/17</div>
-                    <div style="font-size: 9px; margin-top: 2px;">11%</div>
-                </div>
-        
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-18: 10.7% capacity">
-                    <div style="font-weight: bold;">01/18</div>
-                    <div style="font-size: 9px; margin-top: 2px;">11%</div>
-                </div>
-        
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-19: 10.7% capacity">
-                    <div style="font-weight: bold;">01/19</div>
-                    <div style="font-size: 9px; margin-top: 2px;">11%</div>
-                </div>
-        
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-20: 18.2% capacity">
-                    <div style="font-weight: bold;">01/20</div>
-                    <div style="font-size: 9px; margin-top: 2px;">18%</div>
-                </div>
-        
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-21: 18.2% capacity">
-                    <div style="font-weight: bold;">01/21</div>
-                    <div style="font-size: 9px; margin-top: 2px;">18%</div>
-                </div>
-        
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-22: 18.2% capacity">
-                    <div style="font-weight: bold;">01/22</div>
-                    <div style="font-size: 9px; margin-top: 2px;">18%</div>
-                </div>
-        
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-23: 20.4% capacity">
-                    <div style="font-weight: bold;">01/23</div>
-                    <div style="font-size: 9px; margin-top: 2px;">20%</div>
-                </div>
-        
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-24: 20.4% capacity">
-                    <div style="font-weight: bold;">01/24</div>
-                    <div style="font-size: 9px; margin-top: 2px;">20%</div>
-                </div>
-        
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-25: 20.4% capacity">
-                    <div style="font-weight: bold;">01/25</div>
-                    <div style="font-size: 9px; margin-top: 2px;">20%</div>
-                </div>
-        
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-26: 16.1% capacity">
-                    <div style="font-weight: bold;">01/26</div>
                     <div style="font-size: 9px; margin-top: 2px;">16%</div>
                 </div>
         
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-27: 11.8% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-14: 14.3% capacity">
+                    <div style="font-weight: bold;">01/14</div>
+                    <div style="font-size: 9px; margin-top: 2px;">14%</div>
+                </div>
+        
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-15: 14.3% capacity">
+                    <div style="font-weight: bold;">01/15</div>
+                    <div style="font-size: 9px; margin-top: 2px;">14%</div>
+                </div>
+        
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-16: 14.3% capacity">
+                    <div style="font-weight: bold;">01/16</div>
+                    <div style="font-size: 9px; margin-top: 2px;">14%</div>
+                </div>
+        
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-17: 14.3% capacity">
+                    <div style="font-weight: bold;">01/17</div>
+                    <div style="font-size: 9px; margin-top: 2px;">14%</div>
+                </div>
+        
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-18: 14.3% capacity">
+                    <div style="font-weight: bold;">01/18</div>
+                    <div style="font-size: 9px; margin-top: 2px;">14%</div>
+                </div>
+        
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-19: 14.3% capacity">
+                    <div style="font-weight: bold;">01/19</div>
+                    <div style="font-size: 9px; margin-top: 2px;">14%</div>
+                </div>
+        
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-20: 21.8% capacity">
+                    <div style="font-weight: bold;">01/20</div>
+                    <div style="font-size: 9px; margin-top: 2px;">22%</div>
+                </div>
+        
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-21: 21.8% capacity">
+                    <div style="font-weight: bold;">01/21</div>
+                    <div style="font-size: 9px; margin-top: 2px;">22%</div>
+                </div>
+        
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-22: 21.8% capacity">
+                    <div style="font-weight: bold;">01/22</div>
+                    <div style="font-size: 9px; margin-top: 2px;">22%</div>
+                </div>
+        
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-23: 23.9% capacity">
+                    <div style="font-weight: bold;">01/23</div>
+                    <div style="font-size: 9px; margin-top: 2px;">24%</div>
+                </div>
+        
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-24: 23.9% capacity">
+                    <div style="font-weight: bold;">01/24</div>
+                    <div style="font-size: 9px; margin-top: 2px;">24%</div>
+                </div>
+        
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-25: 23.9% capacity">
+                    <div style="font-weight: bold;">01/25</div>
+                    <div style="font-size: 9px; margin-top: 2px;">24%</div>
+                </div>
+        
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-26: 19.6% capacity">
+                    <div style="font-weight: bold;">01/26</div>
+                    <div style="font-size: 9px; margin-top: 2px;">20%</div>
+                </div>
+        
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-27: 15.4% capacity">
                     <div style="font-weight: bold;">01/27</div>
-                    <div style="font-size: 9px; margin-top: 2px;">12%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">15%</div>
                 </div>
         
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-28: 19.3% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-28: 22.9% capacity">
                     <div style="font-weight: bold;">01/28</div>
-                    <div style="font-size: 9px; margin-top: 2px;">19%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">23%</div>
                 </div>
         
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-29: 19.3% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-29: 22.9% capacity">
                     <div style="font-weight: bold;">01/29</div>
-                    <div style="font-size: 9px; margin-top: 2px;">19%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">23%</div>
                 </div>
         
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-30: 22.1% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-30: 25.7% capacity">
                     <div style="font-weight: bold;">01/30</div>
-                    <div style="font-size: 9px; margin-top: 2px;">22%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">26%</div>
                 </div>
         
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-31: 22.1% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-31: 25.7% capacity">
                     <div style="font-weight: bold;">01/31</div>
-                    <div style="font-size: 9px; margin-top: 2px;">22%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">26%</div>
                 </div>
         
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-01: 22.1% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-01: 25.7% capacity">
                     <div style="font-weight: bold;">02/01</div>
-                    <div style="font-size: 9px; margin-top: 2px;">22%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">26%</div>
                 </div>
         
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-02: 20.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-02: 23.6% capacity">
                     <div style="font-weight: bold;">02/02</div>
-                    <div style="font-size: 9px; margin-top: 2px;">20%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">24%</div>
                 </div>
         
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-03: 20.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-03: 23.6% capacity">
                     <div style="font-weight: bold;">02/03</div>
-                    <div style="font-size: 9px; margin-top: 2px;">20%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">24%</div>
                 </div>
         
             </div>
-            <div style="margin-top: 15px; font-size: 11px; color: #a8c5da; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+            <div style="margin-top: 15px; font-size: 11px; color: #6c757d; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #20c997; border-radius: 2px;"></span> Very Low</div>
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #28a745; border-radius: 2px;"></span> Low</div>
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #ffc107; border-radius: 2px;"></span> Medium</div>
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #fd7e14; border-radius: 2px;"></span> High</div>
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #dc3545; border-radius: 2px;"></span> Very High</div>
             </div>
-            <div style="margin-top: 10px; font-size: 11px; color: #a8c5da; text-align: center;">
+            <div style="margin-top: 10px; font-size: 11px; color: #6c757d; text-align: center;">
                 <em>Colors scale adaptively based on peak workload over the 30-day period</em>
             </div>
         </div>
@@ -2226,7 +1244,7 @@
         <!-- Historical Capacity Utilization -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>📈 Historical Capacity Utilization</h2>
-            <div style="font-size: 12px; color: #a8c5da; margin-bottom: 10px;">
+            <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
                 Team utilization percentage over the last 30 days (click legend items to filter)
             </div>
             <div class="chart-container">
@@ -2234,11 +1252,24 @@
             </div>
         </div>
 
+        <!-- Category Allocation Chart -->
+        <div class="grid">
+            <div class="card full-width">
+                <h2>Category Allocation: Cumulative Average vs Target</h2>
+                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
+                    Cumulative average allocation across tracking period: Nov 25, 2025 - Jan 05, 2026 (42 days)
+                </div>
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+
         <!-- Historical Trends Chart -->
         <div class="grid">
             <div class="card full-width">
                 <h2>Historical Allocation Trends</h2>
-                <div style="font-size: 12px; color: #a8c5da; margin-bottom: 10px;">
+                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
                     Daily allocation percentages over time
                 </div>
                 <div class="chart-container">
@@ -2332,29 +1363,83 @@
 
         </div>
 
+        <!-- Category Distribution Donut Charts -->
+        <div class="grid">
+            <div class="card">
+                <h2>📊 Current Period Distribution</h2>
+                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
+                    Today's workload distribution
+                </div>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="currentDonutChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h2>📊 Cumulative Average Distribution</h2>
+                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
+                    Average allocation over tracking period
+                </div>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="cumulativeDonutChart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Configure Chart.js defaults for space theme
-        Chart.defaults.color = '#a8c5da';
-        Chart.defaults.borderColor = 'rgba(96, 187, 233, 0.2)';
-        Chart.defaults.backgroundColor = 'rgba(96, 187, 233, 0.1)';
 
-        // Configure scale defaults
-        Chart.defaults.scale.grid.color = 'rgba(96, 187, 233, 0.1)';
-        Chart.defaults.scale.grid.borderColor = 'rgba(96, 187, 233, 0.3)';
-        Chart.defaults.scale.ticks.color = '#a8c5da';
-
-        // Configure plugin defaults
-        Chart.defaults.plugins.legend.labels.color = '#60BBE9';
-        Chart.defaults.plugins.legend.labels.font = { size: 12, weight: '600' };
-        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(9, 36, 63, 0.95)';
-        Chart.defaults.plugins.tooltip.titleColor = '#60BBE9';
-        Chart.defaults.plugins.tooltip.bodyColor = '#e0e6ed';
-        Chart.defaults.plugins.tooltip.borderColor = 'rgba(96, 187, 233, 0.5)';
-        Chart.defaults.plugins.tooltip.borderWidth = 1;
-
-        // Category Chart - REMOVED
+        // Category Chart
+        const ctx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Communications", "Creative Resources", "Partners", "Pastoral/Strategic", "Spiritual Formation"],
+                datasets: [
+                    {
+                        label: 'Actual %',
+                        data: [49.864999999999995, 6.7125, 0.185, 32.739999999999995, 10.254999999999999],
+                        backgroundColor: '#60BBE9',
+                        borderColor: '#09243F',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Target %',
+                        data: [30.0, 15.0, 5.0, 20.0, 25.0],
+                        backgroundColor: 'rgba(9, 36, 63, 0.3)',
+                        borderColor: '#09243F',
+                        borderWidth: 2,
+                        borderDash: [5, 5]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 50,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
         // Historical Trends Chart
 
@@ -2363,7 +1448,7 @@
             type: 'line',
             data: {
                 labels: ["2025-11-25", "2025-11-26", "2025-11-27", "2025-11-28", "2025-11-29", "2025-11-30", "2025-12-01", "2025-12-02", "2025-12-03", "2025-12-04", "2025-12-05", "2025-12-06", "2025-12-07", "2025-12-08", "2025-12-09", "2025-12-10", "2025-12-11", "2025-12-12", "2025-12-13", "2025-12-14", "2025-12-15", "2025-12-16", "2025-12-17", "2025-12-18", "2025-12-19", "2025-12-20", "2025-12-21", "2025-12-22", "2025-12-23", "2025-12-24", "2025-12-25", "2025-12-28", "2025-12-29", "2025-12-30", "2025-12-31", "2026-01-01", "2026-01-02", "2026-01-03", "2026-01-04", "2026-01-05"],
-                datasets: [{"label": "Spiritual Formation", "data": [18.7, 18.3, 10.8, 10.9, 9.3, 11.1, 11.2, 11.3, 11.5, 11.6, 11.4, 11.6, 11.8, 11.9, 8.5, 8.5, 8.5, 8.6, 8.7, 8.8, 8.9, 9.0, 9.1, 8.6, 8.7, 8.8, 8.9, 9.0, 8.8, 8.9, 9.0, 9.3, 9.5, 9.6, 9.8, 9.9, 10.1, 10.3, 10.4, 10.6], "borderColor": "#60BBE9", "backgroundColor": "#60BBE9", "borderWidth": 3, "fill": false, "tension": 0.4, "pointRadius": 0, "pointHoverRadius": 6, "pointHoverBackgroundColor": "#60BBE9", "pointHoverBorderColor": "#fff", "pointHoverBorderWidth": 2}, {"label": "Communications", "data": [30.5, 29.7, 33.1, 32.8, 32.8, 32.4, 32.1, 32.1, 31.8, 31.6, 33.4, 32.5, 32.6, 32.7, 52.6, 52.9, 53.4, 53.5, 53.7, 54.2, 54.7, 55.2, 55.8, 58.9, 59.4, 60.0, 60.6, 61.1, 59.2, 59.8, 60.4, 62.1, 62.6, 63.1, 63.7, 64.3, 64.9, 65.5, 66.1, 66.8], "borderColor": "#a78bfa", "backgroundColor": "#a78bfa", "borderWidth": 3, "fill": false, "tension": 0.4, "pointRadius": 0, "pointHoverRadius": 6, "pointHoverBackgroundColor": "#a78bfa", "pointHoverBorderColor": "#fff", "pointHoverBorderWidth": 2}, {"label": "Creative Resources", "data": [9.4, 6.4, 11.2, 11.3, 9.7, 11.5, 11.7, 11.8, 11.9, 12.0, 11.9, 12.1, 11.8, 11.5, 7.9, 7.7, 7.4, 7.2, 7.0, 6.7, 6.5, 6.3, 6.1, 5.5, 5.3, 5.0, 4.8, 4.5, 4.1, 3.9, 3.6, 2.8, 2.5, 2.3, 2.0, 1.7, 1.4, 1.0, 0.7, 0.4], "borderColor": "#4ecca3", "backgroundColor": "#4ecca3", "borderWidth": 3, "fill": false, "tension": 0.4, "pointRadius": 0, "pointHoverRadius": 6, "pointHoverBackgroundColor": "#4ecca3", "pointHoverBorderColor": "#fff", "pointHoverBorderWidth": 2}, {"label": "Pastoral/Strategic", "data": [37.0, 42.7, 45.0, 45.0, 38.1, 45.0, 45.0, 44.8, 44.9, 44.8, 43.3, 43.7, 43.8, 43.9, 31.0, 30.9, 30.7, 30.7, 30.6, 30.3, 29.9, 29.5, 29.1, 27.0, 26.6, 26.2, 25.7, 25.3, 27.9, 27.5, 27.0, 25.8, 25.4, 25.0, 24.5, 24.1, 23.7, 23.2, 22.7, 22.3], "borderColor": "#ffd93d", "backgroundColor": "#ffd93d", "borderWidth": 3, "fill": false, "tension": 0.4, "pointRadius": 0, "pointHoverRadius": 6, "pointHoverBackgroundColor": "#ffd93d", "pointHoverBorderColor": "#fff", "pointHoverBorderWidth": 2}, {"label": "Partners", "data": [4.4, 3.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "borderColor": "#ff6b9d", "backgroundColor": "#ff6b9d", "borderWidth": 3, "fill": false, "tension": 0.4, "pointRadius": 0, "pointHoverRadius": 6, "pointHoverBackgroundColor": "#ff6b9d", "pointHoverBorderColor": "#fff", "pointHoverBorderWidth": 2}]
+                datasets: [{"label": "Spiritual Formation", "data": [18.7, 18.3, 10.8, 10.9, 9.3, 11.1, 11.2, 11.3, 11.5, 11.6, 11.4, 11.6, 11.8, 11.9, 8.5, 8.5, 8.5, 8.6, 8.7, 8.8, 8.9, 9.0, 9.1, 8.6, 8.7, 8.8, 8.9, 9.0, 8.8, 8.9, 9.0, 9.3, 9.5, 9.6, 9.8, 9.9, 10.1, 10.3, 10.4, 10.6], "borderColor": "#60BBE9", "backgroundColor": "#60BBE9", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Communications", "data": [30.5, 29.7, 33.1, 32.8, 32.8, 32.4, 32.1, 32.1, 31.8, 31.6, 33.4, 32.5, 32.6, 32.7, 52.6, 52.9, 53.4, 53.5, 53.7, 54.2, 54.7, 55.2, 55.8, 58.9, 59.4, 60.0, 60.6, 61.1, 59.2, 59.8, 60.4, 62.1, 62.6, 63.1, 63.7, 64.3, 64.9, 65.5, 66.1, 66.8], "borderColor": "#09243F", "backgroundColor": "#09243F", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Creative Resources", "data": [9.4, 6.4, 11.2, 11.3, 9.7, 11.5, 11.7, 11.8, 11.9, 12.0, 11.9, 12.1, 11.8, 11.5, 7.9, 7.7, 7.4, 7.2, 7.0, 6.7, 6.5, 6.3, 6.1, 5.5, 5.3, 5.0, 4.8, 4.5, 4.1, 3.9, 3.6, 2.8, 2.5, 2.3, 2.0, 1.7, 1.4, 1.0, 0.7, 0.4], "borderColor": "#28a745", "backgroundColor": "#28a745", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Pastoral/Strategic", "data": [37.0, 42.7, 45.0, 45.0, 38.1, 45.0, 45.0, 44.8, 44.9, 44.8, 43.3, 43.7, 43.8, 43.9, 31.0, 30.9, 30.7, 30.7, 30.6, 30.3, 29.9, 29.5, 29.1, 27.0, 26.6, 26.2, 25.7, 25.3, 27.9, 27.5, 27.0, 25.8, 25.4, 25.0, 24.5, 24.1, 23.7, 23.2, 22.7, 22.3], "borderColor": "#ffc107", "backgroundColor": "#ffc107", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Partners", "data": [4.4, 3.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "borderColor": "#dc3545", "backgroundColor": "#dc3545", "borderWidth": 2, "fill": false, "tension": 0.1}]
             },
             options: {
                 responsive: true,
@@ -2543,11 +1628,9 @@
                 legend: {
                     position: 'right',
                     labels: {
-                        color: '#e0e6ed',
                         padding: 12,
                         font: {
-                            size: 11,
-                            weight: '500'
+                            size: 11
                         },
                         boxWidth: 15,
                         boxHeight: 15,
@@ -2560,7 +1643,6 @@
                                     return {
                                         text: label + ' (' + value.toFixed(1) + '%)',
                                         fillStyle: data.datasets[0].backgroundColor[i],
-                                        fontColor: '#e0e6ed',
                                         hidden: false,
                                         index: i
                                     };
@@ -2705,415 +1787,6 @@
 
             // Welcome message
             addMessage('Hi! I\'m Claude, your capacity dashboard assistant. Ask me anything about team workload, capacity trends, or project planning!', 'assistant');
-        });
-
-        // ===== NUMBER COUNT-UP ANIMATION =====
-        function animateValue(element, start, end, duration) {
-            const range = end - start;
-            const increment = range / (duration / 16);
-            let current = start;
-            const isPercentage = element.textContent.includes('%');
-            const hasPlus = element.textContent.includes('+');
-            const hasMinus = element.textContent.startsWith('-');
-
-            const timer = setInterval(() => {
-                current += increment;
-                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
-                    current = end;
-                    clearInterval(timer);
-                }
-
-                let displayValue = Math.round(current);
-                if (isPercentage) displayValue += '%';
-                if (hasPlus && displayValue > 0) displayValue = '+' + displayValue;
-                if (hasMinus && displayValue < 0) displayValue = displayValue;
-
-                element.textContent = displayValue;
-            }, 16);
-        }
-
-        // Animate all metric values on page load
-        window.addEventListener('load', () => {
-            const metricValues = document.querySelectorAll('.metric-value');
-            metricValues.forEach((element, index) => {
-                const text = element.textContent.trim();
-                const numericValue = parseFloat(text.replace(/[^0-9.-]/g, ''));
-
-                if (!isNaN(numericValue) && text !== 'N/A') {
-                    setTimeout(() => {
-                        animateValue(element, 0, numericValue, 2000);
-                    }, index * 100);
-                }
-            });
-        });
-
-        // ===== PARALLAX SCROLL EFFECT =====
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const particles = document.querySelectorAll('.particle');
-            const orbitalRings = document.querySelectorAll('.orbital-ring');
-            const nebulas = document.querySelectorAll('[class*="nebula"]');
-
-            particles.forEach((particle, index) => {
-                const speed = 0.3 + (index * 0.1);
-                particle.style.transform = `translateY(${scrolled * speed}px)`;
-            });
-
-            orbitalRings.forEach((ring, index) => {
-                const speed = 0.1 + (index * 0.05);
-                ring.style.transform = `rotate(${scrolled * speed * 0.1}deg)`;
-            });
-
-            nebulas.forEach((nebula, index) => {
-                const speed = 0.05 + (index * 0.02);
-                nebula.style.transform = `translateY(${scrolled * speed}px)`;
-            });
-        });
-
-        // ===== ENHANCED GLOW ON IMPORTANT METRICS =====
-        document.addEventListener('DOMContentLoaded', () => {
-            // Add extra glow to critical values
-            const positiveValues = document.querySelectorAll('.metric-value.positive');
-            const negativeValues = document.querySelectorAll('.metric-value.negative');
-
-            positiveValues.forEach(el => {
-                el.style.filter = 'drop-shadow(0 0 20px rgba(78, 204, 163, 0.8))';
-            });
-
-            negativeValues.forEach(el => {
-                el.style.filter = 'drop-shadow(0 0 20px rgba(255, 107, 157, 0.8))';
-            });
-        });
-
-        // ===== GAUGE CHART =====
-        function animateGauge(percentage) {
-            const gaugeProgress = document.getElementById('gaugeProgress');
-            const gaugeValue = document.getElementById('gaugeValue');
-            const radius = 80;
-            const circumference = 2 * Math.PI * radius;
-
-            // Set up the circle
-            gaugeProgress.style.strokeDasharray = circumference;
-            gaugeProgress.style.strokeDashoffset = circumference;
-
-            // Determine color based on percentage
-            let color;
-            if (percentage < 70) {
-                color = '#4ecca3'; // Green - good
-            } else if (percentage < 90) {
-                color = '#ffd93d'; // Yellow - warning
-            } else {
-                color = '#ff6b9d'; // Red - critical
-            }
-            gaugeProgress.style.stroke = color;
-
-            // Animate
-            setTimeout(() => {
-                const offset = circumference - (percentage / 100) * circumference;
-                gaugeProgress.style.strokeDashoffset = offset;
-
-                // Animate the number
-                let current = 0;
-                const interval = setInterval(() => {
-                    current += 1;
-                    gaugeValue.textContent = current + '%';
-                    if (current >= percentage) {
-                        clearInterval(interval);
-                    }
-                }, 20);
-            }, 500);
-        }
-
-        // ===== PROGRESS RINGS =====
-        function animateProgressRing(elementId, valueId, percentage, isNumber = false) {
-            const ring = document.getElementById(elementId);
-            const valueEl = document.getElementById(valueId);
-            const radius = 60;
-            const circumference = 2 * Math.PI * radius;
-
-            ring.style.strokeDasharray = circumference;
-            ring.style.strokeDashoffset = circumference;
-
-            setTimeout(() => {
-                const offset = circumference - (percentage / 100) * circumference;
-                ring.style.strokeDashoffset = offset;
-
-                // Animate the number
-                let current = 0;
-                const target = isNumber ? percentage : percentage;
-                const interval = setInterval(() => {
-                    current += isNumber ? 1 : 1;
-                    if (current >= target) {
-                        current = target;
-                        clearInterval(interval);
-                    }
-                    valueEl.textContent = isNumber ? Math.round(current) : Math.round(current) + '%';
-                }, 20);
-            }, 700);
-        }
-
-        // ===== TIMELINE GANTT =====
-        function generateTimeline() {
-            const timelineContainer = document.getElementById('projectTimeline');
-
-            // Sample project data - you can replace with real data
-            const projects = [
-                { name: 'Perimeter Live Worship Album', start: 0, duration: 1, status: 'critical' },
-                { name: 'Unlimited Grace Podcast', start: 1, duration: 2, status: 'warning' },
-                { name: 'Advent Christmas Video', start: 6, duration: 3, status: 'normal' },
-                { name: 'Radical Dependence Series', start: 7, duration: 4, status: 'normal' }
-            ];
-
-            const totalDays = 10;
-            const dates = [];
-            for (let i = 0; i < totalDays; i++) {
-                const date = new Date();
-                date.setDate(date.getDate() + i);
-                dates.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-            }
-
-            // Build header
-            let html = '<div class="timeline-header">';
-            html += '<div class="timeline-project-col">Project</div>';
-            html += '<div class="timeline-dates">';
-            dates.forEach(date => {
-                html += `<div class="timeline-date">${date}</div>`;
-            });
-            html += '</div></div>';
-
-            // Build project rows
-            projects.forEach(project => {
-                html += '<div class="timeline-row">';
-                html += `<div class="timeline-project-name">${project.name}</div>`;
-                html += '<div class="timeline-bars">';
-
-                const leftPercent = (project.start / totalDays) * 100;
-                const widthPercent = (project.duration / totalDays) * 100;
-
-                html += `<div class="timeline-bar ${project.status}" style="left: ${leftPercent}%; width: ${widthPercent}%">${project.duration}d</div>`;
-                html += '</div></div>';
-            });
-
-            timelineContainer.innerHTML = html;
-        }
-
-        // ===== RADAR/SPIDER CHART =====
-        function generateRadarChart() {
-            const container = document.getElementById('radarChart');
-            const size = 500;
-            const center = size / 2;
-            const maxRadius = 150;
-            const numLevels = 5;
-
-            // Data: actual vs target percentages
-            const categories = [
-                { name: 'Communications', actual: 67, target: 30 },
-                { name: 'Spiritual Formation', actual: 11, target: 25 },
-                { name: 'Pastoral/Strategic', actual: 22, target: 20 },
-                { name: 'Creative Resources', actual: 0.4, target: 15 },
-                { name: 'Partners', actual: 0, target: 5 }
-            ];
-
-            let svg = `<svg class="radar-svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">`;
-
-            // Draw grid circles
-            for (let i = 1; i <= numLevels; i++) {
-                const r = (maxRadius / numLevels) * i;
-                svg += `<circle class="radar-grid" cx="${center}" cy="${center}" r="${r}"/>`;
-            }
-
-            // Draw axes
-            const angleStep = (Math.PI * 2) / categories.length;
-            categories.forEach((cat, i) => {
-                const angle = angleStep * i - Math.PI / 2;
-                const x = center + maxRadius * Math.cos(angle);
-                const y = center + maxRadius * Math.sin(angle);
-                svg += `<line class="radar-axis" x1="${center}" y1="${center}" x2="${x}" y2="${y}"/>`;
-
-                // Labels
-                const labelX = center + (maxRadius + 30) * Math.cos(angle);
-                const labelY = center + (maxRadius + 30) * Math.sin(angle);
-                svg += `<text class="radar-label" x="${labelX}" y="${labelY}" dy="5">${cat.name}</text>`;
-            });
-
-            // Draw target area (dashed)
-            let targetPoints = '';
-            categories.forEach((cat, i) => {
-                const angle = angleStep * i - Math.PI / 2;
-                const r = (cat.target / 100) * maxRadius;
-                const x = center + r * Math.cos(angle);
-                const y = center + r * Math.sin(angle);
-                targetPoints += `${x},${y} `;
-            });
-            svg += `<polygon class="radar-target" points="${targetPoints}"/>`;
-
-            // Draw actual area
-            let actualPoints = '';
-            categories.forEach((cat, i) => {
-                const angle = angleStep * i - Math.PI / 2;
-                const r = (cat.actual / 100) * maxRadius;
-                const x = center + r * Math.cos(angle);
-                const y = center + r * Math.sin(angle);
-                actualPoints += `${x},${y} `;
-            });
-            svg += `<polygon class="radar-area" points="${actualPoints}"/>`;
-
-            svg += '</svg>';
-            container.innerHTML = svg;
-        }
-
-        // ===== SUNBURST CHART =====
-        function generateSunburstChart() {
-            const container = document.getElementById('sunburstChart');
-            const size = 400;
-            const center = size / 2;
-
-            // Hierarchical data
-            const data = {
-                name: 'Team',
-                children: [
-                    { name: 'Communications', value: 67, color: '#60BBE9' },
-                    { name: 'Pastoral', value: 22, color: '#a78bfa' },
-                    { name: 'Spiritual', value: 11, color: '#4ecca3' },
-                    { name: 'Creative', value: 0.4, color: '#ffd93d' }
-                ]
-            };
-
-            let svg = `<svg class="sunburst-svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">`;
-
-            const innerRadius = 60;
-            const outerRadius = 180;
-            const total = data.children.reduce((sum, d) => sum + d.value, 0);
-
-            let startAngle = 0;
-            data.children.forEach(child => {
-                const angle = (child.value / total) * 360;
-                const endAngle = startAngle + angle;
-
-                const largeArc = angle > 180 ? 1 : 0;
-                const startRad = (startAngle - 90) * Math.PI / 180;
-                const endRad = (endAngle - 90) * Math.PI / 180;
-
-                const x1 = center + innerRadius * Math.cos(startRad);
-                const y1 = center + innerRadius * Math.sin(startRad);
-                const x2 = center + outerRadius * Math.cos(startRad);
-                const y2 = center + outerRadius * Math.sin(startRad);
-                const x3 = center + outerRadius * Math.cos(endRad);
-                const y3 = center + outerRadius * Math.sin(endRad);
-                const x4 = center + innerRadius * Math.cos(endRad);
-                const y4 = center + innerRadius * Math.sin(endRad);
-
-                svg += `<path class="sunburst-slice" fill="${child.color}" d="M ${x1} ${y1} L ${x2} ${y2} A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${x3} ${y3} L ${x4} ${y4} A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${x1} ${y1} Z"/>`;
-
-                // Add text label
-                const midAngle = (startAngle + endAngle) / 2;
-                const midRad = (midAngle - 90) * Math.PI / 180;
-                const textRadius = (innerRadius + outerRadius) / 2;
-                const textX = center + textRadius * Math.cos(midRad);
-                const textY = center + textRadius * Math.sin(midRad);
-                svg += `<text class="sunburst-text" x="${textX}" y="${textY}" text-anchor="middle">${child.value.toFixed(1)}%</text>`;
-
-                startAngle = endAngle;
-            });
-
-            svg += `<text class="sunburst-center-text" x="${center}" y="${center}" dy="8">100%</text>`;
-            svg += '</svg>';
-            container.innerHTML = svg;
-        }
-
-        // ===== VELOCITY TREND CHART =====
-        function generateVelocityChart() {
-            const ctx = document.getElementById('velocityChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
-                    datasets: [{
-                        label: 'Projects Completed',
-                        data: [5, 7, 6, 9, 8, 10, 7, 12],
-                        borderColor: '#60BBE9',
-                        backgroundColor: 'rgba(96, 187, 233, 0.2)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 6,
-                        pointBackgroundColor: '#60BBE9',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointHoverRadius: 8,
-                        pointHoverBackgroundColor: '#60BBE9',
-                        pointHoverBorderColor: '#fff',
-                        pointHoverBorderWidth: 3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 2
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // ===== HEAT MAP CALENDAR =====
-        function generateHeatMap() {
-            const container = document.getElementById('heatmapCalendar');
-            const days = 10;
-
-            // Sample workload intensity data (0-4)
-            const intensityData = [4, 4, 2, 3, 1, 0, 2, 3, 4, 2];
-
-            let html = '<div></div>'; // Empty corner cell
-
-            // Header row with dates
-            for (let i = 0; i < days; i++) {
-                const date = new Date();
-                date.setDate(date.getDate() + i);
-                const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                html += `<div class="heatmap-date">${dateStr}</div>`;
-            }
-
-            html += '<div class="heatmap-day-label">Workload</div>';
-
-            // Add cells with intensity
-            for (let i = 0; i < days; i++) {
-                const intensity = intensityData[i];
-                const tasks = Math.round(intensity * 7); // 0-28 tasks
-                html += `<div class="heatmap-cell intensity-${intensity}" title="${tasks} tasks">${tasks}</div>`;
-            }
-
-            container.innerHTML = html;
-        }
-
-        // Initialize all new charts
-        document.addEventListener('DOMContentLoaded', () => {
-            // Calculate overall capacity (you can replace with real calculation)
-            const totalCapacity = 100;
-            const usedCapacity = 62; // Example: 62% utilized
-
-            // animateGauge(usedCapacity); // REMOVED - gauge chart removed
-
-            // Animate progress rings with real data
-            animateProgressRing('ringOnTime', 'ringOnTimeValue', 100); // 100% on-time
-            animateProgressRing('ringUtilization', 'ringUtilizationValue', 62); // 62% utilization
-            animateProgressRing('ringProjects', 'ringProjectsValue', 28, true); // 28 projects (as number)
-
-            // Generate all charts
-            generateTimeline();
-            generateRadarChart();
-            generateVelocityChart();
-            generateHeatMap();
         });
 
     </script>
