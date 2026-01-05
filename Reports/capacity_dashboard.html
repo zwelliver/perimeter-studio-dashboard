@@ -1575,41 +1575,16 @@
         <div class="header">
             <h1>✦ Perimeter Studio Dashboard ✦</h1>
             <div class="subtitle">Video Production Capacity Tracking & Performance Metrics</div>
-            <div class="timestamp">⟡ Last Updated: January 05, 2026 at 02:55 PM</div>
+            <div class="timestamp">⟡ Last Updated: January 05, 2026 at 03:00 PM</div>
         </div>
 
         <div class="grid">
-            <!-- Quick Stats -->
+            <!-- Performance Overview -->
             <div class="card">
-                <h2>Quick Stats</h2>
+                <h2>Performance Overview</h2>
                 <div class="metric">
                     <span class="metric-label">Active Tasks</span>
                     <span class="metric-value">31</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Completed (30 days)</span>
-                    <span class="metric-value">7</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Total Projects This Year</span>
-                    <span class="metric-value">0</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Avg Days Variance</span>
-                    <span class="metric-value positive">-1.0</span>
-                </div>
-            </div>
-
-            <!-- Delivery Performance -->
-            <div class="card">
-                <h2>Delivery Performance</h2>
-                <div class="metric">
-                    <span class="metric-label">On-Time Completion Rate</span>
-                    <span class="metric-value positive">100%</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Average Capacity Variance</span>
-                    <span class="metric-value ">N/A</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Projects Completed (30d)</span>
@@ -1618,6 +1593,10 @@
                 <div class="metric">
                     <span class="metric-label">Projects Completed This Year</span>
                     <span class="metric-value">0</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Avg Days Variance</span>
+                    <span class="metric-value positive">-1.0</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Delayed Due to Capacity</span>
@@ -1929,62 +1908,6 @@
             
             </div>
         
-        </div>
-
-        <!-- Upcoming Workload Forecast -->
-        <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>📅 Upcoming Workload Forecast</h2>
-            <div class="forecast-grid">
-    
-                <div style="border: 2px solid #28a745; border-radius: 8px; padding: 15px; background: #f8f9fa;">
-                    <div style="font-size: 14px; color: #6c757d; margin-bottom: 5px;">7 Days</div>
-                    <div style="font-size: 24px; font-weight: bold; color: #09243F; margin-bottom: 10px;">
-                        10 tasks
-                    </div>
-                    <div style="font-size: 18px; color: #28a745; font-weight: bold; margin-bottom: 5px;">
-                        ✅ 49% capacity
-                    </div>
-                    <div style="font-size: 12px; color: #6c757d;">
-                        Good
-                    </div>
-                    <div style="font-size: 11px; color: #6c757d; margin-top: 8px; padding-top: 8px; border-top: 1px solid #dee2e6; font-style: italic;">
-                        📊 Higher than average workload
-                    </div>
-                </div>
-        
-                <div style="border: 2px solid #28a745; border-radius: 8px; padding: 15px; background: #f8f9fa;">
-                    <div style="font-size: 14px; color: #6c757d; margin-bottom: 5px;">14 Days</div>
-                    <div style="font-size: 24px; font-weight: bold; color: #09243F; margin-bottom: 10px;">
-                        10 tasks
-                    </div>
-                    <div style="font-size: 18px; color: #28a745; font-weight: bold; margin-bottom: 5px;">
-                        ✅ 36% capacity
-                    </div>
-                    <div style="font-size: 12px; color: #6c757d;">
-                        Good
-                    </div>
-                    <div style="font-size: 11px; color: #6c757d; margin-top: 8px; padding-top: 8px; border-top: 1px solid #dee2e6; font-style: italic;">
-                        📊 Moderate workload period
-                    </div>
-                </div>
-        
-                <div style="border: 2px solid #28a745; border-radius: 8px; padding: 15px; background: #f8f9fa;">
-                    <div style="font-size: 14px; color: #6c757d; margin-bottom: 5px;">30 Days</div>
-                    <div style="font-size: 24px; font-weight: bold; color: #09243F; margin-bottom: 10px;">
-                        16 tasks
-                    </div>
-                    <div style="font-size: 18px; color: #28a745; font-weight: bold; margin-bottom: 5px;">
-                        ✅ 29% capacity
-                    </div>
-                    <div style="font-size: 12px; color: #6c757d;">
-                        Good
-                    </div>
-                    <div style="font-size: 11px; color: #6c757d; margin-top: 8px; padding-top: 8px; border-top: 1px solid #dee2e6; font-style: italic;">
-                        📊 Moderate workload period
-                    </div>
-                </div>
-        
-            </div>
         </div>
 
         <!-- 6-Month Capacity Timeline -->
@@ -2370,19 +2293,6 @@
             </div>
         </div>
 
-        <!-- Category Allocation Chart -->
-        <div class="grid">
-            <div class="card full-width">
-                <h2>Category Allocation: Cumulative Average vs Target</h2>
-                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
-                    Cumulative average allocation across tracking period: Nov 25, 2025 - Jan 05, 2026 (42 days)
-                </div>
-                <div class="chart-container">
-                    <canvas id="categoryChart"></canvas>
-                </div>
-            </div>
-        </div>
-
         <!-- Historical Trends Chart -->
         <div class="grid">
             <div class="card full-width">
@@ -2479,28 +2389,6 @@
                 </div>
             </div>
 
-        </div>
-
-        <!-- Category Distribution Donut Charts -->
-        <div class="grid">
-            <div class="card">
-                <h2>📊 Current Period Distribution</h2>
-                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
-                    Today's workload distribution
-                </div>
-                <div class="chart-container" style="height: 350px;">
-                    <canvas id="currentDonutChart"></canvas>
-                </div>
-            </div>
-            <div class="card">
-                <h2>📊 Cumulative Average Distribution</h2>
-                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
-                    Average allocation over tracking period
-                </div>
-                <div class="chart-container" style="height: 350px;">
-                    <canvas id="cumulativeDonutChart"></canvas>
-                </div>
-            </div>
         </div>
     </div>
 
