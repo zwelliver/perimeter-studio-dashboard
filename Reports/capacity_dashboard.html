@@ -1575,7 +1575,7 @@
         <div class="header">
             <h1>✦ Perimeter Studio Dashboard ✦</h1>
             <div class="subtitle">Video Production Capacity Tracking & Performance Metrics</div>
-            <div class="timestamp">⟡ Last Updated: January 05, 2026 at 05:00 PM</div>
+            <div class="timestamp">⟡ Last Updated: January 05, 2026 at 05:15 PM</div>
         </div>
 
         <div class="grid">
@@ -1620,10 +1620,10 @@
 
                 <div class="team-member">
                     <div class="team-member-name">Nick Clark</div>
-                    <div class="team-member-capacity">45% / 100% capacity</div>
+                    <div class="team-member-capacity">51% / 100% capacity</div>
                     <div class="progress-bar">
-                        <div class="progress-fill " style="width: 45.0%">
-                            45%
+                        <div class="progress-fill " style="width: 51.0%">
+                            51%
                         </div>
                     </div>
                 </div>
@@ -1978,8 +1978,8 @@
                 <!-- Timeline bars -->
                 <div style="display: flex; gap: 3px; height: 60px; align-items: flex-end;">
     
-                    <div style="flex: 1; background: #fd7e14; height: 66.98979591836734%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 1 (2026-01-05): 52% capacity, 11 tasks">
+                    <div style="flex: 1; background: #fd7e14; height: 68.58163265306122%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 1 (2026-01-05): 53% capacity, 11 tasks">
                     </div>
         
                     <div style="flex: 1; background: #28a745; height: 31.969387755102044%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
@@ -2159,24 +2159,24 @@
             <h2>📊 Capacity Utilization - Next 30 Days</h2>
             <div class="heatmap-grid">
     
-                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-05: 55.4% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-05: 57.5% capacity">
                     <div style="font-weight: bold;">01/05</div>
-                    <div style="font-size: 9px; margin-top: 2px;">55%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">58%</div>
                 </div>
         
-                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-06: 55.4% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-06: 57.5% capacity">
                     <div style="font-weight: bold;">01/06</div>
-                    <div style="font-size: 9px; margin-top: 2px;">55%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">58%</div>
                 </div>
         
-                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-07: 55.4% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-07: 57.5% capacity">
                     <div style="font-weight: bold;">01/07</div>
-                    <div style="font-size: 9px; margin-top: 2px;">55%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">58%</div>
                 </div>
         
-                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-08: 55.4% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-08: 57.5% capacity">
                     <div style="font-weight: bold;">01/08</div>
-                    <div style="font-size: 9px; margin-top: 2px;">55%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">58%</div>
                 </div>
         
                 <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-09: 46.4% capacity">
@@ -2961,7 +2961,7 @@
 
             const days = 10;
             // Calculate intensity from team utilization (0-4 scale)
-            const teamUtilization = 78;
+            const teamUtilization = 79;
             const baseIntensity = teamUtilization < 40 ? 0 : teamUtilization < 60 ? 1 : teamUtilization < 80 ? 2 : teamUtilization < 100 ? 3 : 4;
 
             // Create variation for next 10 days
@@ -2994,7 +2994,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 animateProgressRing('ringOnTime', 'ringOnTimeValue', 100);
-                animateProgressRing('ringUtilization', 'ringUtilizationValue', 78);
+                animateProgressRing('ringUtilization', 'ringUtilizationValue', 79);
                 animateProgressRing('ringProjects', 'ringProjectsValue', 32, true);
 
                 generateTimeline();
