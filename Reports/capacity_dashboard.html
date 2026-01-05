@@ -1575,7 +1575,7 @@
         <div class="header">
             <h1>✦ Perimeter Studio Dashboard ✦</h1>
             <div class="subtitle">Video Production Capacity Tracking & Performance Metrics</div>
-            <div class="timestamp">⟡ Last Updated: January 05, 2026 at 03:45 PM</div>
+            <div class="timestamp">⟡ Last Updated: January 05, 2026 at 03:51 PM</div>
         </div>
 
         <div class="grid">
@@ -2688,8 +2688,8 @@
             if (!timelineContainer) return;
 
             // Real shoots and deadlines data
-            const shoots = [{"name": "Fully Furnished Broll Filming", "datetime": "2026-01-13T00:00:00+00:00", "type": "shoot"}, {"name": "Jeff's Do/Done Diagram Video", "datetime": "2026-02-09T00:00:00+00:00", "type": "shoot"}];
-            const deadlines = [{"name": "Unlimited Grace - Bryan Chapell, Jeff Norris, Randy Pope Podcast", "due_date": "2026-01-08", "type": "deadline"}, {"name": "Advent Christmas Volunteer Thank you in WOV", "due_date": "2026-01-11", "type": "deadline"}, {"name": "Radical Dependence Teaching Series", "due_date": "2026-01-12", "type": "deadline"}, {"name": "Fully Furnished Broll Filming", "due_date": "2026-01-13", "type": "deadline"}, {"name": "Perimeter Live Worship Album Songs", "due_date": "2026-01-15", "type": "deadline"}];
+            const shoots = [{"name": "Fully Furnished Broll Filming", "datetime": "2026-01-13T00:00:00+00:00", "start_on": null, "due_on": "2026-01-13", "type": "shoot"}, {"name": "Jeff's Do/Done Diagram Video", "datetime": "2026-02-09T00:00:00+00:00", "start_on": null, "due_on": null, "type": "shoot"}];
+            const deadlines = [{"name": "Unlimited Grace - Bryan Chapell, Jeff Norris, Randy Pope Podcast", "start_on": null, "due_date": "2026-01-08", "type": "deadline"}, {"name": "Advent Christmas Volunteer Thank you in WOV", "start_on": null, "due_date": "2026-01-11", "type": "deadline"}, {"name": "Radical Dependence Teaching Series", "start_on": null, "due_date": "2026-01-12", "type": "deadline"}, {"name": "Fully Furnished Broll Filming", "start_on": null, "due_date": "2026-01-13", "type": "deadline"}, {"name": "Perimeter Live Worship Album Songs", "start_on": null, "due_date": "2026-01-15", "type": "deadline"}];
 
             // Combine and convert to timeline format
             const now = new Date();
@@ -2698,29 +2698,79 @@
 
             // Add shoots
             shoots.forEach(shoot => {
-                const shootDate = new Date(shoot.datetime);
-                const daysFromNow = Math.floor((shootDate - now) / (1000 * 60 * 60 * 24));
-                if (daysFromNow >= 0 && daysFromNow < 10) {
-                    projects.push({
-                        name: '🎬 ' + shoot.name,
-                        start: daysFromNow,
-                        duration: 1,
-                        status: daysFromNow <= 2 ? 'critical' : 'normal'
-                    });
+                // Use start_on to due_on range if available, otherwise use film date as 1-day event
+                let startDate, endDate, duration;
+
+                if (shoot.start_on && shoot.due_on) {
+                    // Project has date range
+                    startDate = new Date(shoot.start_on);
+                    endDate = new Date(shoot.due_on);
+                } else if (shoot.start_on) {
+                    // Has start but no due date - use film date as end
+                    startDate = new Date(shoot.start_on);
+                    endDate = new Date(shoot.datetime);
+                } else if (shoot.due_on) {
+                    // Has due but no start - use film date as start
+                    startDate = new Date(shoot.datetime);
+                    endDate = new Date(shoot.due_on);
+                } else {
+                    // No date range - use film date as 1-day event
+                    startDate = new Date(shoot.datetime);
+                    endDate = new Date(shoot.datetime);
+                }
+
+                const daysFromNow = Math.floor((startDate - now) / (1000 * 60 * 60 * 24));
+                const daysToEnd = Math.floor((endDate - now) / (1000 * 60 * 60 * 24));
+
+                // Only show if it overlaps with the 10-day window
+                if (daysToEnd >= 0 && daysFromNow < 10) {
+                    const start = Math.max(0, daysFromNow);
+                    const end = Math.min(10, daysToEnd + 1);
+                    duration = end - start;
+
+                    if (duration > 0) {
+                        projects.push({
+                            name: '🎬 ' + shoot.name,
+                            start: start,
+                            duration: duration,
+                            status: daysFromNow <= 2 ? 'critical' : 'normal'
+                        });
+                    }
                 }
             });
 
             // Add deadlines
             deadlines.forEach(deadline => {
-                const deadlineDate = new Date(deadline.due_date);
-                const daysFromNow = Math.floor((deadlineDate - now) / (1000 * 60 * 60 * 24));
-                if (daysFromNow >= 0 && daysFromNow < 10) {
-                    projects.push({
-                        name: '⏰ ' + deadline.name,
-                        start: daysFromNow,
-                        duration: 1,
-                        status: daysFromNow <= 2 ? 'critical' : daysFromNow <= 5 ? 'warning' : 'normal'
-                    });
+                // Use start_on to due_date range if available, otherwise use due date as 1-day event
+                let startDate, endDate, duration;
+
+                if (deadline.start_on) {
+                    // Project has start date
+                    startDate = new Date(deadline.start_on);
+                    endDate = new Date(deadline.due_date);
+                } else {
+                    // No start date - use due date as 1-day event
+                    startDate = new Date(deadline.due_date);
+                    endDate = new Date(deadline.due_date);
+                }
+
+                const daysFromNow = Math.floor((startDate - now) / (1000 * 60 * 60 * 24));
+                const daysToEnd = Math.floor((endDate - now) / (1000 * 60 * 60 * 24));
+
+                // Only show if it overlaps with the 10-day window
+                if (daysToEnd >= 0 && daysFromNow < 10) {
+                    const start = Math.max(0, daysFromNow);
+                    const end = Math.min(10, daysToEnd + 1);
+                    duration = end - start;
+
+                    if (duration > 0) {
+                        projects.push({
+                            name: '⏰ ' + deadline.name,
+                            start: start,
+                            duration: duration,
+                            status: daysToEnd <= 2 ? 'critical' : daysToEnd <= 5 ? 'warning' : 'normal'
+                        });
+                    }
                 }
             });
 

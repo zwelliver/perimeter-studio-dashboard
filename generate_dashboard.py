@@ -268,7 +268,7 @@ def read_reports():
                 for project_name, project_gid in project_gids.items():
                     endpoint = f"https://app.asana.com/api/1.0/projects/{project_gid}/tasks"
                     params = {
-                        'opt_fields': 'gid,name,custom_fields'
+                        'opt_fields': 'gid,name,custom_fields,start_on,due_on'
                     }
 
                     response = requests.get(endpoint, headers=headers, params=params)
@@ -297,9 +297,19 @@ def read_reports():
 
                                             # Only include future shoots
                                             if film_datetime >= now:
+                                                # Parse start_on and due_on if available
+                                                start_date = None
+                                                due_date = None
+                                                if task.get('start_on'):
+                                                    start_date = datetime.strptime(task['start_on'], '%Y-%m-%d').date()
+                                                if task.get('due_on'):
+                                                    due_date = datetime.strptime(task['due_on'], '%Y-%m-%d').date()
+
                                                 upcoming_shoots.append({
                                                     'name': task.get('name', 'Untitled'),
                                                     'datetime': film_datetime,
+                                                    'start_on': start_date,
+                                                    'due_on': due_date,
                                                     'project': project_name,
                                                     'gid': task.get('gid')
                                                 })
@@ -323,7 +333,7 @@ def read_reports():
             for project_name, project_gid in project_gids.items():
                 endpoint = f"https://app.asana.com/api/1.0/projects/{project_gid}/tasks"
                 params = {
-                    'opt_fields': 'gid,name,due_on,due_at,completed'
+                    'opt_fields': 'gid,name,start_on,due_on,due_at,completed'
                 }
 
                 response = requests.get(endpoint, headers=headers, params=params)
@@ -346,8 +356,15 @@ def read_reports():
                         # Only include if due within next 10 days
                         if due_date and now <= due_date <= cutoff_date:
                             days_until = (due_date - now).days
+
+                            # Parse start_on if available
+                            start_date = None
+                            if task.get('start_on'):
+                                start_date = datetime.strptime(task['start_on'], '%Y-%m-%d').date()
+
                             upcoming_deadlines.append({
                                 'name': task.get('name', 'Untitled'),
+                                'start_on': start_date,
                                 'due_date': due_date,
                                 'days_until': days_until,
                                 'project': project_name,
@@ -3055,8 +3072,28 @@ def generate_html_dashboard(data):
     target_values = [cat['target'] for cat in category_data]
 
     # Prepare timeline data for JavaScript
-    shoots_json = json.dumps([{'name': s['name'], 'datetime': s['datetime'].isoformat(), 'type': 'shoot'} for s in data.get('upcoming_shoots', [])])
-    deadlines_json = json.dumps([{'name': d['name'], 'due_date': d['due_date'].isoformat(), 'type': 'deadline'} for d in data.get('upcoming_deadlines', [])])
+    shoots_data = []
+    for s in data.get('upcoming_shoots', []):
+        shoot_dict = {
+            'name': s['name'],
+            'datetime': s['datetime'].isoformat(),
+            'start_on': s['start_on'].isoformat() if s.get('start_on') else None,
+            'due_on': s['due_on'].isoformat() if s.get('due_on') else None,
+            'type': 'shoot'
+        }
+        shoots_data.append(shoot_dict)
+    shoots_json = json.dumps(shoots_data)
+
+    deadlines_data = []
+    for d in data.get('upcoming_deadlines', []):
+        deadline_dict = {
+            'name': d['name'],
+            'start_on': d['start_on'].isoformat() if d.get('start_on') else None,
+            'due_date': d['due_date'].isoformat(),
+            'type': 'deadline'
+        }
+        deadlines_data.append(deadline_dict)
+    deadlines_json = json.dumps(deadlines_data)
 
     # Prepare radar chart data
     radar_categories_json = json.dumps([{'name': cat['name'], 'actual': cat['actual'], 'target': cat['target']} for cat in category_data])
@@ -3463,29 +3500,79 @@ def generate_html_dashboard(data):
 
             // Add shoots
             shoots.forEach(shoot => {{
-                const shootDate = new Date(shoot.datetime);
-                const daysFromNow = Math.floor((shootDate - now) / (1000 * 60 * 60 * 24));
-                if (daysFromNow >= 0 && daysFromNow < 10) {{
-                    projects.push({{
-                        name: '🎬 ' + shoot.name,
-                        start: daysFromNow,
-                        duration: 1,
-                        status: daysFromNow <= 2 ? 'critical' : 'normal'
-                    }});
+                // Use start_on to due_on range if available, otherwise use film date as 1-day event
+                let startDate, endDate, duration;
+
+                if (shoot.start_on && shoot.due_on) {{
+                    // Project has date range
+                    startDate = new Date(shoot.start_on);
+                    endDate = new Date(shoot.due_on);
+                }} else if (shoot.start_on) {{
+                    // Has start but no due date - use film date as end
+                    startDate = new Date(shoot.start_on);
+                    endDate = new Date(shoot.datetime);
+                }} else if (shoot.due_on) {{
+                    // Has due but no start - use film date as start
+                    startDate = new Date(shoot.datetime);
+                    endDate = new Date(shoot.due_on);
+                }} else {{
+                    // No date range - use film date as 1-day event
+                    startDate = new Date(shoot.datetime);
+                    endDate = new Date(shoot.datetime);
+                }}
+
+                const daysFromNow = Math.floor((startDate - now) / (1000 * 60 * 60 * 24));
+                const daysToEnd = Math.floor((endDate - now) / (1000 * 60 * 60 * 24));
+
+                // Only show if it overlaps with the 10-day window
+                if (daysToEnd >= 0 && daysFromNow < 10) {{
+                    const start = Math.max(0, daysFromNow);
+                    const end = Math.min(10, daysToEnd + 1);
+                    duration = end - start;
+
+                    if (duration > 0) {{
+                        projects.push({{
+                            name: '🎬 ' + shoot.name,
+                            start: start,
+                            duration: duration,
+                            status: daysFromNow <= 2 ? 'critical' : 'normal'
+                        }});
+                    }}
                 }}
             }});
 
             // Add deadlines
             deadlines.forEach(deadline => {{
-                const deadlineDate = new Date(deadline.due_date);
-                const daysFromNow = Math.floor((deadlineDate - now) / (1000 * 60 * 60 * 24));
-                if (daysFromNow >= 0 && daysFromNow < 10) {{
-                    projects.push({{
-                        name: '⏰ ' + deadline.name,
-                        start: daysFromNow,
-                        duration: 1,
-                        status: daysFromNow <= 2 ? 'critical' : daysFromNow <= 5 ? 'warning' : 'normal'
-                    }});
+                // Use start_on to due_date range if available, otherwise use due date as 1-day event
+                let startDate, endDate, duration;
+
+                if (deadline.start_on) {{
+                    // Project has start date
+                    startDate = new Date(deadline.start_on);
+                    endDate = new Date(deadline.due_date);
+                }} else {{
+                    // No start date - use due date as 1-day event
+                    startDate = new Date(deadline.due_date);
+                    endDate = new Date(deadline.due_date);
+                }}
+
+                const daysFromNow = Math.floor((startDate - now) / (1000 * 60 * 60 * 24));
+                const daysToEnd = Math.floor((endDate - now) / (1000 * 60 * 60 * 24));
+
+                // Only show if it overlaps with the 10-day window
+                if (daysToEnd >= 0 && daysFromNow < 10) {{
+                    const start = Math.max(0, daysFromNow);
+                    const end = Math.min(10, daysToEnd + 1);
+                    duration = end - start;
+
+                    if (duration > 0) {{
+                        projects.push({{
+                            name: '⏰ ' + deadline.name,
+                            start: start,
+                            duration: duration,
+                            status: daysToEnd <= 2 ? 'critical' : daysToEnd <= 5 ? 'warning' : 'normal'
+                        }});
+                    }}
                 }}
             }});
 
