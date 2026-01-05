@@ -281,19 +281,28 @@ def read_reports():
                             for field in task.get('custom_fields', []):
                                 if field.get('gid') == FILM_DATE_FIELD_GID:
                                     date_value = field.get('date_value')
-                                    if date_value and date_value.get('date_time'):
-                                        # Parse the datetime
-                                        film_datetime_str = date_value.get('date_time')
-                                        film_datetime = datetime.fromisoformat(film_datetime_str.replace('Z', '+00:00'))
+                                    if date_value:
+                                        # Handle both date_time and date formats
+                                        film_datetime_str = date_value.get('date_time') or date_value.get('date')
+                                        if film_datetime_str:
+                                            # Parse the datetime or date
+                                            if 'T' in film_datetime_str or 'Z' in film_datetime_str:
+                                                # Full datetime
+                                                film_datetime = datetime.fromisoformat(film_datetime_str.replace('Z', '+00:00'))
+                                            else:
+                                                # Date only - set to start of day in UTC
+                                                from datetime import date as date_type
+                                                date_obj = date_type.fromisoformat(film_datetime_str)
+                                                film_datetime = datetime.combine(date_obj, datetime.min.time()).replace(tzinfo=timezone.utc)
 
-                                        # Only include future shoots
-                                        if film_datetime >= now:
-                                            upcoming_shoots.append({
-                                                'name': task.get('name', 'Untitled'),
-                                                'datetime': film_datetime,
-                                                'project': project_name,
-                                                'gid': task.get('gid')
-                                            })
+                                            # Only include future shoots
+                                            if film_datetime >= now:
+                                                upcoming_shoots.append({
+                                                    'name': task.get('name', 'Untitled'),
+                                                    'datetime': film_datetime,
+                                                    'project': project_name,
+                                                    'gid': task.get('gid')
+                                                })
                                         break
 
                 # Sort by datetime (earliest first) and limit to 10
@@ -921,43 +930,688 @@ def generate_html_dashboard(data):
             box-sizing: border-box;
         }}
 
+        @keyframes stars-float {{
+            0%, 100% {{ transform: translateY(0px); }}
+            50% {{ transform: translateY(-20px); }}
+        }}
+
+        @keyframes glow-pulse {{
+            0%, 100% {{ box-shadow: 0 0 20px rgba(96, 187, 233, 0.3), 0 0 40px rgba(96, 187, 233, 0.1), inset 0 0 20px rgba(96, 187, 233, 0.05); }}
+            50% {{ box-shadow: 0 0 30px rgba(96, 187, 233, 0.5), 0 0 60px rgba(96, 187, 233, 0.2), inset 0 0 30px rgba(96, 187, 233, 0.1); }}
+        }}
+
+        @keyframes nebula-shift {{
+            0%, 100% {{ background-position: 0% 50%; }}
+            50% {{ background-position: 100% 50%; }}
+        }}
+
+        @keyframes shooting-star {{
+            0% {{
+                transform: translateX(0) translateY(0) rotate(-45deg);
+                opacity: 1;
+            }}
+            70% {{
+                opacity: 1;
+            }}
+            100% {{
+                transform: translateX(-1000px) translateY(1000px) rotate(-45deg);
+                opacity: 0;
+            }}
+        }}
+
+        @keyframes float-particles {{
+            0%, 100% {{ transform: translateY(0px) translateX(0px); }}
+            25% {{ transform: translateY(-30px) translateX(10px); }}
+            50% {{ transform: translateY(-60px) translateX(-10px); }}
+            75% {{ transform: translateY(-30px) translateX(5px); }}
+        }}
+
+        @keyframes scanline {{
+            0% {{ transform: translateY(-100%); }}
+            100% {{ transform: translateY(100vh); }}
+        }}
+
+        @keyframes holo-border {{
+            0%, 100% {{ border-color: rgba(96, 187, 233, 0.5); }}
+            25% {{ border-color: rgba(168, 139, 250, 0.5); }}
+            50% {{ border-color: rgba(255, 107, 157, 0.5); }}
+            75% {{ border-color: rgba(78, 204, 163, 0.5); }}
+        }}
+
+        @keyframes orbit-spin {{
+            from {{ transform: rotate(0deg); }}
+            to {{ transform: rotate(360deg); }}
+        }}
+
+        @keyframes fade-in-up {{
+            from {{
+                opacity: 0;
+                transform: translateY(30px);
+            }}
+            to {{
+                opacity: 1;
+                transform: translateY(0);
+            }}
+        }}
+
+        @keyframes pulse-glow {{
+            0%, 100% {{
+                text-shadow: 0 0 10px rgba(96, 187, 233, 0.5), 0 0 20px rgba(96, 187, 233, 0.3);
+                transform: scale(1);
+            }}
+            50% {{
+                text-shadow: 0 0 20px rgba(96, 187, 233, 0.8), 0 0 40px rgba(96, 187, 233, 0.5), 0 0 60px rgba(96, 187, 233, 0.3);
+                transform: scale(1.05);
+            }}
+        }}
+
         body {{
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-            background-color: {BRAND_OFF_WHITE};
-            color: {BRAND_NAVY};
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1645 25%, #09243F 50%, #0d1b2a 75%, #000000 100%);
+            background-size: 400% 400%;
+            animation: nebula-shift 30s ease infinite;
+            color: #e0e6ed;
             padding: 20px;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }}
+
+        body::before {{
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20% 30%, white, transparent),
+                radial-gradient(2px 2px at 60% 70%, white, transparent),
+                radial-gradient(1px 1px at 50% 50%, white, transparent),
+                radial-gradient(1px 1px at 80% 10%, white, transparent),
+                radial-gradient(2px 2px at 90% 60%, white, transparent),
+                radial-gradient(1px 1px at 33% 80%, white, transparent),
+                radial-gradient(1px 1px at 15% 90%, white, transparent);
+            background-size: 200% 200%, 200% 200%, 300% 300%, 250% 250%, 200% 200%, 280% 280%, 260% 260%;
+            background-position: 0% 0%, 40% 60%, 60% 20%, 80% 80%, 20% 90%, 70% 30%, 50% 70%;
+            opacity: 0.5;
+            animation: stars-float 60s ease-in-out infinite;
+            z-index: 0;
+            pointer-events: none;
+        }}
+
+        body::after {{
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 80%;
+            background: radial-gradient(circle, rgba(96, 187, 233, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            pointer-events: none;
+            animation: nebula-shift 20s ease-in-out infinite alternate;
+        }}
+
+        /* Scanline overlay - DISABLED */
+        .scanline {{
+            display: none;
+        }}
+
+        /* Additional nebula clouds */
+        .nebula-purple {{
+            position: fixed;
+            bottom: -30%;
+            left: -20%;
+            width: 70%;
+            height: 70%;
+            background: radial-gradient(circle, rgba(168, 139, 250, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: 0;
+            pointer-events: none;
+            animation: nebula-shift 25s ease-in-out infinite alternate-reverse;
+        }}
+
+        .nebula-pink {{
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, rgba(255, 107, 157, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: 0;
+            pointer-events: none;
+            animation: nebula-shift 30s ease-in-out infinite;
+        }}
+
+        /* Shooting stars */
+        .shooting-star {{
+            position: fixed;
+            width: 3px;
+            height: 3px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8);
+            z-index: 1;
+            pointer-events: none;
+        }}
+
+        .shooting-star::after {{
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 3px;
+            height: 2px;
+            width: 100px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), transparent);
+        }}
+
+        .shooting-star:nth-child(1) {{
+            top: 10%;
+            right: 10%;
+            animation: shooting-star 3s ease-in infinite;
+            animation-delay: 2s;
+        }}
+
+        .shooting-star:nth-child(2) {{
+            top: 30%;
+            right: 50%;
+            animation: shooting-star 2.5s ease-in infinite;
+            animation-delay: 5s;
+        }}
+
+        .shooting-star:nth-child(3) {{
+            top: 60%;
+            right: 20%;
+            animation: shooting-star 3.5s ease-in infinite;
+            animation-delay: 8s;
+        }}
+
+        /* Orbital rings */
+        .orbital-ring {{
+            position: fixed;
+            border: 1px solid rgba(96, 187, 233, 0.1);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }}
+
+        .orbital-ring-1 {{
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            right: 5%;
+            animation: orbit-spin 40s linear infinite;
+        }}
+
+        .orbital-ring-2 {{
+            width: 450px;
+            height: 450px;
+            bottom: 10%;
+            left: 5%;
+            animation: orbit-spin 60s linear infinite reverse;
+        }}
+
+        /* Floating particles */
+        .particle {{
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: rgba(96, 187, 233, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            box-shadow: 0 0 10px rgba(96, 187, 233, 0.6);
+        }}
+
+        .particle:nth-child(1) {{ top: 20%; left: 15%; animation: float-particles 15s ease-in-out infinite; }}
+        .particle:nth-child(2) {{ top: 50%; left: 80%; animation: float-particles 12s ease-in-out infinite 2s; }}
+        .particle:nth-child(3) {{ top: 70%; left: 30%; animation: float-particles 18s ease-in-out infinite 4s; }}
+        .particle:nth-child(4) {{ top: 35%; left: 60%; animation: float-particles 14s ease-in-out infinite 1s; }}
+        .particle:nth-child(5) {{ top: 80%; left: 70%; animation: float-particles 16s ease-in-out infinite 3s; }}
+
+        /* Constellation patterns - DISABLED */
+        .constellation {{
+            display: none;
         }}
 
         .dashboard-container {{
-            max-width: 1400px;
+            max-width: 95%;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }}
 
         .header {{
-            background: white;
+            background: rgba(9, 36, 63, 0.4);
+            backdrop-filter: blur(20px);
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(96, 187, 233, 0.3), 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1);
             margin-bottom: 20px;
-            border-left: 5px solid {BRAND_BLUE};
+            border: 1px solid rgba(96, 187, 233, 0.3);
+            border-left: 4px solid #60BBE9;
+            position: relative;
+            overflow: hidden;
+            animation: glow-pulse 4s ease-in-out infinite;
+        }}
+
+        .header::before {{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(96, 187, 233, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }}
+
+        @keyframes shimmer {{
+            0% {{ left: -100%; }}
+            100% {{ left: 100%; }}
+        }}
+
+        /* ===== GAUGE CHART STYLES ===== */
+        .gauge-container {{
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+        }}
+
+        .gauge-svg {{
+            transform: rotate(-90deg);
+            filter: drop-shadow(0 0 10px rgba(96, 187, 233, 0.5));
+        }}
+
+        .gauge-background {{
+            fill: none;
+            stroke: rgba(9, 36, 63, 0.5);
+            stroke-width: 20;
+        }}
+
+        .gauge-progress {{
+            fill: none;
+            stroke-width: 20;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 2s ease;
+        }}
+
+        .gauge-text {{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }}
+
+        .gauge-value {{
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60BBE9, #a78bfa);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(96, 187, 233, 0.6));
+        }}
+
+        .gauge-label {{
+            font-size: 12px;
+            color: #a8c5da;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }}
+
+        /* ===== PROGRESS RING STYLES ===== */
+        .progress-rings-container {{
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin: 20px 0;
+            padding: 20px;
+            overflow: visible;
+        }}
+
+        .progress-ring {{
+            position: relative;
+            width: 160px;
+            height: 160px;
+        }}
+
+        .progress-ring-svg {{
+            transform: rotate(-90deg);
+        }}
+
+        .progress-ring-circle {{
+            fill: none;
+            stroke-width: 12;
+            stroke-linecap: round;
+        }}
+
+        .progress-ring-bg {{
+            stroke: rgba(9, 36, 63, 0.5);
+        }}
+
+        .progress-ring-progress {{
+            transition: stroke-dashoffset 2s ease;
+            filter: drop-shadow(0 0 8px currentColor);
+        }}
+
+        .progress-ring-text {{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }}
+
+        .progress-ring-value {{
+            font-size: 28px;
+            font-weight: 700;
+            color: #e0e6ed;
+            display: block;
+        }}
+
+        .progress-ring-label {{
+            font-size: 11px;
+            color: #a8c5da;
+            display: block;
+            margin-top: 4px;
+        }}
+
+        /* ===== TIMELINE GANTT STYLES ===== */
+        .timeline-container {{
+            margin: 20px 0;
+            overflow-x: auto;
+            position: relative;
+        }}
+
+        .timeline-header {{
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(96, 187, 233, 0.2);
+        }}
+
+        .timeline-project-col {{
+            min-width: 200px;
+            font-weight: 600;
+            color: #60BBE9;
+        }}
+
+        .timeline-dates {{
+            display: flex;
+            flex: 1;
+            min-width: 600px;
+        }}
+
+        .timeline-date {{
+            flex: 1;
+            text-align: center;
+            font-size: 11px;
+            color: #a8c5da;
+        }}
+
+        .timeline-row {{
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            min-height: 40px;
+        }}
+
+        .timeline-project-name {{
+            min-width: 200px;
+            font-size: 13px;
+            color: #e0e6ed;
+            padding-right: 15px;
+        }}
+
+        .timeline-bars {{
+            display: flex;
+            flex: 1;
+            min-width: 600px;
+            position: relative;
+            height: 40px;
+        }}
+
+        .timeline-bar {{
+            position: absolute;
+            height: 24px;
+            border-radius: 12px;
+            background: linear-gradient(90deg, rgba(96, 187, 233, 0.4), rgba(96, 187, 233, 0.7));
+            border: 2px solid #60BBE9;
+            box-shadow: 0 0 15px rgba(96, 187, 233, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            overflow: hidden;
+        }}
+
+        .timeline-bar:hover {{
+            transform: scaleY(1.2);
+            box-shadow: 0 0 25px rgba(96, 187, 233, 0.8);
+        }}
+
+        .timeline-bar.critical {{
+            background: linear-gradient(90deg, rgba(255, 107, 157, 0.4), rgba(255, 107, 157, 0.7));
+            border-color: #ff6b9d;
+            box-shadow: 0 0 15px rgba(255, 107, 157, 0.5);
+        }}
+
+        .timeline-bar.critical:hover {{
+            box-shadow: 0 0 25px rgba(255, 107, 157, 0.8);
+        }}
+
+        .timeline-bar.warning {{
+            background: linear-gradient(90deg, rgba(255, 217, 61, 0.4), rgba(255, 217, 61, 0.7));
+            border-color: #ffd93d;
+            box-shadow: 0 0 15px rgba(255, 217, 61, 0.5);
+        }}
+
+        .timeline-bar.warning:hover {{
+            box-shadow: 0 0 25px rgba(255, 217, 61, 0.8);
+        }}
+
+        /* ===== RADAR/SPIDER CHART STYLES ===== */
+        .radar-container {{
+            position: relative;
+            width: 500px;
+            height: 500px;
+            margin: 20px auto;
+        }}
+
+        .radar-svg {{
+            filter: drop-shadow(0 0 10px rgba(96, 187, 233, 0.3));
+        }}
+
+        .radar-grid {{
+            fill: none;
+            stroke: rgba(96, 187, 233, 0.2);
+            stroke-width: 1;
+        }}
+
+        .radar-axis {{
+            stroke: rgba(96, 187, 233, 0.3);
+            stroke-width: 1;
+        }}
+
+        .radar-area {{
+            fill: rgba(96, 187, 233, 0.3);
+            stroke: #60BBE9;
+            stroke-width: 2;
+        }}
+
+        .radar-target {{
+            fill: rgba(255, 107, 157, 0.2);
+            stroke: #ff6b9d;
+            stroke-width: 2;
+            stroke-dasharray: 5, 5;
+        }}
+
+        .radar-label {{
+            fill: #e0e6ed;
+            font-size: 12px;
+            font-weight: 600;
+            text-anchor: middle;
+        }}
+
+        /* ===== SUNBURST CHART STYLES ===== */
+        .sunburst-container {{
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 20px auto;
+        }}
+
+        .sunburst-svg {{
+            filter: drop-shadow(0 0 15px rgba(96, 187, 233, 0.3));
+        }}
+
+        .sunburst-slice {{
+            cursor: pointer;
+            transition: all 0.3s;
+            stroke: rgba(0, 0, 0, 0.5);
+            stroke-width: 2;
+        }}
+
+        .sunburst-slice:hover {{
+            filter: brightness(1.3) drop-shadow(0 0 10px currentColor);
+            transform: scale(1.05);
+        }}
+
+        .sunburst-text {{
+            fill: white;
+            font-size: 11px;
+            font-weight: 600;
+            pointer-events: none;
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+        }}
+
+        .sunburst-center-text {{
+            fill: #60BBE9;
+            font-size: 24px;
+            font-weight: 700;
+            text-anchor: middle;
+            text-shadow: 0 0 15px rgba(96, 187, 233, 0.6);
+        }}
+
+        /* ===== VELOCITY TREND CHART ===== */
+        .velocity-container {{
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }}
+
+        /* ===== HEAT MAP CALENDAR STYLES ===== */
+        .heatmap-calendar {{
+            display: grid;
+            grid-template-columns: auto repeat(10, 1fr);
+            gap: 4px;
+            margin: 20px 0;
+        }}
+
+        .heatmap-day-label {{
+            font-size: 11px;
+            color: #a8c5da;
+            padding: 8px 12px;
+            text-align: right;
+        }}
+
+        .heatmap-date {{
+            font-size: 10px;
+            color: #a8c5da;
+            text-align: center;
+            margin-bottom: 4px;
+        }}
+
+        .heatmap-cell {{
+            aspect-ratio: 1;
+            border-radius: 6px;
+            border: 1px solid rgba(96, 187, 233, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }}
+
+        .heatmap-cell:hover {{
+            transform: scale(1.15);
+            z-index: 10;
+        }}
+
+        .heatmap-cell.intensity-0 {{
+            background: rgba(9, 36, 63, 0.3);
+            color: #a8c5da;
+        }}
+
+        .heatmap-cell.intensity-1 {{
+            background: rgba(96, 187, 233, 0.2);
+            box-shadow: 0 0 10px rgba(96, 187, 233, 0.3);
+            color: #60BBE9;
+        }}
+
+        .heatmap-cell.intensity-2 {{
+            background: rgba(96, 187, 233, 0.4);
+            box-shadow: 0 0 15px rgba(96, 187, 233, 0.5);
+            color: #fff;
+        }}
+
+        .heatmap-cell.intensity-3 {{
+            background: rgba(255, 217, 61, 0.4);
+            box-shadow: 0 0 15px rgba(255, 217, 61, 0.5);
+            color: #fff;
+            border-color: #ffd93d;
+        }}
+
+        .heatmap-cell.intensity-4 {{
+            background: rgba(255, 107, 157, 0.5);
+            box-shadow: 0 0 20px rgba(255, 107, 157, 0.6);
+            color: #fff;
+            border-color: #ff6b9d;
+            animation: pulse-glow 2s ease-in-out infinite;
         }}
 
         .header h1 {{
-            color: {BRAND_NAVY};
+            color: #60BBE9;
             font-size: 32px;
             margin-bottom: 10px;
             font-weight: 600;
+            text-shadow: 0 0 20px rgba(96, 187, 233, 0.5), 0 0 40px rgba(96, 187, 233, 0.3);
+            position: relative;
+            z-index: 1;
         }}
 
         .header .subtitle {{
-            color: #6c757d;
+            color: #a8c5da;
             font-size: 14px;
+            position: relative;
+            z-index: 1;
         }}
 
         .header .timestamp {{
-            color: {BRAND_BLUE};
+            color: #60BBE9;
             font-size: 13px;
             margin-top: 5px;
+            text-shadow: 0 0 10px rgba(96, 187, 233, 0.5);
+            position: relative;
+            z-index: 1;
         }}
 
         .grid {{
@@ -968,19 +1622,58 @@ def generate_html_dashboard(data):
         }}
 
         .card {{
-            background: white;
+            background: rgba(9, 36, 63, 0.3);
+            backdrop-filter: blur(15px);
             padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(96, 187, 233, 0.2), 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(96, 187, 233, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: visible;
+            opacity: 0;
+            animation: fade-in-up 0.8s ease forwards, holo-border 8s ease-in-out infinite;
+        }}
+
+        .card:nth-child(1) {{ animation-delay: 0.1s, 0s; }}
+        .card:nth-child(2) {{ animation-delay: 0.2s, 0s; }}
+        .card:nth-child(3) {{ animation-delay: 0.3s, 0s; }}
+        .card:nth-child(4) {{ animation-delay: 0.4s, 0s; }}
+        .card:nth-child(5) {{ animation-delay: 0.5s, 0s; }}
+        .card:nth-child(6) {{ animation-delay: 0.6s, 0s; }}
+
+        .card::before {{
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(96, 187, 233, 0.05) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }}
+
+        .card:hover {{
+            border-color: rgba(96, 187, 233, 0.5);
+            box-shadow: 0 0 30px rgba(96, 187, 233, 0.4), 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }}
+
+        .card:hover::before {{
+            opacity: 1;
         }}
 
         .card h2 {{
-            color: {BRAND_NAVY};
+            color: #60BBE9;
             font-size: 18px;
             margin-bottom: 15px;
             font-weight: 600;
-            border-bottom: 2px solid {BRAND_BLUE};
+            border-bottom: 2px solid rgba(96, 187, 233, 0.5);
             padding-bottom: 10px;
+            text-shadow: 0 0 15px rgba(96, 187, 233, 0.4);
+            position: relative;
+            z-index: 1;
         }}
 
         .metric {{
@@ -988,7 +1681,9 @@ def generate_html_dashboard(data):
             justify-content: space-between;
             align-items: center;
             padding: 12px 0;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid rgba(96, 187, 233, 0.1);
+            position: relative;
+            z-index: 1;
         }}
 
         .metric:last-child {{
@@ -997,40 +1692,74 @@ def generate_html_dashboard(data):
 
         .metric-label {{
             font-size: 14px;
-            color: #6c757d;
+            color: #a8c5da;
         }}
 
         .metric-value {{
             font-size: 24px;
             font-weight: 600;
-            color: {BRAND_NAVY};
+            background: linear-gradient(135deg, #60BBE9, #a78bfa, #60BBE9);
+            background-size: 200% 200%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: nebula-shift 6s ease infinite;
+            filter: drop-shadow(0 0 10px rgba(96, 187, 233, 0.4));
+            transition: all 0.3s ease;
+        }}
+
+        .metric-value:hover {{
+            filter: drop-shadow(0 0 2px #ff0000) drop-shadow(2px 0 0px #00ffff) drop-shadow(0 0 20px rgba(96, 187, 233, 0.6));
+            transform: scale(1.05);
         }}
 
         .metric-value.positive {{
-            color: #28a745;
+            background: linear-gradient(135deg, #4ecca3, #60BBE9, #4ecca3);
+            background-size: 200% 200%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(78, 204, 163, 0.6));
+            animation: pulse-glow 3s ease-in-out infinite, nebula-shift 6s ease infinite;
         }}
 
         .metric-value.negative {{
-            color: #dc3545;
+            background: linear-gradient(135deg, #ff6b9d, #dc3545, #ff6b9d);
+            background-size: 200% 200%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(255, 107, 157, 0.6));
+            animation: pulse-glow 2s ease-in-out infinite, nebula-shift 6s ease infinite;
         }}
 
         .metric-value.warning {{
-            color: #ffc107;
+            background: linear-gradient(135deg, #ffd93d, #ffa500, #ffd93d);
+            background-size: 200% 200%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(255, 217, 61, 0.6));
+            animation: pulse-glow 2.5s ease-in-out infinite, nebula-shift 6s ease infinite;
         }}
 
         .progress-bar {{
             width: 100%;
             height: 30px;
-            background: #e9ecef;
+            background: rgba(9, 36, 63, 0.5);
             border-radius: 15px;
             overflow: hidden;
             position: relative;
             margin-top: 8px;
+            border: 1px solid rgba(96, 187, 233, 0.2);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
         }}
 
         .progress-fill {{
             height: 100%;
-            background: linear-gradient(90deg, {BRAND_BLUE}, #4a9fd8);
+            background: linear-gradient(90deg, #60BBE9, #4a9fd8, #60BBE9);
+            background-size: 200% 100%;
+            animation: progress-glow 2s ease-in-out infinite;
             transition: width 0.3s ease;
             display: flex;
             align-items: center;
@@ -1038,29 +1767,50 @@ def generate_html_dashboard(data):
             color: white;
             font-size: 12px;
             font-weight: 600;
+            box-shadow: 0 0 20px rgba(96, 187, 233, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            position: relative;
+        }}
+
+        @keyframes progress-glow {{
+            0%, 100% {{ background-position: 0% 50%; }}
+            50% {{ background-position: 100% 50%; }}
         }}
 
         .progress-fill.over-capacity {{
-            background: linear-gradient(90deg, #dc3545, #c82333);
+            background: linear-gradient(90deg, #ff6b9d, #dc3545, #ff6b9d);
+            background-size: 200% 100%;
+            animation: progress-glow 2s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(255, 107, 157, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }}
 
         .alert {{
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
+            background: rgba(255, 217, 61, 0.1);
+            border-left: 4px solid #ffd93d;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 10px;
             font-size: 14px;
+            border: 1px solid rgba(255, 217, 61, 0.3);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(255, 217, 61, 0.2);
+            color: #ffd93d;
         }}
 
         .alert.danger {{
-            background: #f8d7da;
-            border-left-color: #dc3545;
+            background: rgba(255, 107, 157, 0.1);
+            border-left-color: #ff6b9d;
+            border-color: rgba(255, 107, 157, 0.3);
+            box-shadow: 0 0 20px rgba(255, 107, 157, 0.2);
+            color: #ff6b9d;
         }}
 
         .alert.success {{
-            background: #d4edda;
-            border-left-color: #28a745;
+            background: rgba(78, 204, 163, 0.1);
+            border-left-color: #4ecca3;
+            border-color: rgba(78, 204, 163, 0.3);
+            box-shadow: 0 0 20px rgba(78, 204, 163, 0.2);
+            color: #4ecca3;
         }}
 
         .chart-container {{
@@ -1071,18 +1821,21 @@ def generate_html_dashboard(data):
 
         .team-member {{
             margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
         }}
 
         .team-member-name {{
             font-size: 14px;
             font-weight: 600;
-            color: {BRAND_NAVY};
+            color: #60BBE9;
             margin-bottom: 5px;
+            text-shadow: 0 0 10px rgba(96, 187, 233, 0.3);
         }}
 
         .team-member-capacity {{
             font-size: 12px;
-            color: #6c757d;
+            color: #a8c5da;
             margin-bottom: 5px;
         }}
 
@@ -1278,6 +2031,187 @@ def generate_html_dashboard(data):
             }}
         }}
 
+        /* Large Screen Optimizations */
+        @media (min-width: 1920px) {{
+            body {{
+                font-size: 18px;
+                padding: 30px;
+            }}
+
+            .header h1 {{
+                font-size: 48px;
+            }}
+
+            .header .subtitle {{
+                font-size: 20px;
+            }}
+
+            .header .timestamp {{
+                font-size: 16px;
+            }}
+
+            .grid {{
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 25px;
+            }}
+
+            .card h2 {{
+                font-size: 24px;
+            }}
+
+            .metric-label {{
+                font-size: 16px;
+            }}
+
+            .metric-value {{
+                font-size: 36px;
+            }}
+
+            .chart-container {{
+                height: 400px;
+            }}
+        }}
+
+        @media (min-width: 2560px) {{
+            body {{
+                font-size: 20px;
+                padding: 40px;
+            }}
+
+            .header h1 {{
+                font-size: 56px;
+            }}
+
+            .header .subtitle {{
+                font-size: 24px;
+            }}
+
+            .header .timestamp {{
+                font-size: 18px;
+            }}
+
+            .grid {{
+                grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+                gap: 30px;
+            }}
+
+            .card {{
+                padding: 35px;
+            }}
+
+            .card h2 {{
+                font-size: 28px;
+            }}
+
+            .metric-label {{
+                font-size: 18px;
+            }}
+
+            .metric-value {{
+                font-size: 42px;
+            }}
+
+            .chart-container {{
+                height: 500px;
+            }}
+
+            .progress-ring {{
+                transform: scale(1.25);
+            }}
+
+            .progress-ring-value {{
+                font-size: 36px;
+            }}
+
+            .progress-ring-label {{
+                font-size: 14px;
+            }}
+
+            .progress-rings-container {{
+                gap: 50px !important;
+            }}
+        }}
+
+        @media (min-width: 3840px) {{
+            body {{
+                font-size: 24px;
+                padding: 50px;
+            }}
+
+            .header h1 {{
+                font-size: 72px;
+            }}
+
+            .header .subtitle {{
+                font-size: 32px;
+            }}
+
+            .header .timestamp {{
+                font-size: 22px;
+            }}
+
+            .grid {{
+                grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+                gap: 40px;
+            }}
+
+            .card {{
+                padding: 45px;
+                border-radius: 20px;
+            }}
+
+            .card h2 {{
+                font-size: 36px;
+                margin-bottom: 25px;
+            }}
+
+            .metric-label {{
+                font-size: 22px;
+            }}
+
+            .metric-value {{
+                font-size: 52px;
+            }}
+
+            .chart-container {{
+                height: 600px;
+            }}
+
+            .progress-ring {{
+                transform: scale(1.5);
+            }}
+
+            .progress-ring-value {{
+                font-size: 44px;
+            }}
+
+            .progress-ring-label {{
+                font-size: 16px;
+            }}
+
+            .progress-rings-container {{
+                gap: 70px !important;
+                padding: 40px !important;
+            }}
+
+            .team-member-name {{
+                font-size: 20px;
+            }}
+
+            .team-member-capacity {{
+                font-size: 16px;
+            }}
+
+            .progress-bar {{
+                height: 35px;
+            }}
+
+            .progress-fill {{
+                font-size: 18px;
+                line-height: 35px;
+            }}
+        }}
+
         /* Chat Widget Styles */
         .chat-widget {{
             position: fixed;
@@ -1290,11 +2224,11 @@ def generate_html_dashboard(data):
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: {BRAND_BLUE};
+            background: linear-gradient(135deg, #60BBE9, #4a9fd8);
             color: white;
-            border: none;
+            border: 2px solid rgba(96, 187, 233, 0.5);
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 0 25px rgba(96, 187, 233, 0.5), 0 4px 20px rgba(0,0,0,0.3);
             font-size: 24px;
             display: flex;
             align-items: center;
@@ -1303,8 +2237,10 @@ def generate_html_dashboard(data):
         }}
 
         .chat-button:hover {{
-            background: {BRAND_NAVY};
+            background: linear-gradient(135deg, #09243F, #1a1645);
+            border-color: #60BBE9;
             transform: scale(1.05);
+            box-shadow: 0 0 35px rgba(96, 187, 233, 0.7), 0 6px 25px rgba(0,0,0,0.4);
         }}
 
         .chat-window {{
@@ -1316,9 +2252,11 @@ def generate_html_dashboard(data):
             max-width: calc(100vw - 40px);
             height: 600px;
             max-height: calc(100vh - 120px);
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            background: rgba(9, 36, 63, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(96, 187, 233, 0.3), 0 8px 32px rgba(0,0,0,0.5);
+            border: 1px solid rgba(96, 187, 233, 0.3);
             flex-direction: column;
             overflow: hidden;
         }}
@@ -1328,12 +2266,14 @@ def generate_html_dashboard(data):
         }}
 
         .chat-header {{
-            background: {BRAND_NAVY};
-            color: white;
+            background: linear-gradient(135deg, rgba(9, 36, 63, 0.8), rgba(26, 22, 69, 0.8));
+            color: #60BBE9;
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid rgba(96, 187, 233, 0.3);
+            text-shadow: 0 0 10px rgba(96, 187, 233, 0.5);
         }}
 
         .chat-header h3 {{
@@ -1365,7 +2305,7 @@ def generate_html_dashboard(data):
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            background: #f8f9fa;
+            background: rgba(0, 0, 0, 0.2);
         }}
 
         .chat-message {{
@@ -1377,32 +2317,37 @@ def generate_html_dashboard(data):
         }}
 
         .chat-message.user {{
-            background: {BRAND_BLUE};
+            background: linear-gradient(135deg, #60BBE9, #4a9fd8);
             color: white;
             margin-left: auto;
             border-bottom-right-radius: 4px;
+            box-shadow: 0 0 15px rgba(96, 187, 233, 0.4);
+            border: 1px solid rgba(96, 187, 233, 0.3);
         }}
 
         .chat-message.assistant {{
-            background: white;
-            color: {BRAND_NAVY};
+            background: rgba(9, 36, 63, 0.6);
+            backdrop-filter: blur(10px);
+            color: #e0e6ed;
             margin-right: auto;
             border-bottom-left-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            border: 1px solid rgba(96, 187, 233, 0.2);
         }}
 
         .chat-message.system {{
-            background: #ffe69c;
-            color: #856404;
+            background: rgba(255, 217, 61, 0.2);
+            color: #ffd93d;
             margin: 0 auto;
             text-align: center;
             font-size: 13px;
+            border: 1px solid rgba(255, 217, 61, 0.3);
         }}
 
         .chat-input-container {{
             padding: 15px;
-            background: white;
-            border-top: 1px solid #e9ecef;
+            background: rgba(9, 36, 63, 0.5);
+            border-top: 1px solid rgba(96, 187, 233, 0.3);
             display: flex;
             gap: 10px;
         }}
@@ -1410,44 +2355,57 @@ def generate_html_dashboard(data):
         .chat-input {{
             flex: 1;
             padding: 10px 15px;
-            border: 1px solid #dee2e6;
+            border: 1px solid rgba(96, 187, 233, 0.3);
             border-radius: 8px;
             font-size: 14px;
             font-family: inherit;
+            background: rgba(9, 36, 63, 0.4);
+            color: #e0e6ed;
+            backdrop-filter: blur(10px);
+        }}
+
+        .chat-input::placeholder {{
+            color: #a8c5da;
         }}
 
         .chat-input:focus {{
             outline: none;
-            border-color: {BRAND_BLUE};
+            border-color: #60BBE9;
+            box-shadow: 0 0 15px rgba(96, 187, 233, 0.3);
         }}
 
         .chat-send {{
             padding: 10px 20px;
-            background: {BRAND_BLUE};
+            background: linear-gradient(135deg, #60BBE9, #4a9fd8);
             color: white;
-            border: none;
+            border: 1px solid rgba(96, 187, 233, 0.5);
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            transition: background 0.2s;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(96, 187, 233, 0.3);
         }}
 
         .chat-send:hover {{
-            background: {BRAND_NAVY};
+            background: linear-gradient(135deg, #09243F, #1a1645);
+            box-shadow: 0 0 25px rgba(96, 187, 233, 0.5);
         }}
 
         .chat-send:disabled {{
-            background: #6c757d;
+            background: rgba(108, 117, 125, 0.5);
             cursor: not-allowed;
+            box-shadow: none;
         }}
 
         .typing-indicator {{
             display: none;
             padding: 10px 16px;
-            background: white;
+            background: rgba(9, 36, 63, 0.6);
+            backdrop-filter: blur(10px);
             border-radius: 12px;
             max-width: 60px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            border: 1px solid rgba(96, 187, 233, 0.2);
         }}
 
         .typing-indicator.show {{
@@ -1457,7 +2415,7 @@ def generate_html_dashboard(data):
         .typing-indicator span {{
             height: 8px;
             width: 8px;
-            background: {BRAND_BLUE};
+            background: #60BBE9;
             border-radius: 50%;
             display: inline-block;
             margin: 0 2px;
@@ -1483,11 +2441,59 @@ def generate_html_dashboard(data):
     </style>
 </head>
 <body>
+    <!-- Space visual effects -->
+    <div class="scanline"></div>
+    <div class="nebula-purple"></div>
+    <div class="nebula-pink"></div>
+
+    <!-- Shooting stars -->
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+
+    <!-- Orbital rings -->
+    <div class="orbital-ring orbital-ring-1"></div>
+    <div class="orbital-ring orbital-ring-2"></div>
+
+    <!-- Floating particles -->
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+
+    <!-- Constellation pattern -->
+    <div class="constellation">
+        <svg>
+            <line x1="10%" y1="15%" x2="25%" y2="20%"></line>
+            <line x1="25%" y1="20%" x2="35%" y2="25%"></line>
+            <line x1="35%" y1="25%" x2="30%" y2="40%"></line>
+            <line x1="30%" y1="40%" x2="15%" y2="35%"></line>
+            <line x1="15%" y1="35%" x2="10%" y2="15%"></line>
+            <circle cx="10%" cy="15%" r="2"></circle>
+            <circle cx="25%" cy="20%" r="3"></circle>
+            <circle cx="35%" cy="25%" r="2"></circle>
+            <circle cx="30%" cy="40%" r="2"></circle>
+            <circle cx="15%" cy="35%" r="2"></circle>
+
+            <line x1="70%" y1="60%" x2="80%" y2="55%"></line>
+            <line x1="80%" y1="55%" x2="90%" y2="65%"></line>
+            <line x1="90%" y1="65%" x2="85%" y2="75%"></line>
+            <line x1="85%" y1="75%" x2="70%" y2="70%"></line>
+            <line x1="70%" y1="70%" x2="70%" y2="60%"></line>
+            <circle cx="70%" cy="60%" r="2"></circle>
+            <circle cx="80%" cy="55%" r="3"></circle>
+            <circle cx="90%" cy="65%" r="2"></circle>
+            <circle cx="85%" cy="75%" r="2"></circle>
+            <circle cx="70%" cy="70%" r="2"></circle>
+        </svg>
+    </div>
+
     <div class="dashboard-container">
         <div class="header">
-            <h1>Perimeter Studio Dashboard</h1>
+            <h1>✦ Perimeter Studio Dashboard ✦</h1>
             <div class="subtitle">Video Production Capacity Tracking & Performance Metrics</div>
-            <div class="timestamp">Last Updated: {data['timestamp']}</div>
+            <div class="timestamp">⟡ Last Updated: {data['timestamp']}</div>
         </div>
 
         <div class="grid">
