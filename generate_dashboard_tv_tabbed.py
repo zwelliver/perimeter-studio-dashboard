@@ -52,6 +52,7 @@ def create_tabbed_tv_dashboard(html):
     project_cards = []
     capacity_cards = []
     allocation_cards = []
+    forecast_cards = []
 
     for card in cards:
         # Get the card's h2 heading to categorize it
@@ -71,7 +72,7 @@ def create_tabbed_tv_dashboard(html):
         elif 'At-Risk' in heading_text:
             overview_cards.append(str(card))
 
-        # Projects: Upcoming shoots, upcoming deadlines, project timeline, workload balance
+        # Projects: Upcoming shoots, upcoming deadlines, project timeline
         elif 'Upcoming Shoot' in heading_text:
             project_cards.append(str(card))
         elif 'Upcoming Project Deadline' in heading_text:
@@ -79,12 +80,19 @@ def create_tabbed_tv_dashboard(html):
         elif heading_text == 'Project Timeline':
             project_cards.append(str(card))
         elif heading_text == 'Workload Balance':
-            # Add to both Projects and Allocation tabs
+            # Add to Allocation tab only
             card_html = str(card).replace('class="card full-width"', 'class="card"')
-            project_cards.append(card_html)
             allocation_cards.append(card_html)
 
-        # Capacity: Team capacity, velocity, 10-day heatmap, capacity utilization, 6-month timeline, historical capacity
+        # Forecast: 6-month timeline, historical capacity utilization, forecasted projects (check first before capacity!)
+        elif '6-Month Capacity' in heading_text or '6 Month' in heading_text:
+            forecast_cards.append(str(card))
+        elif heading_text == '📈 Historical Capacity Utilization':
+            forecast_cards.append(str(card))
+        elif 'Forecasted Projects' in heading_text:
+            forecast_cards.append(str(card))
+
+        # Capacity: Team capacity, velocity, 10-day heatmap, capacity utilization
         elif heading_text == 'Team Capacity':
             capacity_cards.append(str(card))
         elif 'Team Velocity' in heading_text or 'Velocity Trend' in heading_text:
@@ -92,10 +100,6 @@ def create_tabbed_tv_dashboard(html):
         elif 'Workload Heat Map' in heading_text:
             capacity_cards.append(str(card))
         elif 'Capacity Utilization' in heading_text:
-            capacity_cards.append(str(card))
-        elif '6-Month Capacity' in heading_text or '6 Month' in heading_text:
-            capacity_cards.append(str(card))
-        elif heading_text == '📈 Historical Capacity Utilization':
             capacity_cards.append(str(card))
 
         # Allocation: workload balance (already added above), category cards, historical allocation
@@ -121,7 +125,7 @@ def create_tabbed_tv_dashboard(html):
     projects_content = '<div class="grid">' + ''.join(project_cards) + '</div>'
 
     # Capacity content - special ordering and team capacity full width
-    # Order: Team Capacity (full width), Velocity, Heatmap, 30-day utilization, 6-month timeline, Historical
+    # Order: Team Capacity (full width), Velocity, Heatmap, 30-day utilization
     capacity_content = '<div class="grid">'
 
     # Find and categorize capacity cards
@@ -129,8 +133,6 @@ def create_tabbed_tv_dashboard(html):
     velocity_card = None
     heatmap_card = None
     utilization_30_card = None
-    timeline_6m_card = None
-    historical_cap_card = None
 
     for card_html in capacity_cards:
         if 'Team Capacity</h2>' in card_html:
@@ -142,10 +144,6 @@ def create_tabbed_tv_dashboard(html):
             heatmap_card = card_html
         elif 'Next 30 Days' in card_html:
             utilization_30_card = card_html
-        elif '6-Month' in card_html or '6 Month' in card_html:
-            timeline_6m_card = card_html
-        elif 'Historical Capacity' in card_html:
-            historical_cap_card = card_html
 
     # Add in desired order
     if team_capacity_card:
@@ -156,12 +154,11 @@ def create_tabbed_tv_dashboard(html):
         capacity_content += heatmap_card
     if utilization_30_card:
         capacity_content += utilization_30_card
-    if timeline_6m_card:
-        capacity_content += timeline_6m_card
-    if historical_cap_card:
-        capacity_content += historical_cap_card
 
     capacity_content += '</div>'
+
+    # Forecast content - 6-month timeline and historical capacity
+    forecast_content = '<div class="grid">' + ''.join(forecast_cards) + '</div>'
 
     # Allocation content (radar + categories in row, then historical chart below)
     allocation_content = '<div class="grid">' + ''.join(allocation_cards) + '</div>'
@@ -174,6 +171,9 @@ def create_tabbed_tv_dashboard(html):
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perimeter Studio Dashboard - TV View</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         {get_tv_styles()}
@@ -189,6 +189,9 @@ def create_tabbed_tv_dashboard(html):
         </button>
         <button class="tv-tab" id="capacity-tab" onclick="showTab('capacity')">
             👥 Capacity
+        </button>
+        <button class="tv-tab" id="forecast-tab" onclick="showTab('forecast')">
+            🔮 Forecast
         </button>
         <button class="tv-tab" id="allocation-tab" onclick="showTab('allocation')">
             📈 Allocation
@@ -206,8 +209,13 @@ def create_tabbed_tv_dashboard(html):
     </div>
 
     <div class="tv-content" id="capacity-content">
-        <h1 class="tab-title">Team Capacity & Forecast</h1>
+        <h1 class="tab-title">Team Capacity</h1>
         {capacity_content}
+    </div>
+
+    <div class="tv-content" id="forecast-content">
+        <h1 class="tab-title">Capacity Forecast</h1>
+        {forecast_content}
     </div>
 
     <div class="tv-content" id="allocation-content">
@@ -235,12 +243,26 @@ def get_tv_styles():
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            list-style: none !important;
+            list-style-type: none !important;
+        }
+
+        *::before,
+        *::after,
+        *::marker {
+            list-style: none !important;
+            list-style-type: none !important;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #f8f9fa;
             overflow: hidden;
+        }
+
+        /* Emoji rendering fix */
+        button, .timeline-project-name, h1, h2 {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
         }
 
         /* Tab Navigation */
@@ -259,15 +281,15 @@ def get_tv_styles():
 
         .tv-tab {
             flex: 1;
-            padding: 20px 20px;
+            padding: 28px 24px;
             color: rgba(255,255,255,0.7);
-            font-size: 19px;
+            font-size: 32px;
             font-weight: 600;
             text-align: center;
             cursor: pointer;
             border: none;
             background: transparent;
-            border-bottom: 4px solid transparent;
+            border-bottom: 6px solid transparent;
             transition: all 0.3s ease;
         }
 
@@ -285,7 +307,7 @@ def get_tv_styles():
         /* Tab Content */
         .tv-content {
             display: none;
-            padding: 90px 30px 20px 30px;
+            padding: 110px 40px 30px 40px;
             height: 100vh;
             overflow: hidden;
             box-sizing: border-box;
@@ -294,77 +316,77 @@ def get_tv_styles():
         .tv-content.active {
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
         .tab-title {
             color: #09243F;
-            font-size: 24px;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
+            font-size: clamp(28px, 3vw, 42px);
+            margin-bottom: 1.2vh;
+            padding-bottom: 0.8vh;
             border-bottom: 3px solid #60BBE9;
             flex-shrink: 0;
+            font-weight: 700;
         }
 
         /* Grid layout - 2 columns for optimal readability */
         .grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
+            gap: 1.5vh 2vw;
             flex: 1;
-            overflow-y: auto;
+            overflow: hidden;
             align-content: start;
-            padding-right: 10px;
+            grid-auto-rows: auto;
         }
 
-        /* Card styling */
+        /* Card styling - no scrolling, auto height */
         .card {
             background: white;
-            padding: 20px 24px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            border: 1px solid #e9ecef;
-            max-height: 480px;
-            overflow-y: auto;
+            padding: 1vh 1.5vw;
+            border-radius: 12px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+            border: 2px solid #e9ecef;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
+            height: auto;
+            min-height: 0;
         }
 
-        /* Larger height for radar chart card */
-        .card:has(.radar-container) {
-            max-height: 500px;
-            height: 100%;
-            overflow: visible;
-        }
-
-        /* Larger height for timeline and shoots cards */
-        .card:has(.timeline-container),
-        .card:has([style*="grid-template-columns"]) {
-            max-height: 520px;
+        /* Card content area that can shrink */
+        .card > div:not(.card h2) {
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
         }
 
         .card h2 {
             color: #09243F;
-            font-size: 20px;
-            margin-bottom: 14px;
-            font-weight: 600;
+            font-size: clamp(18px, 2.2vw, 32px);
+            margin-bottom: 0.8vh;
+            font-weight: 700;
             border-bottom: 2px solid #60BBE9;
-            padding-bottom: 10px;
+            padding-bottom: 0.5vh;
             flex-shrink: 0;
         }
 
         .card h3 {
-            font-size: 16px;
+            font-size: clamp(14px, 1.6vw, 24px);
             color: #09243F;
-            margin: 12px 0 10px 0;
+            margin: 0.8vh 0;
+            font-weight: 600;
         }
 
         .card p {
-            font-size: 15px;
+            font-size: clamp(12px, 1.4vw, 20px);
+            line-height: 1.3;
+            margin: 0.5vh 0;
         }
 
         .full-width {
             grid-column: 1 / -1;
-            max-height: 450px;
+            overflow: hidden;
         }
 
         /* Metrics */
@@ -372,7 +394,7 @@ def get_tv_styles():
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 0;
+            padding: 1vh 0;
             border-bottom: 1px solid #dee2e6;
         }
 
@@ -381,13 +403,13 @@ def get_tv_styles():
         }
 
         .metric-label {
-            font-size: 16px;
+            font-size: clamp(14px, 1.8vw, 26px);
             color: #6c757d;
             font-weight: 500;
         }
 
         .metric-value {
-            font-size: 24px;
+            font-size: clamp(22px, 3vw, 42px);
             font-weight: 700;
             color: #60BBE9;
         }
@@ -401,15 +423,15 @@ def get_tv_styles():
             display: flex;
             justify-content: space-around;
             flex-wrap: wrap;
-            gap: 20px;
-            margin: 12px 0;
-            padding: 12px;
+            gap: 1.5vh 1.5vw;
+            margin: 1vh 0;
+            padding: 0.8vh 0;
         }
 
         .progress-ring {
             position: relative;
-            width: 120px;
-            height: 120px;
+            width: clamp(90px, 10vw, 120px);
+            height: clamp(90px, 10vw, 120px);
             text-align: center;
         }
 
@@ -419,7 +441,7 @@ def get_tv_styles():
 
         .progress-ring-circle {
             fill: none;
-            stroke-width: 12;
+            stroke-width: 10;
             stroke-linecap: round;
         }
 
@@ -437,16 +459,16 @@ def get_tv_styles():
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            width: 120px;
+            width: 100%;
         }
 
         .progress-ring svg {
-            width: 120px !important;
-            height: 120px !important;
+            width: 100% !important;
+            height: 100% !important;
         }
 
         .progress-ring-value {
-            font-size: 20px;
+            font-size: clamp(14px, 1.5vw, 20px);
             font-weight: 700;
             color: #09243F;
             display: block;
@@ -454,29 +476,53 @@ def get_tv_styles():
         }
 
         .progress-ring-label {
-            font-size: 9px;
+            font-size: clamp(8px, 0.9vw, 12px);
             color: #6c757d;
             display: block;
             margin-top: 4px;
-            line-height: 1.2;
+            line-height: 1.1;
         }
 
         /* Charts */
         .chart-container {
             position: relative;
-            height: 220px;
-            margin-top: 10px;
+            height: clamp(180px, 20vh, 280px);
+            margin-top: 0.8vh;
+            overflow: hidden;
         }
 
         canvas {
-            max-height: 220px !important;
+            max-height: 100% !important;
+            width: 100% !important;
         }
 
         /* Timeline */
         .timeline-container {
-            margin: 10px 0;
-            overflow-x: auto;
-            min-height: 200px;
+            margin: 1vh 0;
+            overflow: hidden;
+            flex: 1;
+            list-style: none !important;
+            position: relative;
+            padding-left: 0 !important;
+            min-height: 0;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 25%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #09243F;
+            z-index: 10;
+        }
+
+        .timeline-container *,
+        .timeline-container *::before,
+        .timeline-container *::after {
+            list-style: none !important;
+            list-style-type: none !important;
         }
 
         .timeline-header {
@@ -487,25 +533,24 @@ def get_tv_styles():
         }
 
         .timeline-project-col {
-            min-width: 220px;
+            width: 25%;
             font-weight: 600;
             color: #09243F;
-            font-size: 14px;
-            padding-right: 15px;
-            border-right: 2px solid #dee2e6;
-            margin-right: 15px;
+            font-size: clamp(12px, 1.5vw, 22px);
+            padding-right: 0.8vw;
+            margin-right: 0.8vw;
+            flex-shrink: 0;
         }
 
         .timeline-dates {
             display: flex;
             flex: 1;
-            min-width: 600px;
         }
 
         .timeline-date {
             flex: 1;
             text-align: center;
-            font-size: 13px;
+            font-size: clamp(11px, 1.3vw, 20px);
             color: #6c757d;
             font-weight: 500;
         }
@@ -513,39 +558,59 @@ def get_tv_styles():
         .timeline-row {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
-            min-height: 36px;
+            margin-bottom: 0.8vh;
+            min-height: 2.5vh;
+            list-style: none !important;
+            list-style-type: none !important;
+        }
+
+        .timeline-row::before,
+        .timeline-row::after,
+        .timeline-row::marker {
+            display: none !important;
+            content: none !important;
         }
 
         .timeline-project-name {
-            min-width: 220px;
-            font-size: 14px;
+            width: 25%;
+            font-size: clamp(12px, 1.5vw, 22px);
             color: #09243F;
-            padding-right: 15px;
+            padding-right: 0.8vw;
             font-weight: 500;
-            border-right: 2px solid #dee2e6;
-            margin-right: 15px;
+            margin-right: 0.8vw;
+            flex-shrink: 0;
+            line-height: 1.2;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .timeline-project-name::before,
+        .timeline-project-name::after,
+        .timeline-project-name::marker {
+            display: none !important;
+            content: '' !important;
         }
 
         .timeline-bars {
             display: flex;
             flex: 1;
-            min-width: 600px;
             position: relative;
-            height: 30px;
+            height: 2.5vh;
+            min-height: 24px;
         }
 
         .timeline-bar {
             position: absolute;
-            height: 24px;
+            height: 2vh;
+            min-height: 20px;
             border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 10px;
+            font-size: clamp(10px, 1.1vw, 16px);
             font-weight: 600;
-            padding: 0 6px;
+            padding: 0 0.4vw;
         }
 
         .timeline-bar.critical {
@@ -581,31 +646,31 @@ def get_tv_styles():
         }
 
         .heatmap-day-label {
-            font-size: 11px;
+            font-size: clamp(14px, 1.5vw, 20px);
             color: #6c757d;
-            padding: 8px 12px;
+            padding: 0.8vh 1.2vw;
             text-align: right;
             font-weight: 600;
         }
 
         .heatmap-date {
-            font-size: 10px;
+            font-size: clamp(13px, 1.4vw, 18px);
             color: #6c757d;
             text-align: center;
-            margin-bottom: 4px;
+            margin-bottom: 0.5vh;
             font-weight: 500;
         }
 
         .heatmap-cell {
             aspect-ratio: 1;
-            border-radius: 4px;
+            border-radius: 5px;
             border: 1px solid #dee2e6;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: clamp(13px, 1.4vw, 18px);
             font-weight: 600;
-            min-height: 40px;
+            min-height: clamp(40px, 5vh, 60px);
         }
 
         /* Intensity color scales for workload heatmap */
@@ -645,18 +710,19 @@ def get_tv_styles():
             width: 100%;
             max-width: 100%;
             height: 100%;
-            min-height: 350px;
+            min-height: clamp(250px, 30vh, 400px);
             margin: 0 auto;
-            padding: 10px;
+            padding: 0.8vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
 
         .radar-svg {
             width: 100%;
             height: 100%;
-            min-height: 330px;
+            min-height: clamp(230px, 28vh, 380px);
         }
 
         .radar-grid {
@@ -685,7 +751,7 @@ def get_tv_styles():
 
         .radar-label {
             fill: #09243F;
-            font-size: 13px;
+            font-size: clamp(14px, 1.6vw, 22px);
             font-weight: 600;
             text-anchor: middle;
         }
@@ -693,11 +759,11 @@ def get_tv_styles():
         /* Alerts */
         .alert {
             background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 12px;
-            font-size: 14px;
+            border-left: 5px solid #ffc107;
+            padding: 1.5vh 1.5vw;
+            border-radius: 6px;
+            margin-bottom: 1vh;
+            font-size: clamp(14px, 1.6vw, 22px);
         }
 
         .alert.danger {
@@ -714,29 +780,30 @@ def get_tv_styles():
 
         /* Team members */
         .team-member {
-            margin-bottom: 18px;
+            margin-bottom: 1vh;
         }
 
         .team-member-name {
-            font-size: 14px;
+            font-size: clamp(13px, 1.6vw, 23px);
             font-weight: 600;
             color: #09243F;
-            margin-bottom: 6px;
+            margin-bottom: 0.3vh;
         }
 
         .team-member-capacity {
-            font-size: 12px;
+            font-size: clamp(11px, 1.4vw, 20px);
             color: #6c757d;
-            margin-bottom: 6px;
+            margin-bottom: 0.3vh;
         }
 
         .progress-bar {
             width: 100%;
-            height: 28px;
+            height: 2.5vh;
+            min-height: 26px;
             background: #e9ecef;
-            border-radius: 4px;
+            border-radius: 5px;
             overflow: hidden;
-            margin-top: 8px;
+            margin-top: 0.5vh;
         }
 
         .progress-fill {
@@ -746,7 +813,7 @@ def get_tv_styles():
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 13px;
+            font-size: clamp(11px, 1.4vw, 20px);
             font-weight: 600;
         }
 
@@ -757,13 +824,13 @@ def get_tv_styles():
         /* Keyboard hint */
         .keyboard-hint {
             position: fixed;
-            bottom: 25px;
-            right: 25px;
+            bottom: 30px;
+            right: 30px;
             background: rgba(9,36,63,0.9);
             color: white;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 15px;
+            padding: 18px 32px;
+            border-radius: 8px;
+            font-size: 26px;
             opacity: 0.8;
             z-index: 999;
         }
@@ -809,11 +876,12 @@ def get_tv_scripts():
 
     // Tab Navigation
     let currentTab = 0;
-    const tabs = ['overview', 'projects', 'capacity', 'allocation'];
+    const tabs = ['overview', 'projects', 'capacity', 'forecast', 'allocation'];
     const chartsGenerated = {
         overview: false,
         projects: false,
         capacity: false,
+        forecast: false,
         allocation: false
     };
 
@@ -878,6 +946,13 @@ def get_tv_scripts():
                 chartsGenerated.capacity = true;
             }
 
+            if (tabName === 'forecast' && !chartsGenerated.forecast) {
+                console.log('Generating Forecast charts...');
+                // Forecast charts are typically rendered from the original dashboard
+                // No additional generation needed - charts auto-render
+                chartsGenerated.forecast = true;
+            }
+
             if (tabName === 'allocation' && !chartsGenerated.allocation) {
                 console.log('Generating Allocation charts...');
                 if (typeof generateRadarChart === 'function') {
@@ -940,7 +1015,7 @@ def main():
 
     print(f"✅ Tabbed TV Dashboard: {output_file}")
     print("📺 Features:")
-    print("   - 4 tabs: Overview, Projects, Capacity, Allocation")
+    print("   - 5 tabs: Overview, Projects, Capacity, Forecast, Allocation")
     print("   - Use arrow keys ← → to navigate")
     print("   - Click tabs to switch pages")
     print("   - Optimized for 85\" 4K TV viewing")

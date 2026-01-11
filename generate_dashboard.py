@@ -305,8 +305,12 @@ def read_reports():
                                                 if task.get('due_on'):
                                                     due_date = datetime.strptime(task['due_on'], '%Y-%m-%d').date()
 
+                                                # Clean task name - remove checkboxes
+                                                task_name = task.get('name', 'Untitled')
+                                                task_name = task_name.replace('☐', '').replace('☑', '').replace('✓', '').replace('✔', '').strip()
+
                                                 upcoming_shoots.append({
-                                                    'name': task.get('name', 'Untitled'),
+                                                    'name': task_name,
                                                     'datetime': film_datetime,
                                                     'start_on': start_date,
                                                     'due_on': due_date,
@@ -362,8 +366,12 @@ def read_reports():
                             if task.get('start_on'):
                                 start_date = datetime.strptime(task['start_on'], '%Y-%m-%d').date()
 
+                            # Clean task name - remove checkboxes
+                            task_name = task.get('name', 'Untitled')
+                            task_name = task_name.replace('☐', '').replace('☑', '').replace('✓', '').replace('✔', '').strip()
+
                             upcoming_deadlines.append({
-                                'name': task.get('name', 'Untitled'),
+                                'name': task_name,
                                 'start_on': start_date,
                                 'due_date': due_date,
                                 'days_until': days_until,
@@ -376,6 +384,58 @@ def read_reports():
             data['upcoming_deadlines'] = upcoming_deadlines
         except Exception as e:
             print(f"Warning: Could not fetch upcoming deadlines: {e}")
+
+    # Fetch forecasted projects from the Forecast project
+    data['forecasted_projects'] = []
+    if ASANA_PAT:
+        try:
+            forecasted_projects = []
+            forecast_project_gid = '1212059678473189'
+
+            endpoint = f"https://app.asana.com/api/1.0/projects/{forecast_project_gid}/tasks"
+            params = {
+                'opt_fields': 'gid,name,start_on,due_on,due_at,completed,notes'
+            }
+
+            response = requests.get(endpoint, headers=headers, params=params)
+
+            if response.status_code == 200:
+                tasks = response.json().get('data', [])
+
+                for task in tasks:
+                    if task.get('completed', False):
+                        continue
+
+                    # Extract due date (can be due_on or due_at)
+                    due_date = None
+                    if task.get('due_on'):
+                        due_date = datetime.strptime(task['due_on'], '%Y-%m-%d').date()
+                    elif task.get('due_at'):
+                        due_datetime = datetime.fromisoformat(task['due_at'].replace('Z', '+00:00'))
+                        due_date = due_datetime.date()
+
+                    # Parse start_on if available
+                    start_date = None
+                    if task.get('start_on'):
+                        start_date = datetime.strptime(task['start_on'], '%Y-%m-%d').date()
+
+                    # Clean task name - remove checkboxes
+                    task_name = task.get('name', 'Untitled')
+                    task_name = task_name.replace('☐', '').replace('☑', '').replace('✓', '').replace('✔', '').strip()
+
+                    forecasted_projects.append({
+                        'name': task_name,
+                        'start_on': start_date,
+                        'due_date': due_date,
+                        'notes': task.get('notes', ''),
+                        'gid': task.get('gid')
+                    })
+
+                # Sort by due date if available, otherwise by start date
+                forecasted_projects.sort(key=lambda x: (x['due_date'] or datetime.max.date(), x['start_on'] or datetime.max.date()))
+                data['forecasted_projects'] = forecasted_projects
+        except Exception as e:
+            print(f"Warning: Could not fetch forecasted projects: {e}")
 
     return data
 
@@ -1080,26 +1140,50 @@ def generate_html_dashboard(data):
         /* ===== TIMELINE GANTT STYLES ===== */
         .timeline-container {{
             margin: 15px 0;
-            overflow-x: auto;
+            overflow: hidden;
+            list-style: none !important;
+            position: relative;
+            padding-left: 0 !important;
+        }}
+
+        .timeline-container::before {{
+            content: '';
+            position: absolute;
+            left: 25%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #09243F;
+            z-index: 10;
+        }}
+
+        .timeline-container *,
+        .timeline-container *::before,
+        .timeline-container *::after {{
+            list-style: none !important;
+            list-style-type: none !important;
         }}
 
         .timeline-header {{
             display: flex;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             padding-bottom: 8px;
             border-bottom: 2px solid #dee2e6;
         }}
 
         .timeline-project-col {{
-            min-width: 200px;
+            width: 25%;
             font-weight: 600;
-            color: #60BBE9;
+            color: #09243F;
+            font-size: 14px;
+            padding-right: 12px;
+            margin-right: 12px;
+            flex-shrink: 0;
         }}
 
         .timeline-dates {{
             display: flex;
             flex: 1;
-            min-width: 600px;
         }}
 
         .timeline-date {{
@@ -1107,28 +1191,50 @@ def generate_html_dashboard(data):
             text-align: center;
             font-size: 11px;
             color: #6c757d;
+            font-weight: 500;
         }}
 
         .timeline-row {{
             display: flex;
             align-items: center;
             margin-bottom: 10px;
-            min-height: 36px;
+            min-height: 32px;
+            list-style: none !important;
+            list-style-type: none !important;
+        }}
+
+        .timeline-row::before,
+        .timeline-row::after,
+        .timeline-row::marker {{
+            display: none !important;
+            content: none !important;
         }}
 
         .timeline-project-name {{
-            min-width: 200px;
+            width: 25%;
             font-size: 13px;
             color: #09243F;
             padding-right: 12px;
+            font-weight: 500;
+            margin-right: 12px;
+            flex-shrink: 0;
+            line-height: 1.2;
+            overflow: hidden;
+            word-wrap: break-word;
+        }}
+
+        .timeline-project-name::before,
+        .timeline-project-name::after,
+        .timeline-project-name::marker {{
+            display: none !important;
+            content: '' !important;
         }}
 
         .timeline-bars {{
             display: flex;
             flex: 1;
-            min-width: 600px;
             position: relative;
-            height: 40px;
+            height: 32px;
         }}
 
         .timeline-bar {{
@@ -1136,37 +1242,28 @@ def generate_html_dashboard(data):
             height: 24px;
             border-radius: 4px;
             background: #60BBE9;
-            border: 2px solid #60BBE9;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 10px;
             color: white;
             font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }}
-
-        .timeline-bar:hover {{
-            background: #4a9fd8;
         }}
 
         .timeline-bar.critical {{
             background: #dc3545;
-            border-color: #dc3545;
-        }}
-
-        .timeline-bar.critical:hover {{
-            background: #c82333;
         }}
 
         .timeline-bar.warning {{
             background: #ffc107;
-            border-color: #ffc107;
         }}
 
-        .timeline-bar.warning:hover {{
-            background: #e0a800;
+        .timeline-bar.normal {{
+            background: #60BBE9;
+        }}
+
+        .timeline-bar.info {{
+            background: #17a2b8;
         }}
 
         /* ===== RADAR/SPIDER CHART STYLES ===== */
@@ -2182,7 +2279,7 @@ def generate_html_dashboard(data):
     upcoming_shoots = data.get('upcoming_shoots', [])
     if upcoming_shoots:
         html += """
-            <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
+            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(450px, 1fr)); gap: 22px;">
         """
         for shoot in upcoming_shoots:
             # Format date and time
@@ -2209,21 +2306,21 @@ def generate_html_dashboard(data):
             task_url = f"https://app.asana.com/0/0/{shoot['gid']}/f"
 
             html += f"""
-                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 22px; background: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 14px;">
                         <div>
-                            <div style="font-size: 14px; font-weight: bold; color: #09243F;">{date_str}</div>
-                            <div style="font-size: 18px; font-weight: 600; color: {BRAND_BLUE};">{time_str}</div>
+                            <div style="font-size: 24px; font-weight: bold; color: #09243F;">{date_str}</div>
+                            <div style="font-size: 32px; font-weight: 600; color: {BRAND_BLUE}; margin-top: 4px;">{time_str}</div>
                         </div>
-                        <span style="display: inline-block; padding: 4px 10px; background: {BRAND_NAVY}; color: white; font-size: 11px; border-radius: 4px; white-space: nowrap;">{shoot['project']}</span>
+                        <span style="display: inline-block; padding: 8px 16px; background: {BRAND_NAVY}; color: white; font-size: 18px; border-radius: 6px; white-space: nowrap;">{shoot['project']}</span>
                     </div>
-                    <div style="margin-bottom: 10px;">
-                        <a href="{task_url}" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 15px; line-height: 1.4; display: block;">
+                    <div style="margin-bottom: 14px;">
+                        <a href="{task_url}" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 24px; line-height: 1.4; display: block;">
                             {shoot['name']}
                         </a>
                     </div>
-                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #dee2e6;">
-                        <a href="{task_url}" target="_blank" style="color: {BRAND_BLUE}; text-decoration: none; font-size: 12px;">
+                    <div style="margin-top: 14px; padding-top: 14px; border-top: 2px solid #dee2e6;">
+                        <a href="{task_url}" target="_blank" style="color: {BRAND_BLUE}; text-decoration: none; font-size: 20px;">
                             View in Asana →
                         </a>
                     </div>
@@ -2246,13 +2343,13 @@ def generate_html_dashboard(data):
         <!-- Upcoming Project Deadlines -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>⏰ Upcoming Project Deadlines</h2>
-            <p style="color: #6c757d; margin-top: 5px; font-size: 14px;">Projects due within the next 10 days</p>
+            <p style="color: #6c757d; margin-top: 8px; font-size: 20px;">Projects due within the next 10 days</p>
     """
 
     upcoming_deadlines = data.get('upcoming_deadlines', [])
     if upcoming_deadlines:
         html += """
-            <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
+            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(450px, 1fr)); gap: 22px;">
         """
         for deadline in upcoming_deadlines:
             # Format date
@@ -2278,21 +2375,21 @@ def generate_html_dashboard(data):
                 urgency_text = f'{days_until} DAYS'
 
             html += f"""
-                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 22px; background: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 14px;">
                         <div>
-                            <div style="font-size: 14px; font-weight: bold; color: #09243F;">{date_str}</div>
-                            <div style="font-size: 24px; font-weight: 600; color: {urgency_color}; margin-top: 5px;">{urgency_text}</div>
+                            <div style="font-size: 24px; font-weight: bold; color: #09243F;">{date_str}</div>
+                            <div style="font-size: 36px; font-weight: 600; color: {urgency_color}; margin-top: 8px;">{urgency_text}</div>
                         </div>
-                        <span style="display: inline-block; padding: 4px 10px; background: {BRAND_NAVY}; color: white; font-size: 11px; border-radius: 4px; white-space: nowrap;">{deadline['project']}</span>
+                        <span style="display: inline-block; padding: 8px 16px; background: {BRAND_NAVY}; color: white; font-size: 18px; border-radius: 6px; white-space: nowrap;">{deadline['project']}</span>
                     </div>
-                    <div style="margin-bottom: 10px;">
-                        <a href="{task_url}" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 15px; line-height: 1.4; display: block;">
+                    <div style="margin-bottom: 14px;">
+                        <a href="{task_url}" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 24px; line-height: 1.4; display: block;">
                             {deadline['name']}
                         </a>
                     </div>
-                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #dee2e6;">
-                        <a href="{task_url}" target="_blank" style="color: {BRAND_BLUE}; text-decoration: none; font-size: 12px;">
+                    <div style="margin-top: 14px; padding-top: 14px; border-top: 2px solid #dee2e6;">
+                        <a href="{task_url}" target="_blank" style="color: {BRAND_BLUE}; text-decoration: none; font-size: 20px;">
                             View in Asana →
                         </a>
                     </div>
@@ -2561,6 +2658,82 @@ def generate_html_dashboard(data):
             </div>
         </div>
 
+        <!-- Forecasted Projects -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>🔮 Forecasted Projects</h2>
+            <p style="color: #6c757d; margin-top: 8px; font-size: 20px;">Upcoming projects in the forecast pipeline</p>
+    """
+
+    forecasted_projects = data.get('forecasted_projects', [])
+    if forecasted_projects:
+        html += """
+            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(450px, 1fr)); gap: 22px;">
+        """
+        for project in forecasted_projects:
+            # Format dates
+            date_range_str = ""
+            if project['start_on'] and project['due_date']:
+                start_str = project['start_on'].strftime('%b %-d')
+                due_str = project['due_date'].strftime('%b %-d, %Y')
+                date_range_str = f"{start_str} - {due_str}"
+            elif project['due_date']:
+                date_range_str = project['due_date'].strftime('%b %-d, %Y')
+            elif project['start_on']:
+                date_range_str = f"Starts {project['start_on'].strftime('%b %-d, %Y')}"
+            else:
+                date_range_str = "Date TBD"
+
+            # Generate Asana task URL
+            task_url = f"https://app.asana.com/0/0/{project['gid']}/f"
+
+            # Truncate notes if too long
+            notes = project.get('notes', '')
+            if len(notes) > 150:
+                notes = notes[:150] + '...'
+
+            html += f"""
+                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 22px; background: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 14px;">
+                        <div style="flex: 1;">
+                            <div style="font-size: 24px; font-weight: bold; color: #09243F;">{date_range_str}</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 14px;">
+                        <a href="{task_url}" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 24px; line-height: 1.4; display: block;">
+                            {project['name']}
+                        </a>
+                    </div>
+            """
+
+            if notes:
+                html += f"""
+                    <div style="margin-bottom: 14px; color: #6c757d; font-size: 16px; line-height: 1.5;">
+                        {notes}
+                    </div>
+                """
+
+            html += f"""
+                    <div style="margin-top: 14px; padding-top: 14px; border-top: 2px solid #dee2e6;">
+                        <a href="{task_url}" target="_blank" style="color: {BRAND_BLUE}; text-decoration: none; font-size: 20px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            """
+        html += """
+            </div>
+        """
+    else:
+        html += f"""
+            <div style="text-align: center; padding: 30px; color: #6c757d;">
+                <div style="font-size: 48px; margin-bottom: 10px;">📋</div>
+                <div style="font-size: 16px;">No forecasted projects at this time</div>
+            </div>
+        """
+
+    html += """
+        </div>
+
         <!-- Historical Trends Chart -->
         <div class="grid">
             <div class="card full-width">
@@ -2615,8 +2788,10 @@ def generate_html_dashboard(data):
     # Prepare timeline data for JavaScript
     shoots_data = []
     for s in data.get('upcoming_shoots', []):
+        # Remove checkbox characters from name
+        clean_name = s['name'].replace('☐', '').replace('☑', '').replace('✓', '').replace('✔', '').strip()
         shoot_dict = {
-            'name': s['name'],
+            'name': clean_name,
             'datetime': s['datetime'].isoformat(),
             'start_on': s['start_on'].isoformat() if s.get('start_on') else None,
             'due_on': s['due_on'].isoformat() if s.get('due_on') else None,
@@ -2627,8 +2802,10 @@ def generate_html_dashboard(data):
 
     deadlines_data = []
     for d in data.get('upcoming_deadlines', []):
+        # Remove checkbox characters from name
+        clean_name = d['name'].replace('☐', '').replace('☑', '').replace('✓', '').replace('✔', '').strip()
         deadline_dict = {
-            'name': d['name'],
+            'name': clean_name,
             'start_on': d['start_on'].isoformat() if d.get('start_on') else None,
             'due_date': d['due_date'].isoformat(),
             'type': 'deadline'
