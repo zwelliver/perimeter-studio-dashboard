@@ -537,17 +537,26 @@ def get_tv_styles():
             margin-bottom: 0.5vh !important;
         }
 
-        /* Timeline bars container - let it fill remaining space */
-        #forecast-content .card > div > div[style*="display: flex; gap: 3px; height"] {
+        /* Override the inline height: 60px style on timeline bars */
+        #forecast-content .card > div[style*="margin-top: 15px"] {
             flex: 1 !important;
-            height: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
             min-height: 0 !important;
-            align-items: stretch !important;
         }
 
-        /* Individual timeline bars */
-        #forecast-content .card > div > div[style*="display: flex; gap: 3px; height"] > div {
-            height: 100% !important;
+        /* Timeline bars container - let it fill remaining space */
+        #forecast-content .card > div[style*="margin-top: 15px"] > div[style*="display: flex; gap: 3px; height"] {
+            flex: 1 !important;
+            height: auto !important;
+            min-height: 200px !important;
+            max-height: none !important;
+            align-items: flex-end !important;
+        }
+
+        /* Week labels - keep them small */
+        #forecast-content .card > div[style*="margin-top: 15px"] > div[style*="margin-top: 5px"] {
+            flex: 0 0 auto !important;
         }
 
         /* Make chart containers fill available space */
