@@ -331,6 +331,21 @@
             flex: 0 0 auto !important;
         }
 
+        /* Historical Capacity card - all divs should participate in flex */
+        #forecast-content .card:has(#capacityHistoryChart) {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        #forecast-content .card:has(#capacityHistoryChart) > * {
+            flex-shrink: 0 !important;
+        }
+
+        #forecast-content .card:has(#capacityHistoryChart) > .chart-container {
+            flex: 1 !important;
+            flex-shrink: 1 !important;
+        }
+
         /* Make chart containers fill available space */
         #forecast-content .chart-container {
             flex: 1 !important;
@@ -338,6 +353,13 @@
             min-height: 0 !important;
             display: flex !important;
             flex-direction: column !important;
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+
+        /* Reduce margin on subtitle for Historical Capacity */
+        #forecast-content .card:has(#capacityHistoryChart) > div[style*="font-size: 12px"] {
+            margin-bottom: 0.5vh !important;
         }
 
         /* Historical capacity chart canvas - fill container */
@@ -345,7 +367,7 @@
             flex: 1 !important;
             width: 100% !important;
             height: 100% !important;
-            min-height: 0 !important;
+            min-height: 300px !important;
             max-height: none !important;
         }
 
