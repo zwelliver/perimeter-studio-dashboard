@@ -491,6 +491,25 @@ def get_tv_styles():
             overflow: hidden;
         }
 
+        /* Larger charts for Forecast tab (fewer cards, more vertical space) */
+        #forecast-content .chart-container {
+            height: clamp(300px, 35vh, 500px);
+        }
+
+        #forecast-content .card {
+            min-height: auto;
+        }
+
+        /* 6-Month Capacity Timeline - increase bar height for better visibility */
+        #forecast-content .card > div > div[style*="height: 60px"] {
+            height: 150px !important;
+        }
+
+        /* Historical capacity chart needs more space */
+        #forecast-content canvas {
+            min-height: 300px !important;
+        }
+
         canvas {
             max-height: 100% !important;
             width: 100% !important;
