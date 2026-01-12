@@ -498,6 +498,18 @@ def get_tv_styles():
 
         #forecast-content .card {
             min-height: 450px !important;
+            padding: 1vh 1.5vw !important;
+        }
+
+        /* Reduce subtitle margins on forecast tab */
+        #forecast-content .card h2 {
+            margin-bottom: 0.3vh !important;
+        }
+
+        #forecast-content .card p,
+        #forecast-content .card > div[style*="font-size: 12px"] {
+            margin-bottom: 0.5vh !important;
+            margin-top: 0.3vh !important;
         }
 
         /* 6-Month Capacity Timeline - increase bar height for better visibility */
