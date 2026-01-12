@@ -2279,7 +2279,7 @@ def generate_html_dashboard(data):
     upcoming_shoots = data.get('upcoming_shoots', [])
     if upcoming_shoots:
         html += """
-            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(450px, 1fr)); gap: 22px;">
+            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
         """
         for shoot in upcoming_shoots:
             # Format date and time
@@ -2306,21 +2306,21 @@ def generate_html_dashboard(data):
             task_url = f"https://app.asana.com/0/0/{shoot['gid']}/f"
 
             html += f"""
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 22px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 14px;">
+                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <div>
-                            <div style="font-size: 24px; font-weight: bold; color: #09243F;">{date_str}</div>
-                            <div style="font-size: 32px; font-weight: 600; color: {BRAND_BLUE}; margin-top: 4px;">{time_str}</div>
+                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">{date_str}</div>
+                            <div style="font-size: 20px; font-weight: 600; color: {BRAND_BLUE}; margin-top: 4px;">{time_str}</div>
                         </div>
-                        <span style="display: inline-block; padding: 8px 16px; background: {BRAND_NAVY}; color: white; font-size: 18px; border-radius: 6px; white-space: nowrap;">{shoot['project']}</span>
+                        <span style="display: inline-block; padding: 6px 12px; background: {BRAND_NAVY}; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">{shoot['project']}</span>
                     </div>
-                    <div style="margin-bottom: 14px;">
-                        <a href="{task_url}" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 24px; line-height: 1.4; display: block;">
+                    <div style="margin-bottom: 12px;">
+                        <a href="{task_url}" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
                             {shoot['name']}
                         </a>
                     </div>
-                    <div style="margin-top: 14px; padding-top: 14px; border-top: 2px solid #dee2e6;">
-                        <a href="{task_url}" target="_blank" style="color: {BRAND_BLUE}; text-decoration: none; font-size: 20px;">
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="{task_url}" target="_blank" style="color: {BRAND_BLUE}; text-decoration: none; font-size: 14px;">
                             View in Asana →
                         </a>
                     </div>
@@ -2343,13 +2343,13 @@ def generate_html_dashboard(data):
         <!-- Upcoming Project Deadlines -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>⏰ Upcoming Project Deadlines</h2>
-            <p style="color: #6c757d; margin-top: 8px; font-size: 20px;">Projects due within the next 10 days</p>
+            <p style="color: #6c757d; margin-top: 8px; font-size: 14px;">Projects due within the next 10 days</p>
     """
 
     upcoming_deadlines = data.get('upcoming_deadlines', [])
     if upcoming_deadlines:
         html += """
-            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(450px, 1fr)); gap: 22px;">
+            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
         """
         for deadline in upcoming_deadlines:
             # Format date
@@ -2375,21 +2375,21 @@ def generate_html_dashboard(data):
                 urgency_text = f'{days_until} DAYS'
 
             html += f"""
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 22px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 14px;">
+                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <div>
-                            <div style="font-size: 24px; font-weight: bold; color: #09243F;">{date_str}</div>
-                            <div style="font-size: 36px; font-weight: 600; color: {urgency_color}; margin-top: 8px;">{urgency_text}</div>
+                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">{date_str}</div>
+                            <div style="font-size: 22px; font-weight: 600; color: {urgency_color}; margin-top: 6px;">{urgency_text}</div>
                         </div>
-                        <span style="display: inline-block; padding: 8px 16px; background: {BRAND_NAVY}; color: white; font-size: 18px; border-radius: 6px; white-space: nowrap;">{deadline['project']}</span>
+                        <span style="display: inline-block; padding: 6px 12px; background: {BRAND_NAVY}; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">{deadline['project']}</span>
                     </div>
-                    <div style="margin-bottom: 14px;">
-                        <a href="{task_url}" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 24px; line-height: 1.4; display: block;">
+                    <div style="margin-bottom: 12px;">
+                        <a href="{task_url}" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
                             {deadline['name']}
                         </a>
                     </div>
-                    <div style="margin-top: 14px; padding-top: 14px; border-top: 2px solid #dee2e6;">
-                        <a href="{task_url}" target="_blank" style="color: {BRAND_BLUE}; text-decoration: none; font-size: 20px;">
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="{task_url}" target="_blank" style="color: {BRAND_BLUE}; text-decoration: none; font-size: 14px;">
                             View in Asana →
                         </a>
                     </div>
@@ -2661,13 +2661,13 @@ def generate_html_dashboard(data):
         <!-- Forecasted Projects -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>🔮 Forecasted Projects</h2>
-            <p style="color: #6c757d; margin-top: 8px; font-size: 20px;">Upcoming projects in the forecast pipeline</p>
+            <p style="color: #6c757d; margin-top: 8px; font-size: 14px;">Upcoming projects in the forecast pipeline</p>
     """
 
     forecasted_projects = data.get('forecasted_projects', [])
     if forecasted_projects:
         html += """
-            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(450px, 1fr)); gap: 22px;">
+            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
         """
         for project in forecasted_projects:
             # Format dates
@@ -2692,14 +2692,14 @@ def generate_html_dashboard(data):
                 notes = notes[:150] + '...'
 
             html += f"""
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 22px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 14px;">
+                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <div style="flex: 1;">
-                            <div style="font-size: 24px; font-weight: bold; color: #09243F;">{date_range_str}</div>
+                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">{date_range_str}</div>
                         </div>
                     </div>
-                    <div style="margin-bottom: 14px;">
-                        <a href="{task_url}" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 24px; line-height: 1.4; display: block;">
+                    <div style="margin-bottom: 12px;">
+                        <a href="{task_url}" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.4; display: block;">
                             {project['name']}
                         </a>
                     </div>
@@ -2707,14 +2707,14 @@ def generate_html_dashboard(data):
 
             if notes:
                 html += f"""
-                    <div style="margin-bottom: 14px; color: #6c757d; font-size: 16px; line-height: 1.5;">
+                    <div style="margin-bottom: 12px; color: #6c757d; font-size: 14px; line-height: 1.5;">
                         {notes}
                     </div>
                 """
 
             html += f"""
-                    <div style="margin-top: 14px; padding-top: 14px; border-top: 2px solid #dee2e6;">
-                        <a href="{task_url}" target="_blank" style="color: {BRAND_BLUE}; text-decoration: none; font-size: 20px;">
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="{task_url}" target="_blank" style="color: {BRAND_BLUE}; text-decoration: none; font-size: 14px;">
                             View in Asana →
                         </a>
                     </div>

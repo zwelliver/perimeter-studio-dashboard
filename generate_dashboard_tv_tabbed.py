@@ -885,6 +885,11 @@ def get_tv_scripts():
         allocation: false
     };
 
+    // Auto-cycle state management
+    let autoCycleInterval = null;
+    let autoResumeTimeout = null;
+    let isPaused = false;
+
     function showTab(tabName) {
         // Hide all content
         document.querySelectorAll('.tv-content').forEach(content => {
@@ -971,6 +976,50 @@ def get_tv_scripts():
         }, 150);
     }
 
+    // Start auto-cycling
+    function startAutoCycle() {
+        if (autoCycleInterval) {
+            clearInterval(autoCycleInterval);
+        }
+        isPaused = false;
+        autoCycleInterval = setInterval(() => {
+            currentTab = (currentTab + 1) % tabs.length;
+            showTab(tabs[currentTab]);
+            console.log('Auto-cycling to tab:', tabs[currentTab]);
+        }, 45000); // 45 seconds
+        console.log('Auto-cycle started');
+    }
+
+    // Stop auto-cycling
+    function stopAutoCycle() {
+        if (autoCycleInterval) {
+            clearInterval(autoCycleInterval);
+            autoCycleInterval = null;
+        }
+        isPaused = true;
+        console.log('Auto-cycle paused');
+    }
+
+    // Toggle pause/resume
+    function togglePause() {
+        if (isPaused) {
+            // Resume cycling
+            if (autoResumeTimeout) {
+                clearTimeout(autoResumeTimeout);
+                autoResumeTimeout = null;
+            }
+            startAutoCycle();
+        } else {
+            // Pause cycling
+            stopAutoCycle();
+            // Set auto-resume after 30 minutes
+            autoResumeTimeout = setTimeout(() => {
+                console.log('Auto-resuming after 30 minutes of inactivity');
+                startAutoCycle();
+            }, 30 * 60 * 1000); // 30 minutes
+        }
+    }
+
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight' || e.key === 'Right') {
@@ -979,6 +1028,9 @@ def get_tv_scripts():
         } else if (e.key === 'ArrowLeft' || e.key === 'Left') {
             currentTab = (currentTab - 1 + tabs.length) % tabs.length;
             showTab(tabs[currentTab]);
+        } else if (e.key === ' ' || e.code === 'Space') {
+            e.preventDefault(); // Prevent page scroll
+            togglePause();
         }
     });
 
@@ -987,6 +1039,9 @@ def get_tv_scripts():
         console.log('Page loaded, initializing Overview tab...');
         // Start with Overview tab (already active by default)
         showTab('overview');
+
+        // Start auto-cycling
+        startAutoCycle();
     });
     """
 
@@ -1016,7 +1071,10 @@ def main():
     print(f"✅ Tabbed TV Dashboard: {output_file}")
     print("📺 Features:")
     print("   - 5 tabs: Overview, Projects, Capacity, Forecast, Allocation")
-    print("   - Use arrow keys ← → to navigate")
+    print("   - Auto-cycles through tabs every 45 seconds")
+    print("   - Press SPACEBAR to pause/resume auto-cycling")
+    print("   - Auto-resumes after 30 minutes if paused")
+    print("   - Use arrow keys ← → to navigate manually")
     print("   - Click tabs to switch pages")
     print("   - Optimized for 85\" 4K TV viewing")
 
