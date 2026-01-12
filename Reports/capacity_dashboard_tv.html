@@ -264,37 +264,56 @@
         }
 
         /* Larger charts for Forecast tab (fewer cards, more vertical space) */
-        #forecast-content .chart-container {
-            height: clamp(400px, 50vh, 700px) !important;
-        }
-
         #forecast-content .card {
-            min-height: 450px !important;
+            height: 45vh !important;
+            min-height: 45vh !important;
+            max-height: 45vh !important;
             padding: 1vh 1.5vw !important;
+            display: flex !important;
+            flex-direction: column !important;
         }
 
         /* Reduce subtitle margins on forecast tab */
         #forecast-content .card h2 {
             margin-bottom: 0.3vh !important;
+            flex-shrink: 0 !important;
         }
 
         #forecast-content .card p,
         #forecast-content .card > div[style*="font-size: 12px"] {
             margin-bottom: 0.5vh !important;
             margin-top: 0.3vh !important;
+            flex-shrink: 0 !important;
         }
 
-        /* 6-Month Capacity Timeline - increase bar height for better visibility */
-        #forecast-content .card > div > div[style*="height: 60px"],
+        /* Make chart containers fill available space */
+        #forecast-content .chart-container {
+            flex: 1 !important;
+            height: auto !important;
+            min-height: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        /* 6-Month Capacity Timeline - make the bar container fill space */
+        #forecast-content .card > div {
+            flex: 1 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            min-height: 0 !important;
+        }
+
         #forecast-content .card > div > div[style*="display: flex; gap: 3px"] {
-            height: 300px !important;
-            min-height: 300px !important;
+            flex: 1 !important;
+            height: auto !important;
+            min-height: 200px !important;
         }
 
-        /* Historical capacity chart needs more space */
-        #forecast-content canvas {
-            min-height: 450px !important;
-            height: 450px !important;
+        /* Historical capacity chart - fill available space */
+        #forecast-content .chart-container canvas {
+            flex: 1 !important;
+            height: 100% !important;
+            min-height: 0 !important;
         }
 
         canvas {
