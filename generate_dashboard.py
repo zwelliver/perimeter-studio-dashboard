@@ -3346,7 +3346,7 @@ def generate_html_dashboard(data):
 
             const size = 500;
             const center = size / 2;
-            const maxRadius = 150;
+            const maxRadius = 200;
             const numLevels = 5;
 
             // Real category allocation data
@@ -3366,8 +3366,8 @@ def generate_html_dashboard(data):
                 const y = center + maxRadius * Math.sin(angle);
                 svg += `<line class="radar-axis" x1="${{center}}" y1="${{center}}" x2="${{x}}" y2="${{y}}"/>`;
 
-                const labelX = center + (maxRadius + 30) * Math.cos(angle);
-                const labelY = center + (maxRadius + 30) * Math.sin(angle);
+                const labelX = center + (maxRadius + 35) * Math.cos(angle);
+                const labelY = center + (maxRadius + 35) * Math.sin(angle);
                 svg += `<text class="radar-label" x="${{labelX}}" y="${{labelY}}" dy="5">${{cat.name}}</text>`;
             }});
 
