@@ -504,14 +504,43 @@ def get_tv_styles():
         /* Reduce subtitle margins on forecast tab */
         #forecast-content .card h2 {
             margin-bottom: 0.3vh !important;
+            padding-bottom: 0.3vh !important;
             flex-shrink: 0 !important;
         }
 
         #forecast-content .card p,
-        #forecast-content .card > div[style*="font-size: 12px"] {
-            margin-bottom: 0.5vh !important;
-            margin-top: 0.3vh !important;
+        #forecast-content .card > div[style*="font-size: 12px; color"] {
+            margin-bottom: 0.3vh !important;
+            margin-top: 0.2vh !important;
             flex-shrink: 0 !important;
+        }
+
+        /* All direct children divs of cards should flex */
+        #forecast-content .card > div {
+            flex: 1 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            min-height: 0 !important;
+            overflow: hidden !important;
+        }
+
+        /* Month header row for 6-month timeline - don't let it grow */
+        #forecast-content .card > div > div[style*="display: flex; margin-bottom"] {
+            flex: 0 0 auto !important;
+            margin-bottom: 0.5vh !important;
+        }
+
+        /* Timeline bars container - let it fill remaining space */
+        #forecast-content .card > div > div[style*="display: flex; gap: 3px; height"] {
+            flex: 1 !important;
+            height: auto !important;
+            min-height: 0 !important;
+            align-items: stretch !important;
+        }
+
+        /* Individual timeline bars */
+        #forecast-content .card > div > div[style*="display: flex; gap: 3px; height"] > div {
+            height: 100% !important;
         }
 
         /* Make chart containers fill available space */
@@ -523,25 +552,13 @@ def get_tv_styles():
             flex-direction: column !important;
         }
 
-        /* 6-Month Capacity Timeline - make the bar container fill space */
-        #forecast-content .card > div {
-            flex: 1 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            min-height: 0 !important;
-        }
-
-        #forecast-content .card > div > div[style*="display: flex; gap: 3px"] {
-            flex: 1 !important;
-            height: auto !important;
-            min-height: 200px !important;
-        }
-
-        /* Historical capacity chart - fill available space */
+        /* Historical capacity chart canvas - fill container */
         #forecast-content .chart-container canvas {
             flex: 1 !important;
+            width: 100% !important;
             height: 100% !important;
             min-height: 0 !important;
+            max-height: none !important;
         }
 
         canvas {

@@ -276,14 +276,43 @@
         /* Reduce subtitle margins on forecast tab */
         #forecast-content .card h2 {
             margin-bottom: 0.3vh !important;
+            padding-bottom: 0.3vh !important;
             flex-shrink: 0 !important;
         }
 
         #forecast-content .card p,
-        #forecast-content .card > div[style*="font-size: 12px"] {
-            margin-bottom: 0.5vh !important;
-            margin-top: 0.3vh !important;
+        #forecast-content .card > div[style*="font-size: 12px; color"] {
+            margin-bottom: 0.3vh !important;
+            margin-top: 0.2vh !important;
             flex-shrink: 0 !important;
+        }
+
+        /* All direct children divs of cards should flex */
+        #forecast-content .card > div {
+            flex: 1 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            min-height: 0 !important;
+            overflow: hidden !important;
+        }
+
+        /* Month header row for 6-month timeline - don't let it grow */
+        #forecast-content .card > div > div[style*="display: flex; margin-bottom"] {
+            flex: 0 0 auto !important;
+            margin-bottom: 0.5vh !important;
+        }
+
+        /* Timeline bars container - let it fill remaining space */
+        #forecast-content .card > div > div[style*="display: flex; gap: 3px; height"] {
+            flex: 1 !important;
+            height: auto !important;
+            min-height: 0 !important;
+            align-items: stretch !important;
+        }
+
+        /* Individual timeline bars */
+        #forecast-content .card > div > div[style*="display: flex; gap: 3px; height"] > div {
+            height: 100% !important;
         }
 
         /* Make chart containers fill available space */
@@ -295,25 +324,13 @@
             flex-direction: column !important;
         }
 
-        /* 6-Month Capacity Timeline - make the bar container fill space */
-        #forecast-content .card > div {
-            flex: 1 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            min-height: 0 !important;
-        }
-
-        #forecast-content .card > div > div[style*="display: flex; gap: 3px"] {
-            flex: 1 !important;
-            height: auto !important;
-            min-height: 200px !important;
-        }
-
-        /* Historical capacity chart - fill available space */
+        /* Historical capacity chart canvas - fill container */
         #forecast-content .chart-container canvas {
             flex: 1 !important;
+            width: 100% !important;
             height: 100% !important;
             min-height: 0 !important;
+            max-height: none !important;
         }
 
         canvas {
@@ -693,7 +710,7 @@
 <h2>Performance Overview</h2>
 <div class="metric">
 <span class="metric-label">Active Tasks</span>
-<span class="metric-value">29</span>
+<span class="metric-value">31</span>
 </div>
 <div class="metric">
 <span class="metric-label">Projects Completed (30d)</span>
@@ -807,6 +824,25 @@
 <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
 <div>
+<div style="font-size: 16px; font-weight: bold; color: #09243F;">Tue, Jan 20</div>
+<div style="font-size: 20px; font-weight: 600; color: #60BBE9; margin-top: 4px;">2:00 PM</div>
+</div>
+<span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Production</span>
+</div>
+<div style="margin-bottom: 12px;">
+<a href="https://app.asana.com/0/0/1212753815794838/f" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;" target="_blank">
+                            WOV - Penny Eubank
+                        </a>
+</div>
+<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+<a href="https://app.asana.com/0/0/1212753815794838/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
+                            View in Asana →
+                        </a>
+</div>
+</div>
+<div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
+<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+<div>
 <div style="font-size: 16px; font-weight: bold; color: #09243F;">Mon, Jan 26</div>
 <div style="font-size: 20px; font-weight: 600; color: #60BBE9; margin-top: 4px;">11:00 AM</div>
 </div>
@@ -819,6 +855,25 @@
 </div>
 <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
 <a href="https://app.asana.com/0/0/1212722489719345/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
+                            View in Asana →
+                        </a>
+</div>
+</div>
+<div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
+<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+<div>
+<div style="font-size: 16px; font-weight: bold; color: #09243F;">Wed, Jan 28</div>
+<div style="font-size: 20px; font-weight: 600; color: #60BBE9; margin-top: 4px;">10:00 AM</div>
+</div>
+<span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Production</span>
+</div>
+<div style="margin-bottom: 12px;">
+<a href="https://app.asana.com/0/0/1212753445542451/f" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;" target="_blank">
+                            WOV - Evan Forester
+                        </a>
+</div>
+<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+<a href="https://app.asana.com/0/0/1212753445542451/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
                             View in Asana →
                         </a>
 </div>
@@ -866,25 +921,6 @@
 <h2>⏰ Upcoming Project Deadlines</h2>
 <p style="color: #6c757d; margin-top: 8px; font-size: 14px;">Projects due within the next 10 days</p>
 <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
-<div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-<div>
-<div style="font-size: 16px; font-weight: bold; color: #09243F;">Mon, Jan 12, 2026</div>
-<div style="font-size: 22px; font-weight: 600; color: #dc3545; margin-top: 6px;">DUE TODAY</div>
-</div>
-<span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Post Production</span>
-</div>
-<div style="margin-bottom: 12px;">
-<a href="https://app.asana.com/0/0/1211995020691865/f" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;" target="_blank">
-                            Radical Dependence Teaching Series
-                        </a>
-</div>
-<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-<a href="https://app.asana.com/0/0/1211995020691865/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
-                            View in Asana →
-                        </a>
-</div>
-</div>
 <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
 <div>
@@ -942,6 +978,44 @@
                         </a>
 </div>
 </div>
+<div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
+<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+<div>
+<div style="font-size: 16px; font-weight: bold; color: #09243F;">Fri, Jan 16, 2026</div>
+<div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">4 DAYS</div>
+</div>
+<span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Post Production</span>
+</div>
+<div style="margin-bottom: 12px;">
+<a href="https://app.asana.com/0/0/1211995020691865/f" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;" target="_blank">
+                            Radical Dependence Teaching Series
+                        </a>
+</div>
+<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+<a href="https://app.asana.com/0/0/1211995020691865/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
+                            View in Asana →
+                        </a>
+</div>
+</div>
+<div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
+<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+<div>
+<div style="font-size: 16px; font-weight: bold; color: #09243F;">Thu, Jan 22, 2026</div>
+<div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">10 DAYS</div>
+</div>
+<span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Production</span>
+</div>
+<div style="margin-bottom: 12px;">
+<a href="https://app.asana.com/0/0/1212753815794838/f" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;" target="_blank">
+                            WOV - Penny Eubank
+                        </a>
+</div>
+<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+<a href="https://app.asana.com/0/0/1212753815794838/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
+                            View in Asana →
+                        </a>
+</div>
+</div>
 </div>
 </div><div class="card full-width" style="margin-bottom: 30px;">
 <h2>Project Timeline</h2>
@@ -968,10 +1042,10 @@
 </div>
 <div class="team-member">
 <div class="team-member-name">Nick Clark</div>
-<div class="team-member-capacity">59% / 100% capacity</div>
+<div class="team-member-capacity">71% / 100% capacity</div>
 <div class="progress-bar">
-<div class="progress-fill" style="width: 59.0%">
-                                59%
+<div class="progress-fill" style="width: 71.0%">
+                                71%
                             </div>
 </div>
 </div>
@@ -1009,123 +1083,123 @@
 </div><div class="card full-width" style="margin-bottom: 30px;">
 <h2>📊 Capacity Utilization - Next 30 Days</h2>
 <div class="heatmap-grid">
-<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-12: 46.1% capacity">
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-12: 50.4% capacity">
 <div style="font-weight: bold;">01/12</div>
+<div style="font-size: 9px; margin-top: 2px;">50%</div>
+</div>
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-13: 50.4% capacity">
+<div style="font-weight: bold;">01/13</div>
+<div style="font-size: 9px; margin-top: 2px;">50%</div>
+</div>
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-14: 48.6% capacity">
+<div style="font-weight: bold;">01/14</div>
+<div style="font-size: 9px; margin-top: 2px;">49%</div>
+</div>
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-15: 46.1% capacity">
+<div style="font-weight: bold;">01/15</div>
 <div style="font-size: 9px; margin-top: 2px;">46%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-13: 31.1% capacity">
-<div style="font-weight: bold;">01/13</div>
-<div style="font-size: 9px; margin-top: 2px;">31%</div>
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-16: 36.4% capacity">
+<div style="font-weight: bold;">01/16</div>
+<div style="font-size: 9px; margin-top: 2px;">36%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-14: 29.3% capacity">
-<div style="font-weight: bold;">01/14</div>
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-17: 21.4% capacity">
+<div style="font-weight: bold;">01/17</div>
+<div style="font-size: 9px; margin-top: 2px;">21%</div>
+</div>
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-18: 21.4% capacity">
+<div style="font-weight: bold;">01/18</div>
+<div style="font-size: 9px; margin-top: 2px;">21%</div>
+</div>
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-19: 21.4% capacity">
+<div style="font-weight: bold;">01/19</div>
+<div style="font-size: 9px; margin-top: 2px;">21%</div>
+</div>
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-20: 23.9% capacity">
+<div style="font-weight: bold;">01/20</div>
+<div style="font-size: 9px; margin-top: 2px;">24%</div>
+</div>
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-21: 23.9% capacity">
+<div style="font-weight: bold;">01/21</div>
+<div style="font-size: 9px; margin-top: 2px;">24%</div>
+</div>
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-22: 23.9% capacity">
+<div style="font-weight: bold;">01/22</div>
+<div style="font-size: 9px; margin-top: 2px;">24%</div>
+</div>
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-23: 23.9% capacity">
+<div style="font-weight: bold;">01/23</div>
+<div style="font-size: 9px; margin-top: 2px;">24%</div>
+</div>
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-24: 28.9% capacity">
+<div style="font-weight: bold;">01/24</div>
 <div style="font-size: 9px; margin-top: 2px;">29%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-15: 26.8% capacity">
-<div style="font-weight: bold;">01/15</div>
-<div style="font-size: 9px; margin-top: 2px;">27%</div>
-</div>
-<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-16: 17.1% capacity">
-<div style="font-weight: bold;">01/16</div>
-<div style="font-size: 9px; margin-top: 2px;">17%</div>
-</div>
-<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-17: 17.1% capacity">
-<div style="font-weight: bold;">01/17</div>
-<div style="font-size: 9px; margin-top: 2px;">17%</div>
-</div>
-<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-18: 17.1% capacity">
-<div style="font-weight: bold;">01/18</div>
-<div style="font-size: 9px; margin-top: 2px;">17%</div>
-</div>
-<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-19: 17.1% capacity">
-<div style="font-weight: bold;">01/19</div>
-<div style="font-size: 9px; margin-top: 2px;">17%</div>
-</div>
-<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-20: 19.6% capacity">
-<div style="font-weight: bold;">01/20</div>
-<div style="font-size: 9px; margin-top: 2px;">20%</div>
-</div>
-<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-21: 19.6% capacity">
-<div style="font-weight: bold;">01/21</div>
-<div style="font-size: 9px; margin-top: 2px;">20%</div>
-</div>
-<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-22: 19.6% capacity">
-<div style="font-weight: bold;">01/22</div>
-<div style="font-size: 9px; margin-top: 2px;">20%</div>
-</div>
-<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-23: 21.8% capacity">
-<div style="font-weight: bold;">01/23</div>
-<div style="font-size: 9px; margin-top: 2px;">22%</div>
-</div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-24: 26.8% capacity">
-<div style="font-weight: bold;">01/24</div>
-<div style="font-size: 9px; margin-top: 2px;">27%</div>
-</div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-25: 26.8% capacity">
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-25: 28.9% capacity">
 <div style="font-weight: bold;">01/25</div>
-<div style="font-size: 9px; margin-top: 2px;">27%</div>
+<div style="font-size: 9px; margin-top: 2px;">29%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-26: 26.8% capacity">
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-26: 28.9% capacity">
 <div style="font-weight: bold;">01/26</div>
-<div style="font-size: 9px; margin-top: 2px;">27%</div>
+<div style="font-size: 9px; margin-top: 2px;">29%</div>
 </div>
-<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-27: 22.5% capacity">
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-27: 24.6% capacity">
 <div style="font-weight: bold;">01/27</div>
-<div style="font-size: 9px; margin-top: 2px;">22%</div>
+<div style="font-size: 9px; margin-top: 2px;">25%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-28: 30.0% capacity">
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-28: 32.1% capacity">
 <div style="font-weight: bold;">01/28</div>
-<div style="font-size: 9px; margin-top: 2px;">30%</div>
+<div style="font-size: 9px; margin-top: 2px;">32%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-29: 30.0% capacity">
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-29: 32.1% capacity">
 <div style="font-weight: bold;">01/29</div>
-<div style="font-size: 9px; margin-top: 2px;">30%</div>
+<div style="font-size: 9px; margin-top: 2px;">32%</div>
 </div>
 <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-30: 31.1% capacity">
 <div style="font-weight: bold;">01/30</div>
 <div style="font-size: 9px; margin-top: 2px;">31%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-31: 25.7% capacity">
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-31: 25.7% capacity">
 <div style="font-weight: bold;">01/31</div>
 <div style="font-size: 9px; margin-top: 2px;">26%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-01: 25.7% capacity">
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-01: 25.7% capacity">
 <div style="font-weight: bold;">02/01</div>
 <div style="font-size: 9px; margin-top: 2px;">26%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-02: 25.7% capacity">
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-02: 25.7% capacity">
 <div style="font-weight: bold;">02/02</div>
 <div style="font-size: 9px; margin-top: 2px;">26%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-03: 25.7% capacity">
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-03: 25.7% capacity">
 <div style="font-weight: bold;">02/03</div>
 <div style="font-size: 9px; margin-top: 2px;">26%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-04: 25.7% capacity">
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-04: 25.7% capacity">
 <div style="font-weight: bold;">02/04</div>
 <div style="font-size: 9px; margin-top: 2px;">26%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-05: 25.7% capacity">
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-05: 25.7% capacity">
 <div style="font-weight: bold;">02/05</div>
 <div style="font-size: 9px; margin-top: 2px;">26%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-06: 25.7% capacity">
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-06: 25.7% capacity">
 <div style="font-weight: bold;">02/06</div>
 <div style="font-size: 9px; margin-top: 2px;">26%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-07: 25.7% capacity">
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-07: 25.7% capacity">
 <div style="font-weight: bold;">02/07</div>
 <div style="font-size: 9px; margin-top: 2px;">26%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-08: 25.7% capacity">
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-08: 25.7% capacity">
 <div style="font-weight: bold;">02/08</div>
 <div style="font-size: 9px; margin-top: 2px;">26%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-09: 25.7% capacity">
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-09: 25.7% capacity">
 <div style="font-weight: bold;">02/09</div>
 <div style="font-size: 9px; margin-top: 2px;">26%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-10: 25.7% capacity">
+<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-10: 25.7% capacity">
 <div style="font-weight: bold;">02/10</div>
 <div style="font-size: 9px; margin-top: 2px;">26%</div>
 </div>
@@ -1163,19 +1237,19 @@
 </div>
 <!-- Timeline bars -->
 <div style="display: flex; gap: 3px; height: 60px; align-items: flex-end;">
-<div style="flex: 1; background: #fd7e14; height: 34.29081632653062%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 1 (2026-01-12): 26% capacity, 9 tasks">
+<div style="flex: 1; background: #fd7e14; height: 51.005102040816325%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 1 (2026-01-12): 39% capacity, 11 tasks">
 </div>
-<div style="flex: 1; background: #ffc107; height: 28.12244897959184%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 2 (2026-01-19): 22% capacity, 8 tasks">
+<div style="flex: 1; background: #ffc107; height: 32.5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 2 (2026-01-19): 25% capacity, 10 tasks">
 </div>
-<div style="flex: 1; background: #fd7e14; height: 35.61734693877551%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 3 (2026-01-26): 27% capacity, 10 tasks">
+<div style="flex: 1; background: #ffc107; height: 37.20918367346939%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 3 (2026-01-26): 29% capacity, 11 tasks">
 </div>
-<div style="flex: 1; background: #fd7e14; height: 33.42857142857142%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 4 (2026-02-02): 26% capacity, 7 tasks">
+<div style="flex: 1; background: #ffc107; height: 33.42857142857142%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 4 (2026-02-02): 26% capacity, 7 tasks">
 </div>
 <div style="flex: 1; background: #ffc107; height: 29.183673469387756%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 5 (2026-02-09): 22% capacity, 7 tasks">
 </div>
-<div style="flex: 1; background: #ffc107; height: 26.331632653061224%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 6 (2026-02-16): 20% capacity, 6 tasks">
+<div style="flex: 1; background: #28a745; height: 26.331632653061224%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 6 (2026-02-16): 20% capacity, 6 tasks">
 </div>
-<div style="flex: 1; background: #ffc107; height: 21.954081632653065%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 7 (2026-02-23): 17% capacity, 5 tasks">
+<div style="flex: 1; background: #28a745; height: 21.954081632653065%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 7 (2026-02-23): 17% capacity, 5 tasks">
 </div>
 <div style="flex: 1; background: #28a745; height: 16.71428571428571%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 8 (2026-03-02): 13% capacity, 3 tasks">
 </div>
@@ -2223,8 +2297,8 @@ Dec 1...
             if (!timelineContainer) return;
 
             // Real shoots and deadlines data
-            const shoots = [{"name": "Fully Furnished Broll Filming", "datetime": "2026-01-13T13:30:00+00:00", "start_on": null, "due_on": "2026-01-13", "type": "shoot"}, {"name": "Womens Retreat Janie Butler Testimony", "datetime": "2026-01-14T16:00:00+00:00", "start_on": null, "due_on": "2026-01-14", "type": "shoot"}, {"name": "Womens Retreat Laura Madden Memorial Video", "datetime": "2026-01-14T16:00:00+00:00", "start_on": null, "due_on": "2026-02-19", "type": "shoot"}, {"name": "Unlimited Grace - Podcast-January", "datetime": "2026-01-26T16:00:00+00:00", "start_on": null, "due_on": "2026-01-30", "type": "shoot"}, {"name": "Jeff's Do/Done Diagram Video", "datetime": "2026-02-09T00:00:00+00:00", "start_on": null, "due_on": null, "type": "shoot"}, {"name": "Unlimited Grace - Podcast- February", "datetime": "2026-02-16T00:00:00+00:00", "start_on": null, "due_on": "2026-02-23", "type": "shoot"}];
-            const deadlines = [{"name": "Radical Dependence Teaching Series", "start_on": null, "due_date": "2026-01-12", "type": "deadline"}, {"name": "Fully Furnished Broll Filming", "start_on": null, "due_date": "2026-01-13", "type": "deadline"}, {"name": "Womens Retreat Janie Butler Testimony", "start_on": null, "due_date": "2026-01-14", "type": "deadline"}, {"name": "Perimeter Live Worship Album Songs", "start_on": null, "due_date": "2026-01-15", "type": "deadline"}];
+            const shoots = [{"name": "Fully Furnished Broll Filming", "datetime": "2026-01-13T13:30:00+00:00", "start_on": null, "due_on": "2026-01-13", "type": "shoot"}, {"name": "Womens Retreat Janie Butler Testimony", "datetime": "2026-01-14T16:00:00+00:00", "start_on": null, "due_on": "2026-01-14", "type": "shoot"}, {"name": "Womens Retreat Laura Madden Memorial Video", "datetime": "2026-01-14T16:00:00+00:00", "start_on": null, "due_on": "2026-02-19", "type": "shoot"}, {"name": "WOV - Penny Eubank", "datetime": "2026-01-20T19:00:00+00:00", "start_on": null, "due_on": "2026-01-22", "type": "shoot"}, {"name": "Unlimited Grace - Podcast-January", "datetime": "2026-01-26T16:00:00+00:00", "start_on": null, "due_on": "2026-01-30", "type": "shoot"}, {"name": "WOV - Evan Forester", "datetime": "2026-01-28T15:00:00+00:00", "start_on": null, "due_on": "2026-01-29", "type": "shoot"}, {"name": "Jeff's Do/Done Diagram Video", "datetime": "2026-02-09T00:00:00+00:00", "start_on": null, "due_on": null, "type": "shoot"}, {"name": "Unlimited Grace - Podcast- February", "datetime": "2026-02-16T00:00:00+00:00", "start_on": null, "due_on": "2026-02-23", "type": "shoot"}];
+            const deadlines = [{"name": "Fully Furnished Broll Filming", "start_on": null, "due_date": "2026-01-13", "type": "deadline"}, {"name": "Womens Retreat Janie Butler Testimony", "start_on": null, "due_date": "2026-01-14", "type": "deadline"}, {"name": "Perimeter Live Worship Album Songs", "start_on": null, "due_date": "2026-01-15", "type": "deadline"}, {"name": "Radical Dependence Teaching Series", "start_on": null, "due_date": "2026-01-16", "type": "deadline"}, {"name": "WOV - Penny Eubank", "start_on": null, "due_date": "2026-01-22", "type": "deadline"}];
 
             // Combine and convert to timeline format
             const now = new Date();
@@ -2456,7 +2530,7 @@ Dec 1...
 
             const days = 10;
             // Calculate intensity from team utilization (0-4 scale)
-            const teamUtilization = 64;
+            const teamUtilization = 67;
             const baseIntensity = teamUtilization < 40 ? 0 : teamUtilization < 60 ? 1 : teamUtilization < 80 ? 2 : teamUtilization < 100 ? 3 : 4;
 
             // Create variation for next 10 days
@@ -2489,8 +2563,8 @@ Dec 1...
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 animateProgressRing('ringOnTime', 'ringOnTimeValue', 100);
-                animateProgressRing('ringUtilization', 'ringUtilizationValue', 64);
-                animateProgressRing('ringProjects', 'ringProjectsValue', 29, true);
+                animateProgressRing('ringUtilization', 'ringUtilizationValue', 67);
+                animateProgressRing('ringProjects', 'ringProjectsValue', 31, true);
 
                 generateTimeline();
                 generateRadarChart();
