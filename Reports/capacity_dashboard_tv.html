@@ -263,11 +263,18 @@
             overflow: hidden;
         }
 
+        /* Forecast tab - single column layout with larger cards */
+        #forecast-content .grid {
+            grid-template-columns: 1fr !important;
+            align-content: stretch !important;
+            grid-auto-rows: 1fr !important;
+        }
+
         /* Larger charts for Forecast tab (fewer cards, more vertical space) */
         #forecast-content .card {
-            height: 45vh !important;
-            min-height: 45vh !important;
-            max-height: 45vh !important;
+            height: auto !important;
+            min-height: 42vh !important;
+            max-height: none !important;
             padding: 1vh 1.5vw !important;
             display: flex !important;
             flex-direction: column !important;
