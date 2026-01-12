@@ -1269,8 +1269,8 @@ def generate_html_dashboard(data):
         /* ===== RADAR/SPIDER CHART STYLES ===== */
         .radar-container {{
             position: relative;
-            width: 500px;
-            height: 500px;
+            width: 600px;
+            height: 600px;
             margin: 20px auto;
         }}
 
@@ -3344,7 +3344,7 @@ def generate_html_dashboard(data):
             const container = document.getElementById('radarChart');
             if (!container) return;
 
-            const size = 500;
+            const size = 600;
             const center = size / 2;
             const maxRadius = 200;
             const numLevels = 5;
@@ -3366,8 +3366,8 @@ def generate_html_dashboard(data):
                 const y = center + maxRadius * Math.sin(angle);
                 svg += `<line class="radar-axis" x1="${{center}}" y1="${{center}}" x2="${{x}}" y2="${{y}}"/>`;
 
-                const labelX = center + (maxRadius + 35) * Math.cos(angle);
-                const labelY = center + (maxRadius + 35) * Math.sin(angle);
+                const labelX = center + (maxRadius + 50) * Math.cos(angle);
+                const labelY = center + (maxRadius + 50) * Math.sin(angle);
                 svg += `<text class="radar-label" x="${{labelX}}" y="${{labelY}}" dy="5">${{cat.name}}</text>`;
             }});
 
