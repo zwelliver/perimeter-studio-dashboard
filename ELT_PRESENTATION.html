@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio Automation System - ELT Presentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #60bbe9 0%, #4a9fd1 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-align: center;
+            border-bottom: 5px solid #60bbe9;
+            padding-bottom: 20px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.3em;
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            color: #60bbe9;
+            font-size: 2.2em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 6px solid #60bbe9;
+            padding-left: 20px;
+        }
+
+        h3 {
+            color: #34495e;
+            font-size: 1.5em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            text-align: justify;
+        }
+
+        ul {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+
+        .metric-box {
+            background: linear-gradient(135deg, #60bbe9 0%, #4a9fd1 100%);
+            color: white;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .metric-box h3 {
+            color: white;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .metric-box p {
+            font-size: 1.2em;
+            text-align: left;
+        }
+
+        .benefit-box {
+            background: #e8f4f8;
+            border-left: 6px solid #3498db;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+
+        .benefit-box h3 {
+            color: #2980b9;
+            margin-top: 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: white;
+            border: 2px solid #60bbe9;
+            padding: 25px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #60bbe9;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        .priority-section {
+            background: #fff3cd;
+            border-left: 6px solid #ffc107;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+
+        .priority-section h3 {
+            color: #856404;
+            margin-top: 0;
+        }
+
+        .trust-section {
+            background: #d4edda;
+            border-left: 6px solid #28a745;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+
+        .trust-section h3 {
+            color: #155724;
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #60bbe9;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #60bbe9 0%, #4a9fd1 100%);
+            color: white;
+            padding: 40px;
+            margin: 40px -50px -50px -50px;
+            border-radius: 0 0 8px 8px;
+            text-align: center;
+        }
+
+        .conclusion h2 {
+            color: white;
+            border: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .conclusion p {
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 30px;
+            }
+
+            .metric-box, .conclusion {
+                background: #60bbe9;
+                color: white;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Studio Automation System</h1>
+        <p class="subtitle">Delivering Consistency, Priorities, and Staff Health Through AI-Powered Workflows</p>
+
+        <h2>Executive Summary</h2>
+
+        <p>The Studio team has implemented a comprehensive AI-powered automation system that directly enforces the strategic allocation framework established by leadership. The system tracks, measures, and reports capacity against the five priority categories you defined.</p>
+
+        <h3>Your Strategic Allocation Framework</h3>
+        <table>
+            <tr>
+                <th>Category</th>
+                <th>Target Allocation</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td><strong>Spiritual Formation</strong></td>
+                <td>30%</td>
+                <td>Equip our people (Teaching, Life on Life, WOV)</td>
+            </tr>
+            <tr>
+                <td><strong>Communications</strong></td>
+                <td>30%</td>
+                <td>Inform and engage people in church life (Testimonies, campaigns, events)</td>
+            </tr>
+            <tr>
+                <td><strong>Pastoral/Strategic</strong></td>
+                <td>20%</td>
+                <td>Support Jeff's goals and priorities</td>
+            </tr>
+            <tr>
+                <td><strong>Creative Resources</strong></td>
+                <td>15%</td>
+                <td>Extend voice/reach to broader audience (Digging Deeper, partnerships)</td>
+            </tr>
+            <tr>
+                <td><strong>Partners</strong></td>
+                <td>5%</td>
+                <td>Support church plants, nonprofits, global partners</td>
+            </tr>
+        </table>
+
+        <div class="metric-box">
+            <h3>The System Enforces These Priorities Automatically</h3>
+            <p>Every task is automatically scored and categorized. The dashboard shows real-time allocation across all five categories, so you always know if we're aligned with your strategic framework.</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Task Automation</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">15 min</div>
+                <div class="stat-label">Update Frequency</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">Real-time</div>
+                <div class="stat-label">Dashboard Visibility</div>
+            </div>
+        </div>
+
+        <h2>1. Consistency: Standardized, Predictable Workflows</h2>
+
+        <div class="metric-box">
+            <h3>Zero Manual Data Entry</h3>
+            <p>Every task is automatically analyzed, categorized, and capacity-scored within 15 minutes of creation. This eliminates human error and ensures consistent data across all projects.</p>
+        </div>
+
+        <div class="benefit-box">
+            <h3>Consistent Processes</h3>
+            <ul>
+                <li><strong>Automated Task Classification:</strong> AI determines category and type for every task using the same criteria every time</li>
+                <li><strong>Standardized Capacity Calculation:</strong> All tasks measured against the same baseline formulas</li>
+                <li><strong>Uniform Calendar Integration:</strong> Film dates and due dates automatically sync to Google Calendar</li>
+                <li><strong>Predictable WOV Workflow:</strong> Calendar event automatically triggers complete task creation with all fields populated</li>
+            </ul>
+        </div>
+
+        <h3>What This Means for ELT</h3>
+        <p><strong>You can trust the data.</strong> Whether you're looking at capacity today or three months ago, the same measurement standards apply. Decision-making is based on consistent, reliable metrics.</p>
+
+        <h2>2. How the System Enforces Your Strategic Priorities</h2>
+
+        <h3>Automated Priority Scoring</h3>
+        <p>Every video project request is automatically scored using AI based on three factors:</p>
+
+        <div class="benefit-box">
+            <h3>Priority Score = Purpose + Audience + Scope</h3>
+            <p><strong>Purpose (1-4 points):</strong></p>
+            <ul>
+                <li>4 = Equipping (Teaching, Strategic Partnerships, Jeff Norris content)</li>
+                <li>3 = Enriching (WOV, Testimonies, Campaign updates)</li>
+                <li>2 = Ministry Support (Event promos, recaps, ministry profiles)</li>
+                <li>1 = Partner Support (Church plants, nonprofits, global partners)</li>
+            </ul>
+            <p><strong>Audience (1-4 points):</strong> Church-wide (4), Community (3), People Groups (2), Ministry Groups (1)</p>
+            <p><strong>Scope (1-4 points):</strong> Evergreen content (4), Seasonal/Campaign (3), Event-driven (2), One-time (1)</p>
+        </div>
+
+        <p>This scoring system ensures high-priority work (Spiritual Formation, Pastoral/Strategic) automatically gets scheduled first.</p>
+
+        <h3>Real-Time Allocation Tracking</h3>
+
+        <div class="priority-section">
+            <h3>Dashboard Shows Actual vs. Target Allocation</h3>
+            <p>The system tracks capacity consumption across your five strategic categories in real-time:</p>
+            <table>
+                <tr>
+                    <th>Category</th>
+                    <th>Target</th>
+                    <th>Current Status</th>
+                </tr>
+                <tr>
+                    <td>Spiritual Formation</td>
+                    <td>30%</td>
+                    <td>✅ Visual indicator showing if on-target, over, or under</td>
+                </tr>
+                <tr>
+                    <td>Communications</td>
+                    <td>30%</td>
+                    <td>✅ Visual indicator showing if on-target, over, or under</td>
+                </tr>
+                <tr>
+                    <td>Pastoral/Strategic</td>
+                    <td>20%</td>
+                    <td>✅ Visual indicator showing if on-target, over, or under</td>
+                </tr>
+                <tr>
+                    <td>Creative Resources</td>
+                    <td>15%</td>
+                    <td>✅ Visual indicator showing if on-target, over, or under</td>
+                </tr>
+                <tr>
+                    <td>Partners</td>
+                    <td>5%</td>
+                    <td>✅ Visual indicator showing if on-target, over, or under</td>
+                </tr>
+            </table>
+        </div>
+
+        <h3>Forward Planning with Forecast Project</h3>
+        <p>The <strong>Forecast project</strong> shows what's being planned 3-6 months ahead, with capacity already modeled against your five strategic categories. This allows us to:</p>
+        <ul>
+            <li>Identify when strategic initiatives would push us over target allocations</li>
+            <li>Plan resource needs before they become urgent</li>
+            <li>Show you exactly where capacity is committed in future quarters</li>
+            <li>Model "what-if" scenarios for new initiatives</li>
+        </ul>
+
+        <h2>3. Staff Health: Sustainable Workloads</h2>
+
+        <div class="metric-box">
+            <h3>Preventing Burnout Through Visibility</h3>
+            <p>The system tracks capacity allocation in real-time, providing early warnings when team workload exceeds sustainable levels (>100% capacity).</p>
+        </div>
+
+        <h3>How We Protect Staff Health</h3>
+
+        <div class="benefit-box">
+            <h3>Automatic Capacity Monitoring</h3>
+            <ul>
+                <li><strong>Weekly Capacity Reports:</strong> Every Monday, team receives capacity analysis showing if we're overloaded</li>
+                <li><strong>Color-Coded Warnings:</strong> Dashboard shows green (healthy), yellow (high), red (overloaded) status</li>
+                <li><strong>Historical Tracking:</strong> System learns actual time tasks take and improves estimates</li>
+                <li><strong>Actual vs. Estimated Variance:</strong> Shows when estimates are consistently wrong so we can adjust</li>
+            </ul>
+        </div>
+
+        <div class="benefit-box">
+            <h3>Reduced Manual Overhead</h3>
+            <p>Staff no longer spend time on:</p>
+            <ul>
+                <li>Manual capacity spreadsheets</li>
+                <li>Creating WOV tasks from calendar events</li>
+                <li>Manually syncing film dates to calendar</li>
+                <li>Requesting and waiting for production backdrops</li>
+                <li>Updating dashboards and reports</li>
+            </ul>
+            <p><strong>Result: More time for creative work, less time on administrative tasks</strong></p>
+        </div>
+
+        <h3>The Numbers</h3>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">~10 hrs</div>
+                <div class="stat-label">Admin Time Saved Per Week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">3-6 mo</div>
+                <div class="stat-label">Forward Planning (Forecast)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">90 days</div>
+                <div class="stat-label">Active Production Visibility</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">Every 15 min</div>
+                <div class="stat-label">Capacity Updates</div>
+            </div>
+        </div>
+
+        <h2>4. Complete Transparency: What You Can See</h2>
+
+        <h3>The Dashboard Answers Your Questions</h3>
+
+        <table>
+            <tr>
+                <th>Question</th>
+                <th>What the Dashboard Shows</th>
+            </tr>
+            <tr>
+                <td><strong>"Are we aligned with strategic priorities?"</strong></td>
+                <td>Real-time allocation % for all 5 categories vs. your targets (30/30/20/15/5)</td>
+            </tr>
+            <tr>
+                <td><strong>"What is the studio working on this week?"</strong></td>
+                <td>All active tasks across Preproduction, Production, Post Production, and Forecast</td>
+            </tr>
+            <tr>
+                <td><strong>"Do we have capacity for this new initiative?"</strong></td>
+                <td>Current capacity utilization %, available capacity, and which categories have room</td>
+            </tr>
+            <tr>
+                <td><strong>"What's filming in the next 30/60/90 days?"</strong></td>
+                <td>Production timeline showing all scheduled film dates with category tags</td>
+            </tr>
+            <tr>
+                <td><strong>"Are we delivering on time?"</strong></td>
+                <td>On-time completion rate, average delay for late tasks, performance by category</td>
+            </tr>
+            <tr>
+                <td><strong>"What strategic initiatives are planned for Q2/Q3/Q4?"</strong></td>
+                <td>Forecast project showing future work with capacity pre-allocated by category</td>
+            </tr>
+            <tr>
+                <td><strong>"Are our estimates accurate?"</strong></td>
+                <td>Estimated vs. actual allocation variance, showing continuous improvement</td>
+            </tr>
+        </table>
+
+        <h3>How Data Demonstrates Accountability</h3>
+
+        <div class="benefit-box">
+            <ul>
+                <li><strong>Every task is tracked</strong> from creation to completion with timestamps and category tags</li>
+                <li><strong>System shows true capacity</strong> - when we're overloaded, dashboard immediately shows red warning</li>
+                <li><strong>No manual manipulation</strong> - AI determines all scores and allocations using the same criteria every time</li>
+                <li><strong>Historical trends visible</strong> - see how allocation has tracked against targets over weeks/months</li>
+                <li><strong>Continuous learning</strong> - actual vs. estimated variance shows system improving estimates over time</li>
+            </ul>
+        </div>
+
+        <div class="trust-section">
+            <h3>Alignment Over Time</h3>
+            <p>The system doesn't just track current week - it shows trending data demonstrating sustained alignment with your strategic framework. You can see:</p>
+            <ul>
+                <li>Monthly allocation percentages for each category</li>
+                <li>Quarterly performance against targets</li>
+                <li>Annual production mix aligned with your 30/30/20/15/5 framework</li>
+            </ul>
+        </div>
+
+        <h2>5. The Bottom Line</h2>
+
+        <div class="metric-box">
+            <h3>What We've Built</h3>
+            <p>A fully automated production management system that:</p>
+            <ul>
+                <li><strong>Enforces your strategic priorities</strong> through automated scoring and allocation tracking</li>
+                <li><strong>Shows real-time alignment</strong> against your 5-category framework (30/30/20/15/5)</li>
+                <li><strong>Provides immediate answers</strong> to capacity and planning questions</li>
+                <li><strong>Protects staff health</strong> through workload monitoring and early warnings</li>
+                <li><strong>Demonstrates forward planning</strong> with 3-6 month visibility via Forecast project</li>
+                <li><strong>Delivers complete transparency</strong> - every task, every category, every metric visible in real-time</li>
+            </ul>
+        </div>
+
+        <h3>ROI Summary</h3>
+        <ul>
+            <li><strong>Time Savings:</strong> ~10 hours/week of manual administrative work eliminated</li>
+            <li><strong>Visibility:</strong> Real-time dashboard replacing delayed manual reports</li>
+            <li><strong>Accuracy:</strong> AI-powered estimates improving with every completed task</li>
+            <li><strong>Scalability:</strong> System handles unlimited tasks with zero additional overhead</li>
+        </ul>
+
+        <div class="conclusion">
+            <h2>Your Priorities, Enforced by Automation</h2>
+            <p>This system takes the strategic allocation framework you established and makes it operational reality. Every video request, every capacity decision, every resource allocation is measured against your five categories.</p>
+            <p><strong>The dashboard gives you real-time visibility into how studio resources align with your strategic priorities.</strong></p>
+        </div>
+    </div>
+</body>
+</html>

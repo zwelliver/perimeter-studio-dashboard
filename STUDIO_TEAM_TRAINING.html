@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio Automation System - Team Training Guide</title>
+    <style>
+        @media print {
+            .no-print { display: none; }
+            .page-break { page-break-before: always; }
+            body { font-size: 11pt; }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #f8f9fa;
+        }
+
+        .container {
+            background: white;
+            padding: 60px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        h3 {
+            color: #34495e;
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: #555;
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .highlight-box {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .success-box {
+            background: #d5f4e6;
+            border-left: 4px solid #27ae60;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #f39c12;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .danger-box {
+            background: #f8d7da;
+            border-left: 4px solid #e74c3c;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #c7254e;
+        }
+
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .formula {
+            background: #fff;
+            border: 2px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .example {
+            background: #f8f9fa;
+            border-left: 3px solid #95a5a6;
+            padding: 15px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+
+        .flow-diagram {
+            background: linear-gradient(to right, #3498db, #2980b9);
+            color: white;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .toc {
+            background: #ecf0f1;
+            padding: 30px;
+            border-radius: 5px;
+            margin: 30px 0;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .toc li {
+            margin-bottom: 10px;
+        }
+
+        .toc a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .toc a:hover {
+            color: #3498db;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .badge-auto {
+            background: #27ae60;
+            color: white;
+        }
+
+        .badge-manual {
+            background: #e67e22;
+            color: white;
+        }
+
+        .badge-time {
+            background: #9b59b6;
+            color: white;
+        }
+
+        .section-number {
+            color: #3498db;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+
+        .print-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 20px 0;
+        }
+
+        .print-button:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Studio Automation System</h1>
+        <p class="subtitle">Complete Team Training Guide</p>
+
+        <div class="highlight-box no-print">
+            <strong>Training Duration:</strong> 45-60 minutes<br>
+            <strong>Format:</strong> Presentation + Live Demo + Q&A<br>
+            <strong>Materials Needed:</strong> Projector, access to Asana, access to dashboard
+        </div>
+
+        <button class="print-button no-print" onclick="window.print()">📄 Print to PDF</button>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3>📋 Table of Contents</h3>
+            <ul>
+                <li><a href="#intro">1. Introduction & Overview</a> <span class="badge badge-time">5 min</span></li>
+                <li><a href="#projects">2. The Three Asana Projects</a> <span class="badge badge-time">5 min</span></li>
+                <li><a href="#capacity">3. Automatic Capacity Scoring</a> <span class="badge badge-time">10 min</span></li>
+                <li><a href="#dashboard">4. The Dashboard - Mission Control</a> <span class="badge badge-time">10 min</span></li>
+                <li><a href="#wov">5. WOV Automation</a> <span class="badge badge-time">5 min</span></li>
+                <li><a href="#calendar">6. Calendar Synchronization</a> <span class="badge badge-time">5 min</span></li>
+                <li><a href="#backdrops">7. AI-Powered Backdrop Generation</a> <span class="badge badge-time">5 min</span></li>
+                <li><a href="#reports">8. Weekly Capacity Report</a> <span class="badge badge-time">5 min</span></li>
+                <li><a href="#manual-auto">9. Manual vs. Automatic Tasks</a> <span class="badge badge-time">5 min</span></li>
+                <li><a href="#best-practices">10. Best Practices & Tips</a> <span class="badge badge-time">5 min</span></li>
+                <li><a href="#troubleshooting">11. Troubleshooting & FAQ</a> <span class="badge badge-time">5 min</span></li>
+                <li><a href="#roadmap">12. What's Next - Roadmap</a> <span class="badge badge-time">3 min</span></li>
+                <li><a href="#demo">13. Hands-On Demo</a> <span class="badge badge-time">10 min</span></li>
+                <li><a href="#qa">14. Q&A</a> <span class="badge badge-time">5 min</span></li>
+            </ul>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Section 1 -->
+        <h2 id="intro"><span class="section-number">1.</span> Introduction & Overview</h2>
+        <span class="badge badge-time">5 minutes</span>
+
+        <h3>What We Built</h3>
+        <div class="success-box">
+            <ul>
+                <li><strong>Complete automation system</strong> for studio production workflow</li>
+                <li><strong>AI-powered</strong> task management, capacity planning, and content generation</li>
+                <li><strong>Real-time dashboards</strong> showing what's happening across all projects</li>
+                <li><strong>Zero manual data entry</strong> for most routine tasks</li>
+            </ul>
+        </div>
+
+        <h3>The Problem We Solved</h3>
+
+        <table>
+            <tr>
+                <th>❌ Before</th>
+                <th>✅ After</th>
+            </tr>
+            <tr>
+                <td>Manual tracking of capacity and workload</td>
+                <td>Automatic capacity calculation and tracking</td>
+            </tr>
+            <tr>
+                <td>No visibility into team allocation</td>
+                <td>Real-time visibility into who's working on what</td>
+            </tr>
+            <tr>
+                <td>Guessing at how long tasks take</td>
+                <td>Data-driven estimates based on historical performance</td>
+            </tr>
+            <tr>
+                <td>Calendar events disconnected from tasks</td>
+                <td>Calendar events automatically create tasks</td>
+            </tr>
+            <tr>
+                <td>Manual backdrop requests and generation</td>
+                <td>AI-generated backdrops on demand</td>
+            </tr>
+        </table>
+
+        <div class="page-break"></div>
+
+        <!-- Section 2 -->
+        <h2 id="projects"><span class="section-number">2.</span> The Three Asana Projects</h2>
+        <span class="badge badge-time">5 minutes</span>
+
+        <h3>Project Structure</h3>
+        <div class="flow-diagram">
+            📋 Preproduction → 🎬 Production → 🎞️ Post Production
+        </div>
+
+        <h3>Key Custom Fields</h3>
+
+        <h4>Fields You'll Use:</h4>
+        <ul>
+            <li><strong>Category</strong> - What type of work (Video, Event, Graphics, etc.)</li>
+            <li><strong>% Allocation</strong> - How much of weekly capacity this takes</li>
+            <li><strong>Film Date</strong> - When filming happens</li>
+            <li><strong>Start Date</strong> - When work begins</li>
+            <li><strong>Task Progress</strong> - Current status (Scheduled, In Progress, etc.)</li>
+        </ul>
+
+        <h4>Auto-Populated Fields (Don't Touch):</h4>
+        <ul>
+            <li><strong>Actual Allocation</strong> <span class="badge badge-auto">AUTO</span> - System calculates after completion</li>
+            <li><strong>Video Duration</strong> <span class="badge badge-auto">AUTO</span> - Extracted from task details</li>
+            <li><strong>Approval</strong> - Workflow status</li>
+        </ul>
+
+        <h3>How Tasks Flow</h3>
+        <div class="example">
+            <strong>Example:</strong><br>
+            1. Create task in <strong>Preproduction</strong> → Scout, plan, prepare<br>
+            2. Move to <strong>Production</strong> → Film, record, capture<br>
+            3. Move to <strong>Post Production</strong> → Edit, review, publish
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Section 3 -->
+        <h2 id="capacity"><span class="section-number">3.</span> Automatic Capacity Scoring</h2>
+        <span class="badge badge-time">10 minutes</span>
+
+        <h3>What It Does</h3>
+        <div class="highlight-box">
+            <strong>Every 15 minutes</strong>, the system automatically:
+            <ol>
+                <li>Scans all tasks across all three projects</li>
+                <li>Calculates <strong>% Allocation</strong> (weekly capacity consumed)</li>
+                <li>Updates tasks with estimates</li>
+                <li>Tracks actual time spent on completed tasks</li>
+            </ol>
+        </div>
+
+        <h3>How It Calculates % Allocation</h3>
+
+        <div class="formula">
+            Category Base × Duration Multiplier × Type Modifier = % Allocation
+        </div>
+
+        <h4>Category Bases (What type of work):</h4>
+        <table>
+            <tr>
+                <th>Category</th>
+                <th>Base Allocation</th>
+            </tr>
+            <tr>
+                <td>Full Video</td>
+                <td>11-19% (based on length)</td>
+            </tr>
+            <tr>
+                <td>Testimonial</td>
+                <td>11-19% (based on length)</td>
+            </tr>
+            <tr>
+                <td>B-Roll</td>
+                <td>3-6%</td>
+            </tr>
+            <tr>
+                <td>Social Media</td>
+                <td>1.5-3%</td>
+            </tr>
+            <tr>
+                <td>Event Coverage</td>
+                <td>5-11%</td>
+            </tr>
+            <tr>
+                <td>Graphics</td>
+                <td>2-4%</td>
+            </tr>
+            <tr>
+                <td>Communications</td>
+                <td>1-2%</td>
+            </tr>
+        </table>
+
+        <h4>Duration Multipliers:</h4>
+        <table>
+            <tr>
+                <th>Video Length</th>
+                <th>Multiplier</th>
+            </tr>
+            <tr><td>0-2 minutes</td><td>× 1.0</td></tr>
+            <tr><td>2-5 minutes</td><td>× 1.3</td></tr>
+            <tr><td>5-10 minutes</td><td>× 1.7</td></tr>
+            <tr><td>10-20 minutes</td><td>× 2.2</td></tr>
+            <tr><td>20+ minutes</td><td>× 3.0</td></tr>
+        </table>
+
+        <h4>Type Modifiers:</h4>
+        <ul>
+            <li>Equipping: <strong>+30%</strong></li>
+            <li>Enriching: <strong>+15%</strong></li>
+            <li>Celebrational: <strong>+10%</strong></li>
+            <li>Promotional: Base (no change)</li>
+            <li>Administrative: <strong>-20%</strong></li>
+        </ul>
+
+        <div class="example">
+            <strong>Example Calculation:</strong><br>
+            <strong>Task:</strong> "5-minute equipping video on quantum computing"<br><br>
+            <strong>Breakdown:</strong><br>
+            • Category: Full Video = 15% base (for 5 min)<br>
+            • Type: Equipping = +30%<br>
+            • <strong>Result:</strong> 15% × 1.30 = <strong>19.5% allocation</strong><br><br>
+            <strong>Meaning:</strong> One person would spend ~19.5% of their week on this task
+        </div>
+
+        <h3>What This Means for You</h3>
+
+        <div class="success-box">
+            <strong>When creating a task:</strong>
+            <ol>
+                <li>Set the <strong>Category</strong> (Video, Event, etc.)</li>
+                <li>Include duration in title/notes: "5-minute testimonial video"</li>
+                <li>Set the <strong>Type</strong> (Equipping, Enriching, etc.)</li>
+                <li><strong>System automatically calculates % Allocation within 15 minutes</strong></li>
+            </ol>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Section 4 -->
+        <h2 id="dashboard"><span class="section-number">4.</span> The Dashboard - Your Mission Control</h2>
+        <span class="badge badge-time">10 minutes</span>
+
+        <h3>Live Dashboard: index.html</h3>
+        <div class="highlight-box">
+            <strong>Updated automatically every 15 minutes and pushed to GitHub</strong><br>
+            Location: <code>~/Scripts/StudioProcesses/index.html</code>
+        </div>
+
+        <h3>What You'll See</h3>
+
+        <h4>A. Weekly Capacity Overview</h4>
+        <ul>
+            <li><strong>Total tasks</strong> in each project</li>
+            <li><strong>Capacity by category</strong> (Video, Events, Graphics, etc.)</li>
+            <li><strong>Team allocation</strong> percentage</li>
+            <li>Color-coded warnings (🟢 Good, 🟡 High, 🔴 Overloaded)</li>
+        </ul>
+
+        <h4>B. Production Timeline</h4>
+        <strong>Visual calendar showing:</strong>
+        <ul>
+            <li>What's filming this week</li>
+            <li>What's filming next week</li>
+            <li>Film dates for next 30 days</li>
+            <li>Conflicts and overlaps</li>
+        </ul>
+
+        <h4>C. Performance Metrics</h4>
+        <ul>
+            <li><strong>Estimated vs. Actual Allocation</strong>
+                <ul>
+                    <li>Did tasks take more/less time than expected?</li>
+                    <li>Tracks variance to improve future estimates</li>
+                </ul>
+            </li>
+            <li><strong>Tasks with actual data tracked</strong></li>
+            <li><strong>Average variance</strong> (Are we over/under estimating?)</li>
+        </ul>
+
+        <h4>D. Delivery Performance</h4>
+        <ul>
+            <li><strong>On-time completion rate</strong></li>
+            <li><strong>Average delay</strong> for late tasks</li>
+            <li><strong>Category performance</strong> (Which types of work are on time?)</li>
+        </ul>
+
+        <h3>How to Use the Dashboard</h3>
+
+        <table>
+            <tr>
+                <th>Frequency</th>
+                <th>What to Check</th>
+            </tr>
+            <tr>
+                <td><strong>Daily</strong></td>
+                <td>
+                    • Production Timeline (what's filming)<br>
+                    • Capacity percentage (overloaded?)
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Weekly</strong></td>
+                <td>
+                    • Upcoming film dates<br>
+                    • Total allocation > 100% check<br>
+                    • Categories consuming most capacity
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Monthly</strong></td>
+                <td>
+                    • Delivery performance trends<br>
+                    • Estimated vs. actual variance<br>
+                    • Adjust future estimates
+                </td>
+            </tr>
+        </table>
+
+        <div class="page-break"></div>
+
+        <!-- Section 5 -->
+        <h2 id="wov"><span class="section-number">5.</span> WOV (Weekly Opportunity Video) Automation</h2>
+        <span class="badge badge-time">5 minutes</span>
+
+        <h3>What It Does</h3>
+        <div class="highlight-box">
+            <strong>Every 30 minutes</strong>, the system:
+            <ol>
+                <li>Checks Google Calendar for events with "WOV" in the title</li>
+                <li>Identifies the talent (non-studio attendee)</li>
+                <li>Automatically creates a task in <strong>Production project</strong></li>
+            </ol>
+        </div>
+
+        <h3>What Gets Created Automatically</h3>
+
+        <table>
+            <tr>
+                <th>Field</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>Task Name</td>
+                <td>WOV - [Talent Name]</td>
+            </tr>
+            <tr>
+                <td>Film Date</td>
+                <td>From calendar event</td>
+            </tr>
+            <tr>
+                <td>Due Date</td>
+                <td>Thursday 10am before Sunday it airs</td>
+            </tr>
+            <tr>
+                <td>Task Progress</td>
+                <td>"Scheduled"</td>
+            </tr>
+            <tr>
+                <td>Approval</td>
+                <td>"Approved"</td>
+            </tr>
+            <tr>
+                <td>Virtual Location</td>
+                <td>"WOV Set"</td>
+            </tr>
+            <tr>
+                <td>Type</td>
+                <td>"Enriching"</td>
+            </tr>
+            <tr>
+                <td>Category</td>
+                <td>"Communications"</td>
+            </tr>
+        </table>
+
+        <div class="example">
+            <strong>Example:</strong><br><br>
+            <strong>Calendar Event:</strong> "WOV - Interview with Dr. Sarah Chen"<br>
+            <strong>Date:</strong> December 15, 2025 at 2:00 PM<br><br>
+            ↓ <em>Automatically creates</em> ↓<br><br>
+            <strong>Asana Task:</strong> "WOV - Dr. Sarah Chen"<br>
+            <strong>Film Date:</strong> Dec 15, 2025 at 2:00 PM<br>
+            <strong>Due Date:</strong> Dec 18, 2025 at 10:00 AM (Thursday before Sunday)
+        </div>
+
+        <h3>What You Need to Do</h3>
+        <div class="success-box">
+            <strong>Nothing!</strong> Just schedule the calendar event with "WOV" in the title.
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Section 6 -->
+        <h2 id="calendar"><span class="section-number">6.</span> Calendar Synchronization</h2>
+        <span class="badge badge-time">5 minutes</span>
+
+        <h3>Two-Way Calendar Integration</h3>
+
+        <h4>From Asana → Google Calendar:</h4>
+
+        <table>
+            <tr>
+                <th>Sync Type</th>
+                <th>What It Does</th>
+                <th>Format</th>
+            </tr>
+            <tr>
+                <td><strong>Film Date Sync</strong></td>
+                <td>Tasks with Film Dates create calendar events</td>
+                <td>🎬 FILM: [Task Name]</td>
+            </tr>
+            <tr>
+                <td><strong>Due Date Sync</strong></td>
+                <td>Tasks with Due Dates create calendar events</td>
+                <td>✅ DUE: [Task Name]</td>
+            </tr>
+        </table>
+
+        <p><em>Both sync every 30 minutes</em></p>
+
+        <h4>From Google Calendar → Asana:</h4>
+
+        <table>
+            <tr>
+                <th>Sync Type</th>
+                <th>What It Does</th>
+            </tr>
+            <tr>
+                <td><strong>WOV Sync</strong></td>
+                <td>Calendar events with "WOV" create Asana tasks with all details auto-populated</td>
+            </tr>
+        </table>
+
+        <p><em>Runs every 30 minutes</em></p>
+
+        <h3>What You'll See</h3>
+
+        <div class="highlight-box">
+            <strong>In Google Calendar:</strong>
+            <ul>
+                <li><code>🎬 FILM:</code> events (filming schedule)</li>
+                <li><code>✅ DUE:</code> events (delivery deadlines)</li>
+                <li>Regular <code>WOV</code> events (your scheduled recordings)</li>
+            </ul>
+
+            <strong>In Asana:</strong>
+            <ul>
+                <li>Tasks automatically created from WOV calendar events</li>
+                <li>Film Date and Due Date fields synced</li>
+            </ul>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Section 7 -->
+        <h2 id="backdrops"><span class="section-number">7.</span> AI-Powered Backdrop Generation</h2>
+        <span class="badge badge-time">5 minutes</span>
+
+        <h3>What the System Creates</h3>
+
+        <h4>Available Styles:</h4>
+        <ul>
+            <li>Professional office</li>
+            <li>Library/bookshelf</li>
+            <li>Modern tech environment</li>
+            <li>Seasonal themes (Christmas, Halloween, etc.)</li>
+            <li>Custom scenes</li>
+        </ul>
+
+        <h4>Example Prompts:</h4>
+        <div class="example">
+            <ul>
+                <li>"Professional library with warm lighting and vintage books"</li>
+                <li>"Modern tech studio with blue accent lighting"</li>
+                <li>"Cozy office with plants and natural light"</li>
+                <li>"Winter holiday scene with fireplace and decorations"</li>
+            </ul>
+        </div>
+
+        <h3>Automatic Backdrop System</h3>
+
+        <div class="success-box">
+            <strong>What Happens Automatically:</strong>
+            <ul>
+                <li>Scans Production project tasks every 30 minutes</li>
+                <li>Checks if backdrops already exist</li>
+                <li>Generates 3 unique backdrop variations</li>
+                <li><strong>Automatically attaches images to the Asana task</strong></li>
+                <li>Adds a comment listing the backdrop options</li>
+            </ul>
+
+            <strong>AI Models Used:</strong>
+            <ul>
+                <li><strong>Grok-4-Fast</strong> - Analyzes task details and creates creative prompts</li>
+                <li><strong>Stable Diffusion Ultra</strong> - Generates photorealistic backdrops</li>
+            </ul>
+
+            <strong>What You Need to Do:</strong>
+            <ul>
+                <li>Review the attached backdrop images in the Asana task</li>
+                <li>Pick your favorite option</li>
+                <li>That's it!</li>
+            </ul>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Section 8 -->
+        <h2 id="reports"><span class="section-number">8.</span> Weekly Capacity Report</h2>
+        <span class="badge badge-time">5 minutes</span>
+
+        <h3>Automatic Monday Morning Report</h3>
+
+        <div class="highlight-box">
+            <strong>Every Monday at 8:00 AM</strong>, you receive an email with:
+        </div>
+
+        <h4>This Week's Snapshot</h4>
+        <ul>
+            <li>Total tasks scheduled</li>
+            <li>Capacity by category</li>
+            <li>Estimated weekly allocation percentage</li>
+            <li>Team workload distribution</li>
+        </ul>
+
+        <h4>Insights</h4>
+        <ul>
+            <li><strong>Capacity warnings</strong> (Are we overbooked?)</li>
+            <li><strong>Category breakdown</strong> (What's consuming most time?)</li>
+            <li><strong>Film schedule</strong> (What's being recorded this week?)</li>
+        </ul>
+
+        <h4>Recommendations</h4>
+        <ul>
+            <li>Suggested task deferrals (if overloaded)</li>
+            <li>Underutilized capacity (if under 80%)</li>
+            <li>Scheduling conflicts to resolve</li>
+        </ul>
+
+        <h3>How to Use It</h3>
+
+        <div class="example">
+            <strong>Monday Planning Meeting:</strong>
+            <ol>
+                <li>Review the report</li>
+                <li>Identify overload weeks</li>
+                <li>Defer or reassign tasks</li>
+                <li>Confirm film schedule</li>
+            </ol>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Section 9 -->
+        <h2 id="manual-auto"><span class="section-number">9.</span> What's Manual vs. Automatic</h2>
+        <span class="badge badge-time">5 minutes</span>
+
+        <h3>What YOU Do (Manual)</h3>
+
+        <div class="warning-box">
+            <h4>✏️ Task Creation</h4>
+            <ul>
+                <li>Create tasks in appropriate project</li>
+                <li>Set Category, Type, Approval status</li>
+                <li>Add task description and notes</li>
+                <li>Set Film Date (if applicable)</li>
+            </ul>
+
+            <h4>✏️ Task Management</h4>
+            <ul>
+                <li>Move tasks between projects (Prep → Prod → Post)</li>
+                <li>Mark tasks complete</li>
+                <li>Update Task Progress status</li>
+                <li>Add notes about challenges/complexity</li>
+            </ul>
+
+            <h4>✏️ Calendar Management</h4>
+            <ul>
+                <li>Schedule WOV events in Google Calendar</li>
+                <li>Manage film schedule</li>
+            </ul>
+        </div>
+
+        <h3>What the SYSTEM Does (Automatic)</h3>
+
+        <div class="success-box">
+            <h4>🤖 Every 15 Minutes:</h4>
+            <ul>
+                <li>Calculate % Allocation for all tasks</li>
+                <li>Update capacity estimates</li>
+                <li>Calculate actual allocation for completed tasks</li>
+                <li>Regenerate dashboard</li>
+                <li>Commit dashboard to GitHub</li>
+            </ul>
+
+            <h4>🤖 Every 30 Minutes:</h4>
+            <ul>
+                <li>Sync Film Dates to Google Calendar</li>
+                <li>Sync Due Dates to Google Calendar</li>
+                <li>Sync WOV calendar events to Asana tasks</li>
+                <li>Generate production backdrops</li>
+            </ul>
+
+            <h4>🤖 Every Monday at 8 AM:</h4>
+            <ul>
+                <li>Generate weekly capacity report</li>
+                <li>Email report to team</li>
+            </ul>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Section 10 -->
+        <h2 id="best-practices"><span class="section-number">10.</span> Best Practices & Tips</h2>
+        <span class="badge badge-time">5 minutes</span>
+
+        <h3>For Accurate Capacity Tracking</h3>
+
+        <div class="success-box">
+            <h4>✅ DO:</h4>
+            <ul>
+                <li>Include video duration in task title or notes: <strong>"5-minute educational video"</strong></li>
+                <li>Set Category accurately (Video, Event, Graphics, etc.)</li>
+                <li>Set Type appropriately (Equipping, Enriching, etc.)</li>
+                <li>Mark tasks complete when done</li>
+                <li>Add notes about what took longer/shorter than expected</li>
+            </ul>
+        </div>
+
+        <div class="danger-box">
+            <h4>❌ DON'T:</h4>
+            <ul>
+                <li>Leave Category blank</li>
+                <li>Use "Other" unless truly necessary</li>
+                <li>Delete tasks (mark complete instead, for tracking)</li>
+                <li>Manually edit % Allocation (system recalculates every 15 min)</li>
+            </ul>
+        </div>
+
+        <h3>For WOV Tasks</h3>
+
+        <div class="success-box">
+            <h4>✅ DO:</h4>
+            <ul>
+                <li>Include "WOV" in calendar event title</li>
+                <li>Invite the talent to the calendar event</li>
+                <li>Exclude studio team from attendee list</li>
+            </ul>
+        </div>
+
+        <div class="danger-box">
+            <h4>❌ DON'T:</h4>
+            <ul>
+                <li>Create WOV tasks manually (let automation handle it)</li>
+                <li>Edit auto-generated WOV task fields (they'll be overwritten)</li>
+            </ul>
+        </div>
+
+        <h3>For Dashboard Accuracy</h3>
+
+        <div class="success-box">
+            <h4>✅ DO:</h4>
+            <ul>
+                <li>Set Film Dates for filming tasks</li>
+                <li>Set Due Dates for deliverables</li>
+                <li>Update Task Progress as work progresses</li>
+                <li>Add Start Date when work begins</li>
+            </ul>
+        </div>
+
+        <h3>For Better Estimates</h3>
+
+        <div class="highlight-box">
+            <h4>✅ DO:</h4>
+            <ul>
+                <li>Add detailed notes to complex tasks</li>
+                <li>Mention if something was "easier than expected" or "took longer"</li>
+                <li>Note number of revisions required</li>
+                <li>Document challenges encountered</li>
+            </ul>
+
+            <strong>Why?</strong> The AI uses these notes to calculate actual allocation and improve future estimates.
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Section 11 -->
+        <h2 id="troubleshooting"><span class="section-number">11.</span> Troubleshooting & FAQ</h2>
+        <span class="badge badge-time">5 minutes</span>
+
+        <h3>Common Questions</h3>
+
+        <div class="example">
+            <h4>Q: "My task doesn't have a % Allocation yet"</h4>
+            <p><strong>A:</strong></p>
+            <ul>
+                <li>Wait up to 15 minutes (system runs every 15 min)</li>
+                <li>Check that Category is set (not blank)</li>
+                <li>Verify task has video duration in title/notes if it's a video</li>
+            </ul>
+        </div>
+
+        <div class="example">
+            <h4>Q: "The % Allocation seems wrong"</h4>
+            <p><strong>A:</strong></p>
+            <ul>
+                <li>System recalculates every 15 minutes based on latest info</li>
+                <li>Check Category, Type, and duration are correct</li>
+                <li>See Section 3 for calculation formula</li>
+            </ul>
+        </div>
+
+        <div class="example">
+            <h4>Q: "I created a WOV calendar event but no task appeared"</h4>
+            <p><strong>A:</strong></p>
+            <ul>
+                <li>Wait 30 minutes (WOV sync runs every 30 min)</li>
+                <li>Verify event has "WOV" in the title</li>
+                <li>Check that event is not in the past</li>
+                <li>Ensure event has at least one non-studio attendee</li>
+            </ul>
+        </div>
+
+        <div class="example">
+            <h4>Q: "Calendar events are duplicating"</h4>
+            <p><strong>A:</strong></p>
+            <ul>
+                <li>This was a bug, now fixed</li>
+                <li>Events starting with "✅ DUE:" or "🎬 FILM:" are auto-generated</li>
+                <li>Don't manually create events with these prefixes</li>
+            </ul>
+        </div>
+
+        <div class="example">
+            <h4>Q: "Dashboard isn't updating"</h4>
+            <p><strong>A:</strong></p>
+            <ul>
+                <li>Check last update timestamp at top of dashboard</li>
+                <li>System updates every 15 minutes</li>
+                <li>Auto-commits to GitHub</li>
+                <li>Refresh browser (Ctrl+F5 / Cmd+Shift+R)</li>
+            </ul>
+        </div>
+
+        <h3>Who to Ask for Help</h3>
+
+        <table>
+            <tr>
+                <th>Issue Type</th>
+                <th>Where to Look</th>
+            </tr>
+            <tr>
+                <td>Asana/Automation Issues</td>
+                <td>
+                    • Scripts: <code>~/Scripts/StudioProcesses/</code><br>
+                    • Logs: <code>scorer_cron.log</code>, <code>wov_sync.log</code>, <code>timeline.log</code>
+                </td>
+            </tr>
+            <tr>
+                <td>Calendar Sync Issues</td>
+                <td>
+                    • Check cron: <code>crontab -l</code><br>
+                    • Logs: <code>film_calendar_sync.log</code>, <code>due_calendar_sync.log</code>
+                </td>
+            </tr>
+        </table>
+
+        <div class="page-break"></div>
+
+        <!-- Section 12 -->
+        <h2 id="roadmap"><span class="section-number">12.</span> What's Next - Roadmap</h2>
+        <span class="badge badge-time">3 minutes</span>
+
+        <h3>Coming Soon</h3>
+
+        <div class="highlight-box">
+            <h4>🔜 Web Interface for Backdrop Generation</h4>
+            <ul>
+                <li>Request backdrops via web form</li>
+                <li>Real-time generation and preview</li>
+                <li>Download high-res versions</li>
+            </ul>
+        </div>
+
+        <div class="highlight-box">
+            <h4>🔜 Task Templates</h4>
+            <ul>
+                <li>Pre-configured templates for common video types</li>
+                <li>Auto-populate fields based on template</li>
+                <li>Faster task creation</li>
+            </ul>
+        </div>
+
+        <div class="highlight-box">
+            <h4>🔜 Advanced Analytics</h4>
+            <ul>
+                <li>Team member workload distribution</li>
+                <li>Category trends over time</li>
+                <li>Predictive capacity planning</li>
+            </ul>
+        </div>
+
+        <div class="highlight-box">
+            <h4>🔜 Slack Integration</h4>
+            <ul>
+                <li>Capacity alerts in Slack</li>
+                <li>WOV task notifications</li>
+                <li>Weekly report in team channel</li>
+            </ul>
+        </div>
+
+        <h3>Feedback Welcome!</h3>
+
+        <div class="success-box">
+            <strong>What would make this system more useful for you?</strong>
+            <ul>
+                <li>Features you'd like to see</li>
+                <li>Reports that would be helpful</li>
+                <li>Automation you'd like added</li>
+            </ul>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Section 13 -->
+        <h2 id="demo"><span class="section-number">13.</span> Hands-On Demo</h2>
+        <span class="badge badge-time">10 minutes</span>
+
+        <h3>Live Walkthrough</h3>
+
+        <div class="highlight-box">
+            <h4>Demo 1: Create a Task and Watch Automation</h4>
+            <ol>
+                <li>Create new video task in Production</li>
+                <li>Set Category: "Full Video"</li>
+                <li>Add "8-minute equipping video" to title</li>
+                <li>Set Type: "Equipping"</li>
+                <li>Wait 15 minutes → Show % Allocation auto-calculated</li>
+            </ol>
+        </div>
+
+        <div class="highlight-box">
+            <h4>Demo 2: WOV Calendar Event → Asana Task</h4>
+            <ol>
+                <li>Create Google Calendar event: "WOV - Test Demo"</li>
+                <li>Set date/time</li>
+                <li>Add fake talent as attendee</li>
+                <li>Wait 30 minutes → Show Asana task auto-created</li>
+            </ol>
+        </div>
+
+        <div class="highlight-box">
+            <h4>Demo 3: Dashboard Tour</h4>
+            <ol>
+                <li>Open <code>index.html</code></li>
+                <li>Show capacity overview</li>
+                <li>Show production timeline</li>
+                <li>Show delivery performance</li>
+                <li>Explain how to interpret metrics</li>
+            </ol>
+        </div>
+
+        <div class="highlight-box">
+            <h4>Demo 4: Complete a Task and See Actual Allocation</h4>
+            <ol>
+                <li>Find a completed task</li>
+                <li>Show original estimated allocation</li>
+                <li>Show calculated actual allocation</li>
+                <li>Explain variance</li>
+            </ol>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Section 14 -->
+        <h2 id="qa"><span class="section-number">14.</span> Q&A</h2>
+        <span class="badge badge-time">5 minutes</span>
+
+        <h3>Open Floor</h3>
+
+        <div class="success-box">
+            <ul>
+                <li>Questions about any feature</li>
+                <li>Clarifications on workflow</li>
+                <li>Requests for additional training</li>
+            </ul>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Quick Reference -->
+        <h2>📋 Quick Reference</h2>
+
+        <h3>Key Files & Locations</h3>
+        <pre>~/Scripts/StudioProcesses/
+├── video_scorer.py          # Main automation (% allocation)
+├── production_timeline.py   # Timeline generation
+├── generate_dashboard.py    # Dashboard creation
+├── wov_calendar_sync.py     # WOV automation
+├── film_date_calendar_sync.py   # Film date sync
+├── due_date_calendar_sync.py    # Due date sync
+├── production_backdrops.py  # AI backdrop generation
+└── index.html              # Live dashboard</pre>
+
+        <h3>Cron Schedule (What Runs When)</h3>
+        <table>
+            <tr>
+                <th>Frequency</th>
+                <th>What Runs</th>
+            </tr>
+            <tr>
+                <td>Every 15 min</td>
+                <td>video_scorer.py + production_timeline.py + dashboard commit</td>
+            </tr>
+            <tr>
+                <td>Every 30 min</td>
+                <td>WOV sync + Film sync + Due sync</td>
+            </tr>
+            <tr>
+                <td>Every Monday 8am</td>
+                <td>Weekly capacity report</td>
+            </tr>
+        </table>
+
+        <h3>Important URLs</h3>
+        <ul>
+            <li><strong>Dashboard:</strong> <code>~/Scripts/StudioProcesses/index.html</code></li>
+            <li><strong>Preproduction:</strong> https://app.asana.com/0/1208336083003480</li>
+            <li><strong>Production:</strong> https://app.asana.com/0/1209597979075357</li>
+            <li><strong>Post Production:</strong> https://app.asana.com/0/1209581743268502</li>
+        </ul>
+
+        <h3>Custom Field Reference</h3>
+        <table>
+            <tr>
+                <th>Field Name</th>
+                <th>Type</th>
+                <th>Purpose</th>
+                <th>Auto-Populated?</th>
+            </tr>
+            <tr>
+                <td>Category</td>
+                <td>Enum</td>
+                <td>Type of work (Video, Event, Graphics, etc.)</td>
+                <td>✅ Auto (AI-determined)</td>
+            </tr>
+            <tr>
+                <td>Type</td>
+                <td>Enum</td>
+                <td>Content type (Equipping, Enriching, etc.)</td>
+                <td>✅ Auto (AI-determined)</td>
+            </tr>
+            <tr>
+                <td>% Allocation</td>
+                <td>Number</td>
+                <td>Weekly capacity consumed</td>
+                <td>✅ Auto (calculated)</td>
+            </tr>
+            <tr>
+                <td>Actual Allocation</td>
+                <td>Number</td>
+                <td>Real capacity used after completion</td>
+                <td>✅ Auto (calculated)</td>
+            </tr>
+            <tr>
+                <td>Film Date</td>
+                <td>Date/Time</td>
+                <td>When filming happens</td>
+                <td>❌ Manual (✅ Auto for WOV)</td>
+            </tr>
+            <tr>
+                <td>Start Date</td>
+                <td>Date</td>
+                <td>When work begins</td>
+                <td>❌ Manual (✅ Auto for WOV)</td>
+            </tr>
+            <tr>
+                <td>Due Date</td>
+                <td>Date</td>
+                <td>Delivery deadline</td>
+                <td>❌ Manual (✅ Auto for WOV)</td>
+            </tr>
+            <tr>
+                <td>Task Progress</td>
+                <td>Enum</td>
+                <td>Current status</td>
+                <td>❌ Manual (✅ Auto for WOV)</td>
+            </tr>
+            <tr>
+                <td>Approval</td>
+                <td>Enum</td>
+                <td>Workflow approval state</td>
+                <td>❌ Manual (✅ Auto for WOV)</td>
+            </tr>
+            <tr>
+                <td>Virtual Location</td>
+                <td>Text</td>
+                <td>Where filmed/recorded</td>
+                <td>❌ Manual (✅ Auto for WOV)</td>
+            </tr>
+        </table>
+
+        <p style="margin-top: 15px;"><strong>Note:</strong> Fields marked "Auto for WOV" are automatically populated when tasks are created from WOV calendar events.</p>
+
+        <div class="page-break"></div>
+
+        <!-- Closing -->
+        <div style="text-align: center; margin-top: 60px; padding: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 10px;">
+            <h2 style="color: white; border: none; margin: 0;">Thank You!</h2>
+            <p style="font-size: 1.2em; margin-top: 20px; color: white;">Questions? Feedback? Ideas?</p>
+            <p style="font-size: 1.1em; color: white;">Let's make this system work for everyone!</p>
+        </div>
+
+    </div>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

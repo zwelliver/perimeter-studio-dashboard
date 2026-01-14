@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio Automation - Quick Start Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            color: #2980b9;
+            font-size: 1.8em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-left: 5px solid #3498db;
+            padding-left: 15px;
+        }
+
+        h3 {
+            color: #34495e;
+            font-size: 1.3em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .highlight-box {
+            background: #e8f4f8;
+            border-left: 5px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Studio Automation System - Quick Start Guide</h1>
+
+        <div class="highlight-box">
+            <h3>What This System Does</h3>
+            <p><strong>Automatically handles capacity tracking, task creation, and production scheduling</strong> so you can focus on creating great content instead of managing spreadsheets.</p>
+        </div>
+
+        <h2>1. The Four Asana Projects</h2>
+
+        <p><strong>Your workflow follows this path:</strong></p>
+        <ul>
+            <li><strong>Forecast</strong> - Long-range planning (3-6 months out) for strategic initiatives and future content</li>
+            <li><strong>Preproduction</strong> (1208336083003480) - Scout, plan, prepare</li>
+            <li><strong>Production</strong> (1209597979075357) - Film, record, capture</li>
+            <li><strong>Post Production</strong> (1209581743268502) - Edit, review, publish</li>
+        </ul>
+
+        <div class="highlight-box">
+            <h3>The Forecast Project</h3>
+            <p>The <strong>Forecast</strong> project is our forward-thinking planning tool. Tasks here represent future content ideas, strategic initiatives, and long-range planning (typically 3-6 months out). This allows us to:</p>
+            <ul>
+                <li>Plan capacity for major initiatives before they become urgent</li>
+                <li>Align studio work with organizational strategic goals</li>
+                <li>Identify resource needs early</li>
+                <li>Show leadership our proactive planning</li>
+            </ul>
+            <p>When tasks in Forecast are ready to begin active work, they move to Preproduction.</p>
+        </div>
+
+        <h2>2. What YOU Do (Manual Tasks)</h2>
+
+        <div class="success-box">
+            <h3>Task Creation</h3>
+            <ul>
+                <li>Create tasks in the appropriate project</li>
+                <li>Include video duration in title/notes: <em>"5-minute testimonial video"</em></li>
+                <li>Set Film Date if applicable</li>
+                <li>Move tasks between projects as work progresses</li>
+                <li>Mark tasks complete when done</li>
+            </ul>
+        </div>
+
+        <div class="success-box">
+            <h3>WOV Scheduling</h3>
+            <ul>
+                <li>Schedule WOV events in Google Calendar with "WOV" in the title</li>
+                <li>Invite the talent to the calendar event</li>
+                <li><strong>That's it!</strong> The system creates the Asana task automatically</li>
+            </ul>
+        </div>
+
+        <h2>3. What the SYSTEM Does (Automatic)</h2>
+
+        <table>
+            <tr>
+                <th>Frequency</th>
+                <th>What Happens</th>
+            </tr>
+            <tr>
+                <td><strong>Every 15 min</strong></td>
+                <td>
+                    • AI determines Category and Type<br>
+                    • Calculates % Allocation (capacity)<br>
+                    • Updates dashboard<br>
+                    • Commits to GitHub
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Every 30 min</strong></td>
+                <td>
+                    • Syncs Film Dates to Google Calendar<br>
+                    • Syncs Due Dates to Google Calendar<br>
+                    • Creates WOV tasks from calendar events<br>
+                    • Generates production backdrops with AI
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Monday 8am</strong></td>
+                <td>
+                    • Emails weekly capacity report to team
+                </td>
+            </tr>
+        </table>
+
+        <h2>4. Understanding Capacity (% Allocation)</h2>
+
+        <p>The system automatically calculates how much of your weekly capacity each task consumes based on:</p>
+
+        <ul>
+            <li><strong>Category</strong> - AI determines if it's Video, Event, Graphics, etc.</li>
+            <li><strong>Duration</strong> - Extracted from your task title/notes</li>
+            <li><strong>Type</strong> - AI classifies as Equipping, Enriching, Celebrational, etc.</li>
+        </ul>
+
+        <div class="highlight-box">
+            <h3>Example</h3>
+            <p><strong>Task:</strong> "5-minute equipping video on quantum computing"</p>
+            <p><strong>AI Analysis:</strong></p>
+            <ul>
+                <li>Category: Full Video (15% base for 5 min)</li>
+                <li>Type: Equipping (+30% modifier)</li>
+                <li><strong>Result: 19.5% allocation</strong> (one person spends ~20% of their week on this)</li>
+            </ul>
+        </div>
+
+        <h2>5. The Dashboard - Your Mission Control</h2>
+
+        <p>View <code>index.html</code> for real-time insights (updates every 15 minutes):</p>
+
+        <ul>
+            <li><strong>Weekly Capacity</strong> - Are we overloaded? (Red/yellow/green indicators)</li>
+            <li><strong>Production Timeline</strong> - What's filming this week/next week</li>
+            <li><strong>Performance Metrics</strong> - Are estimates accurate?</li>
+            <li><strong>Delivery Performance</strong> - On-time completion rates</li>
+        </ul>
+
+        <h2>6. WOV Automation</h2>
+
+        <div class="highlight-box">
+            <p><strong>Create a Google Calendar event with "WOV" in the title</strong></p>
+            <p>Within 30 minutes, the system automatically:</p>
+            <ul>
+                <li>Creates task in Production project: <em>"WOV - [Talent Name]"</em></li>
+                <li>Sets Film Date from calendar event</li>
+                <li>Calculates Due Date (Thursday 10am before Sunday it airs)</li>
+                <li>Sets all fields: Scheduled, Approved, WOV Set, Enriching, Communications</li>
+                <li>Generates 4 AI backdrop options and attaches to task</li>
+            </ul>
+        </div>
+
+        <h2>7. AI-Powered Backdrops</h2>
+
+        <p>Every 30 minutes, the system:</p>
+        <ul>
+            <li>Checks all Production tasks</li>
+            <li>Generates 4 professional backdrop variations using AI</li>
+            <li>Automatically attaches images to the Asana task</li>
+            <li>No manual requests needed</li>
+        </ul>
+
+        <h2>8. Best Practices</h2>
+
+        <div class="success-box">
+            <h3>DO:</h3>
+            <ul>
+                <li>Include video duration in task titles: "8-minute testimonial"</li>
+                <li>Set Film Dates for filming tasks</li>
+                <li>Mark tasks complete (don't delete them - we need the data!)</li>
+                <li>Add notes about what took longer/shorter than expected</li>
+                <li>Use "WOV" in calendar event titles for auto-creation</li>
+            </ul>
+        </div>
+
+        <div class="warning-box">
+            <h3>DON'T:</h3>
+            <ul>
+                <li>Manually edit % Allocation (system recalculates every 15 min)</li>
+                <li>Delete tasks (mark complete instead)</li>
+                <li>Create WOV tasks manually (let automation handle it)</li>
+                <li>Create calendar events starting with "✅ DUE:" or "🎬 FILM:" (auto-generated)</li>
+            </ul>
+        </div>
+
+        <h2>9. Quick Reference</h2>
+
+        <table>
+            <tr>
+                <th>Field Name</th>
+                <th>Auto or Manual?</th>
+                <th>Notes</th>
+            </tr>
+            <tr>
+                <td>Category</td>
+                <td>✅ Auto</td>
+                <td>AI-determined</td>
+            </tr>
+            <tr>
+                <td>Type</td>
+                <td>✅ Auto</td>
+                <td>AI-determined</td>
+            </tr>
+            <tr>
+                <td>% Allocation</td>
+                <td>✅ Auto</td>
+                <td>Calculated every 15 min</td>
+            </tr>
+            <tr>
+                <td>Actual Allocation</td>
+                <td>✅ Auto</td>
+                <td>Calculated when task completes</td>
+            </tr>
+            <tr>
+                <td>Film Date</td>
+                <td>❌ Manual</td>
+                <td>✅ Auto for WOV tasks</td>
+            </tr>
+            <tr>
+                <td>Due Date</td>
+                <td>❌ Manual</td>
+                <td>✅ Auto for WOV tasks</td>
+            </tr>
+            <tr>
+                <td>Task Progress</td>
+                <td>❌ Manual</td>
+                <td>✅ Auto for WOV tasks</td>
+            </tr>
+        </table>
+
+        <h2>10. Common Questions</h2>
+
+        <p><strong>Q: My task doesn't have % Allocation yet</strong></p>
+        <p>Wait up to 15 minutes. Make sure you included duration in the title/notes.</p>
+
+        <p><strong>Q: I created a WOV calendar event but no task appeared</strong></p>
+        <p>Wait 30 minutes. Verify "WOV" is in the title and event has a non-studio attendee.</p>
+
+        <p><strong>Q: Dashboard isn't updating</strong></p>
+        <p>Check the timestamp at top. System updates every 15 min. Hard refresh your browser (Ctrl+F5 / Cmd+Shift+R).</p>
+
+        <p><strong>Q: Where are the AI-generated backdrops?</strong></p>
+        <p>Check the Asana task attachments. They're automatically added within 30 minutes of task creation.</p>
+
+        <h2>11. Need Help?</h2>
+
+        <p><strong>Check the logs:</strong></p>
+        <ul>
+            <li><code>scorer_cron.log</code> - Capacity calculations</li>
+            <li><code>wov_sync.log</code> - WOV automation</li>
+            <li><code>film_calendar_sync.log</code> - Film date sync</li>
+            <li><code>due_calendar_sync.log</code> - Due date sync</li>
+        </ul>
+
+        <p><strong>Files location:</strong> <code>~/Scripts/StudioProcesses/</code></p>
+
+        <div class="highlight-box">
+            <h3>Remember</h3>
+            <p>The system works best when you <strong>include duration info</strong> in task titles, <strong>set film dates</strong>, and <strong>mark tasks complete</strong>. Everything else is automated!</p>
+        </div>
+    </div>
+</body>
+</html>

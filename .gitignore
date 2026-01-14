@@ -32,3 +32,49 @@ Reports/*.png
 *.tmp
 *.bak
 /tmp/
+
+# Google Calendar credentials and tokens
+credentials.json
+token.pickle
+
+# Mapping and sync files
+*_mapping.json
+*_sync_token.txt
+*_last_run.txt
+processed_*.txt
+
+# Node modules and frontend dependencies
+node_modules/
+.vite/
+package-lock.json
+studio-command-center/frontend/node_modules/
+studio-command-center/frontend/.vite/
+
+# Backup and duplicate files
+*_backup.py
+*_original.py
+*_new.py
+*_space.py
+
+# Large documents
+*.pdf
+*.docx
+
+# Git helpers
+.git-credentials-helper.sh
+
+# Additional reports to exclude
+Reports/capacity_dashboard_tv.html
+Reports/capacity_timeline.html
+Reports/dashboard_template.html
+
+# Cron logs
+cron_log.txt
+scorer_cron.log
+timeline.log
+space_dashboard.log
+weekly_report.log
+wov_sync.log
+wov_alert.log
+capacity_snapshot.log
+capacity_alerts.txt

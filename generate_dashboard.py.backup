@@ -1,0 +1,2596 @@
+"""
+Perimeter Studio Capacity Dashboard Generator
+Generates interactive HTML dashboard
+"""
+
+import pandas as pd
+import os
+import json
+import math
+from datetime import datetime, timedelta, timezone
+
+# Perimeter Church Brand Colors
+BRAND_NAVY = '#09243F'
+BRAND_BLUE = '#60BBE9'
+BRAND_OFF_WHITE = '#f8f9fa'
+
+def read_reports():
+    """Read all report CSV files and fetch active task data from Asana"""
+    import requests
+    import os
+    from dotenv import load_dotenv
+
+    load_dotenv(".env")
+
+    reports_dir = 'Reports'
+
+    data = {
+        'allocation': None,
+        'variance': None,
+        'delivery_log': None,
+        'delivery_summary': None,
+        'timestamp': datetime.now().strftime('%B %d, %Y at %I:%M %p'),
+        'team_capacity': [],
+        'capacity_history': None
+    }
+
+    # Read allocation report
+    allocation_file = os.path.join(reports_dir, 'weighted_allocation_report.csv')
+    if os.path.exists(allocation_file):
+        data['allocation'] = pd.read_csv(allocation_file)
+
+    # Read variance tracking
+    variance_file = os.path.join(reports_dir, 'variance_tracking_history.csv')
+    if os.path.exists(variance_file):
+        df = pd.read_csv(variance_file)
+        if not df.empty:
+            # Calculate cumulative averages across all time
+            cumulative_variance = df.groupby('Category').agg({
+                'Actual %': 'mean',
+                'Target %': 'first',  # Target is constant
+                'Variance': 'mean'
+            }).reset_index()
+
+            data['variance'] = cumulative_variance
+            # Keep full history for trends
+            data['variance_history'] = df
+
+    # Read delivery performance log
+    delivery_log_file = os.path.join(reports_dir, 'delivery_performance_log.csv')
+    if os.path.exists(delivery_log_file):
+        data['delivery_log'] = pd.read_csv(delivery_log_file)
+
+    # Read delivery performance summary
+    delivery_summary_file = os.path.join(reports_dir, 'delivery_performance_summary.csv')
+    if os.path.exists(delivery_summary_file):
+        # This is a text file, parse it
+        with open(delivery_summary_file, 'r') as f:
+            content = f.read()
+            data['delivery_summary'] = content
+
+    # Read capacity history
+    capacity_history_file = os.path.join(reports_dir, 'capacity_history.csv')
+    if os.path.exists(capacity_history_file):
+        capacity_df = pd.read_csv(capacity_history_file)
+        # Sort by date to ensure chronological order
+        capacity_df = capacity_df.sort_values('date')
+
+        # Filter to show only last 30 days for cleaner chart display
+        cutoff_date = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+        capacity_df = capacity_df[capacity_df['date'] >= cutoff_date]
+
+        # Organize data by team member
+        capacity_history_by_member = {}
+        team_members = ['Zach Welliver', 'Nick Clark', 'Adriel Abella', 'John Meyer', 'Team Total']
+
+        for member in team_members:
+            member_data = capacity_df[capacity_df['team_member'] == member]
+            if not member_data.empty:
+                capacity_history_by_member[member] = member_data[['date', 'utilization_percent']].to_dict('records')
+
+        data['capacity_history_by_member'] = capacity_history_by_member
+    else:
+        data['capacity_history_by_member'] = {}
+
+    # Fetch active tasks from Asana to calculate team capacity accurately
+    team_capacity_config = {
+        'Zach Welliver': {'max': 50},
+        'Nick Clark': {'max': 100},
+        'Adriel Abella': {'max': 100},
+        'John Meyer': {'max': 30}
+    }
+
+    # Calculate current usage per team member from actual Asana tasks
+    team_usage = {name: 0 for name in team_capacity_config.keys()}
+
+    # Asana API setup
+    ASANA_PAT = os.getenv("ASANA_PAT_SCORER")
+    if ASANA_PAT:
+        headers = {
+            "Authorization": f"Bearer {ASANA_PAT}",
+            "Content-Type": "application/json"
+        }
+
+        # Internal projects (affect team capacity)
+        project_gids = {
+            'Preproduction': '1208336083003480',
+            'Production': '1209597979075357',
+            'Post Production': '1209581743268502',
+            'Forecast': '1212059678473189'
+        }
+
+        # External projects (tracking only, do not affect team capacity)
+        external_project_gids = {
+            'Contracted/Outsourced': '1212319598244265'
+        }
+
+        PERCENT_ALLOCATION_FIELD_GID = '1208923995383367'
+
+        # Fetch active tasks from all production projects
+        for project_name, project_gid in project_gids.items():
+            try:
+                endpoint = f"https://app.asana.com/api/1.0/projects/{project_gid}/tasks"
+                params = {
+                    'opt_fields': 'gid,name,assignee.name,custom_fields,completed'
+                }
+
+                response = requests.get(endpoint, headers=headers, params=params)
+
+                if response.status_code == 200:
+                    tasks = response.json().get('data', [])
+
+                    for task in tasks:
+                        # Skip completed tasks
+                        if task.get('completed', False):
+                            continue
+
+                        # Get assignee name
+                        assignee = task.get('assignee')
+                        if not assignee:
+                            continue
+
+                        assignee_name = assignee.get('name', '')
+
+                        # Find Percent Allocation custom field
+                        allocation_pct = 0
+                        for field in task.get('custom_fields', []):
+                            if field.get('gid') == PERCENT_ALLOCATION_FIELD_GID:
+                                # Asana stores as decimal (0.13 = 13%), convert to percentage
+                                allocation_pct = (field.get('number_value', 0) or 0) * 100
+                                break
+
+                        # Add to team member's usage if they're in our config
+                        if assignee_name in team_usage:
+                            team_usage[assignee_name] += allocation_pct
+
+            except Exception as e:
+                # If API call fails, continue with next project
+                print(f"Warning: Could not fetch tasks from {project_name}: {e}")
+                continue
+
+    # Create team capacity list
+    data['team_capacity'] = [
+        {'name': name, 'current': team_usage[name], 'max': config['max']}
+        for name, config in team_capacity_config.items()
+    ]
+
+    # Count actual active tasks from Asana
+    data['active_task_count'] = 0
+    if ASANA_PAT:
+        for project_name, project_gid in project_gids.items():
+            try:
+                endpoint = f"https://app.asana.com/api/1.0/projects/{project_gid}/tasks"
+                params = {'opt_fields': 'completed'}
+
+                response = requests.get(endpoint, headers=headers, params=params)
+
+                if response.status_code == 200:
+                    tasks = response.json().get('data', [])
+                    data['active_task_count'] += sum(1 for task in tasks if not task.get('completed', False))
+            except Exception as e:
+                print(f"Warning: Could not count tasks from {project_name}: {e}")
+                continue
+
+    # Fetch external project tasks (contracted/outsourced)
+    data['external_projects'] = []
+    if ASANA_PAT:
+        VIDEOGRAPHER_FIELD_GID = '1209693890455555'
+        for project_name, project_gid in external_project_gids.items():
+            try:
+                endpoint = f"https://app.asana.com/api/1.0/projects/{project_gid}/tasks"
+                params = {'opt_fields': 'name,completed,due_on,custom_fields'}
+
+                response = requests.get(endpoint, headers=headers, params=params)
+
+                if response.status_code == 200:
+                    tasks = response.json().get('data', [])
+                    active_tasks = [t for t in tasks if not t.get('completed', False)]
+                    completed_tasks = [t for t in tasks if t.get('completed', False)]
+
+                    # Extract task info including videographer
+                    task_list = []
+                    for t in active_tasks[:5]:  # Show first 5
+                        videographer = None
+                        # Extract videographer from custom fields
+                        for field in t.get('custom_fields', []):
+                            if field.get('gid') == VIDEOGRAPHER_FIELD_GID:
+                                videographer = field.get('text_value')
+                                break
+
+                        task_list.append({
+                            'name': t.get('name', 'Untitled'),
+                            'due_on': t.get('due_on'),
+                            'videographer': videographer
+                        })
+
+                    data['external_projects'].append({
+                        'name': project_name,
+                        'active_count': len(active_tasks),
+                        'completed_count': len(completed_tasks),
+                        'total_count': len(tasks),
+                        'tasks': task_list
+                    })
+            except Exception as e:
+                print(f"Warning: Could not fetch external project {project_name}: {e}")
+                continue
+
+    # Fetch detailed task data for advanced analytics
+    detailed_tasks = fetch_detailed_tasks()
+
+    # Calculate workload forecast (7/14/30 days)
+    data['workload_forecast'] = calculate_workload_forecast(detailed_tasks, team_capacity_config)
+
+    # Identify at-risk tasks
+    team_capacity_info = {}
+    for member in data['team_capacity']:
+        team_capacity_info[member['name']] = {
+            'current': member['current'],
+            'max': member['max']
+        }
+    data['at_risk_tasks'] = identify_at_risk_tasks(detailed_tasks, team_capacity_info)
+
+    # Generate capacity heatmap for next 30 days
+    data['capacity_heatmap'] = generate_capacity_heatmap(detailed_tasks, team_capacity_config)
+
+    # Generate 6-month capacity timeline
+    data['six_month_timeline'] = generate_6month_timeline(detailed_tasks, team_capacity_config)
+
+    # Fetch upcoming shoots from Asana
+    data['upcoming_shoots'] = []
+    if ASANA_PAT:
+        try:
+            FILM_DATE_FIELD_GID = os.getenv('FILM_DATE_FIELD_GID')
+            if FILM_DATE_FIELD_GID:
+                upcoming_shoots = []
+                now = datetime.now(timezone.utc)
+
+                # Search for tasks with Film Date set across all production projects
+                for project_name, project_gid in project_gids.items():
+                    endpoint = f"https://app.asana.com/api/1.0/projects/{project_gid}/tasks"
+                    params = {
+                        'opt_fields': 'gid,name,custom_fields'
+                    }
+
+                    response = requests.get(endpoint, headers=headers, params=params)
+
+                    if response.status_code == 200:
+                        tasks = response.json().get('data', [])
+
+                        for task in tasks:
+                            # Find Film Date custom field
+                            for field in task.get('custom_fields', []):
+                                if field.get('gid') == FILM_DATE_FIELD_GID:
+                                    date_value = field.get('date_value')
+                                    if date_value and date_value.get('date_time'):
+                                        # Parse the datetime
+                                        film_datetime_str = date_value.get('date_time')
+                                        film_datetime = datetime.fromisoformat(film_datetime_str.replace('Z', '+00:00'))
+
+                                        # Only include future shoots
+                                        if film_datetime >= now:
+                                            upcoming_shoots.append({
+                                                'name': task.get('name', 'Untitled'),
+                                                'datetime': film_datetime,
+                                                'project': project_name,
+                                                'gid': task.get('gid')
+                                            })
+                                        break
+
+                # Sort by datetime (earliest first) and limit to 10
+                upcoming_shoots.sort(key=lambda x: x['datetime'])
+                data['upcoming_shoots'] = upcoming_shoots[:10]
+        except Exception as e:
+            print(f"Warning: Could not fetch upcoming shoots: {e}")
+
+    # Fetch upcoming project deadlines (due within next 10 days)
+    data['upcoming_deadlines'] = []
+    if ASANA_PAT:
+        try:
+            upcoming_deadlines = []
+            now = datetime.now(timezone.utc).date()
+            cutoff_date = now + timedelta(days=10)
+
+            # Search for tasks with due dates across all production projects
+            for project_name, project_gid in project_gids.items():
+                endpoint = f"https://app.asana.com/api/1.0/projects/{project_gid}/tasks"
+                params = {
+                    'opt_fields': 'gid,name,due_on,due_at,completed'
+                }
+
+                response = requests.get(endpoint, headers=headers, params=params)
+
+                if response.status_code == 200:
+                    tasks = response.json().get('data', [])
+
+                    for task in tasks:
+                        if task.get('completed', False):
+                            continue
+
+                        # Extract due date (can be due_on or due_at)
+                        due_date = None
+                        if task.get('due_on'):
+                            due_date = datetime.strptime(task['due_on'], '%Y-%m-%d').date()
+                        elif task.get('due_at'):
+                            due_datetime = datetime.fromisoformat(task['due_at'].replace('Z', '+00:00'))
+                            due_date = due_datetime.date()
+
+                        # Only include if due within next 10 days
+                        if due_date and now <= due_date <= cutoff_date:
+                            days_until = (due_date - now).days
+                            upcoming_deadlines.append({
+                                'name': task.get('name', 'Untitled'),
+                                'due_date': due_date,
+                                'days_until': days_until,
+                                'project': project_name,
+                                'gid': task.get('gid')
+                            })
+
+            # Sort by due date (earliest first)
+            upcoming_deadlines.sort(key=lambda x: x['due_date'])
+            data['upcoming_deadlines'] = upcoming_deadlines
+        except Exception as e:
+            print(f"Warning: Could not fetch upcoming deadlines: {e}")
+
+    return data
+
+def fetch_detailed_tasks():
+    """Fetch detailed task information from Asana for advanced analytics"""
+    import requests
+    from dotenv import load_dotenv
+
+    load_dotenv(".env")
+
+    ASANA_PAT = os.getenv("ASANA_PAT_SCORER")
+    if not ASANA_PAT:
+        return []
+
+    headers = {"Authorization": f"Bearer {ASANA_PAT}", "Content-Type": "application/json"}
+
+    project_gids = {
+        'Preproduction': '1208336083003480',
+        'Production': '1209597979075357',
+        'Post Production': '1209581743268502',
+        'Forecast': '1212059678473189'
+    }
+
+    PERCENT_ALLOCATION_FIELD_GID = '1208923995383367'
+    ACTUAL_ALLOCATION_FIELD_GID = '1212060330747288'
+    TASK_PROGRESS_FIELD_GID = '1209598240843051'
+    VIDEOGRAPHER_FIELD_GID = '1209693890455555'
+
+    all_tasks = []
+
+    for project_name, project_gid in project_gids.items():
+        try:
+            endpoint = f"https://app.asana.com/api/1.0/projects/{project_gid}/tasks"
+            params = {
+                'opt_fields': 'gid,name,completed,created_at,start_on,due_on,assignee.name,custom_fields'
+            }
+
+            response = requests.get(endpoint, headers=headers, params=params)
+            if response.status_code == 200:
+                tasks = response.json().get('data', [])
+
+                for task in tasks:
+                    # Extract allocation fields and task progress
+                    estimated_allocation = 0
+                    actual_allocation = 0
+                    task_progress = None
+                    videographer = None
+
+                    if 'custom_fields' in task:
+                        for field in task['custom_fields']:
+                            if field['gid'] == PERCENT_ALLOCATION_FIELD_GID and field.get('number_value'):
+                                estimated_allocation = field.get('number_value', 0) * 100
+                            elif field['gid'] == ACTUAL_ALLOCATION_FIELD_GID and field.get('number_value'):
+                                actual_allocation = field.get('number_value', 0) * 100
+                            elif field['gid'] == TASK_PROGRESS_FIELD_GID:
+                                # Task Progress is an enum field, get the display_value
+                                if field.get('display_value'):
+                                    task_progress = field.get('display_value')
+                            elif field['gid'] == VIDEOGRAPHER_FIELD_GID:
+                                # Videographer is a text field
+                                videographer = field.get('text_value')
+
+                    task_info = {
+                        'gid': task.get('gid'),
+                        'name': task.get('name', 'Untitled'),
+                        'project': project_name,
+                        'completed': task.get('completed', False),
+                        'created_at': task.get('created_at'),
+                        'start_on': task.get('start_on'),
+                        'due_on': task.get('due_on'),
+                        'assignee': task.get('assignee', {}).get('name', 'Unassigned') if task.get('assignee') else 'Unassigned',
+                        'estimated_allocation': estimated_allocation,
+                        'actual_allocation': actual_allocation,
+                        'task_progress': task_progress,
+                        'videographer': videographer
+                    }
+
+                    all_tasks.append(task_info)
+        except Exception as e:
+            print(f"Warning: Could not fetch tasks from {project_name}: {e}")
+            continue
+
+    return all_tasks
+
+def calculate_workload_forecast(tasks, team_capacity_config):
+    """Calculate upcoming workload for 7, 14, and 30 day windows - matches heatmap/timeline logic"""
+    today = datetime.now().date()
+    DEFAULT_TASK_DURATION_DAYS = 30
+
+    # Calculate daily team capacity (matches heatmap calculation)
+    daily_max = sum(team_capacity_config[member]['max'] for member in team_capacity_config) / 5
+
+    windows = {
+        '7_days': {'days': 7, 'end': today + timedelta(days=7)},
+        '14_days': {'days': 14, 'end': today + timedelta(days=14)},
+        '30_days': {'days': 30, 'end': today + timedelta(days=30)}
+    }
+
+    # First pass: Calculate utilizations for all windows and find peak
+    all_utilizations = []
+    for window_name, window_info in windows.items():
+        daily_utilizations = []
+        active_task_set = set()  # Track unique tasks active in this window
+
+        # Check each day in the window
+        for day_offset in range(window_info['days']):
+            current_date = today + timedelta(days=day_offset)
+            daily_capacity = 0
+
+            for task in tasks:
+                if task['completed']:
+                    continue
+
+                try:
+                    # Match heatmap logic for handling missing dates
+                    if task['due_on']:
+                        due_date = datetime.fromisoformat(task['due_on']).date() if isinstance(task['due_on'], str) else task['due_on']
+                        if task['start_on']:
+                            start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
+                        else:
+                            # Has due but no start: work backwards from due date
+                            start_date = max(today, due_date - timedelta(days=DEFAULT_TASK_DURATION_DAYS))
+                    elif task['start_on']:
+                        # Has start but no due: assign default duration from start
+                        start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
+                        due_date = start_date + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+                    else:
+                        # Neither date exists: assign defaults
+                        start_date = today
+                        due_date = today + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+
+                    # Check if task is active on this specific day (matches heatmap logic)
+                    if start_date <= current_date <= due_date:
+                        # Divide by 5 for daily workload (5-day work week) - matches heatmap
+                        daily_workload = task['estimated_allocation'] / 5
+                        daily_capacity += daily_workload
+                        # Track task as active in this window
+                        active_task_set.add(task.get('gid', task.get('name', '')))
+                except:
+                    pass
+
+            # Calculate utilization for this day
+            day_utilization = (daily_capacity / daily_max * 100) if daily_max > 0 else 0
+            daily_utilizations.append(day_utilization)
+            all_utilizations.append(day_utilization)
+
+        # Average the daily utilizations for the window (matches timeline logic)
+        window_info['utilization'] = sum(daily_utilizations) / len(daily_utilizations) if daily_utilizations else 0
+        window_info['tasks'] = len(active_task_set)
+        window_info['daily_utilizations'] = daily_utilizations
+
+    # Calculate adaptive thresholds for relative context
+    peak_utilization = max(all_utilizations) if all_utilizations else 0
+    adaptive_vmax = max(peak_utilization * 1.5, 20)
+    adaptive_threshold_low = adaptive_vmax * 0.35
+    adaptive_threshold_medium = adaptive_vmax * 0.60
+    adaptive_threshold_high = adaptive_vmax * 0.80
+
+    # Fixed thresholds for absolute capacity status
+    FIXED_THRESHOLD_BUSY = 70
+    FIXED_THRESHOLD_OVER = 100
+
+    for window_name, window_info in windows.items():
+        utilization = window_info['utilization']
+
+        # Use FIXED thresholds for status (absolute capacity)
+        if utilization >= FIXED_THRESHOLD_OVER:
+            window_info['status'] = 'over'
+        elif utilization >= FIXED_THRESHOLD_BUSY:
+            window_info['status'] = 'busy'
+        else:
+            window_info['status'] = 'good'
+
+        # Add relative workload context note
+        relative_note = None
+        if utilization >= adaptive_threshold_high:
+            relative_note = "Peak workload period"
+        elif utilization >= adaptive_threshold_medium:
+            relative_note = "Higher than average workload"
+        elif utilization >= adaptive_threshold_low:
+            relative_note = "Moderate workload period"
+
+        window_info['relative_note'] = relative_note
+
+    return windows
+
+def generate_6month_timeline(tasks, team_capacity_config):
+    """Generate 6-month capacity timeline showing weekly utilization"""
+    today = datetime.now().date()
+    DEFAULT_TASK_DURATION_DAYS = 30
+
+    # Calculate daily team capacity (matches heatmap calculation)
+    daily_max = sum(team_capacity_config[member]['max'] for member in team_capacity_config) / 5
+
+    # Generate 26 weeks (6 months)
+    weeks = []
+    for week_num in range(26):
+        week_start = today + timedelta(weeks=week_num)
+        week_end = week_start + timedelta(days=6)
+
+        # Calculate average daily capacity for this week by checking each day
+        daily_utilizations = []
+        for day_offset in range(7):
+            current_date = week_start + timedelta(days=day_offset)
+            daily_capacity = 0
+
+            for task in tasks:
+                if task['completed']:
+                    continue
+
+                try:
+                    # Determine task date range (same logic as heatmap)
+                    if task['due_on']:
+                        due_date = datetime.fromisoformat(task['due_on']).date() if isinstance(task['due_on'], str) else task['due_on']
+                        if task['start_on']:
+                            start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
+                        else:
+                            start_date = max(today, due_date - timedelta(days=DEFAULT_TASK_DURATION_DAYS))
+                    elif task['start_on']:
+                        start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
+                        due_date = start_date + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+                    else:
+                        start_date = today
+                        due_date = today + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+
+                    # Check if task is active on this specific day
+                    if start_date <= current_date <= due_date:
+                        daily_workload = task['estimated_allocation'] / 5
+                        daily_capacity += daily_workload
+                except:
+                    pass
+
+            # Calculate utilization for this day
+            day_utilization = (daily_capacity / daily_max * 100) if daily_max > 0 else 0
+            daily_utilizations.append(day_utilization)
+
+        # Average the daily utilizations for the week
+        utilization = sum(daily_utilizations) / len(daily_utilizations) if daily_utilizations else 0
+
+        # Count unique tasks active during this week
+        task_count = 0
+        for task in tasks:
+            if task['completed']:
+                continue
+            try:
+                if task['due_on']:
+                    due_date = datetime.fromisoformat(task['due_on']).date() if isinstance(task['due_on'], str) else task['due_on']
+                    if task['start_on']:
+                        start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
+                    else:
+                        start_date = max(today, due_date - timedelta(days=DEFAULT_TASK_DURATION_DAYS))
+                elif task['start_on']:
+                    start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
+                    due_date = start_date + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+                else:
+                    start_date = today
+                    due_date = today + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+
+                if start_date <= week_end and due_date >= week_start:
+                    task_count += 1
+            except:
+                pass
+
+        weeks.append({
+            'week_num': week_num + 1,
+            'start_date': week_start.strftime('%Y-%m-%d'),
+            'end_date': week_end.strftime('%Y-%m-%d'),
+            'month': week_start.strftime('%b'),
+            'task_count': task_count,
+            'utilization': utilization,
+            'status': None  # Will be set after calculating adaptive thresholds
+        })
+
+    # Calculate adaptive color thresholds (same logic as heatmap)
+    utilization_values = [week['utilization'] for week in weeks]
+    peak_utilization = max(utilization_values) if utilization_values else 0
+    adaptive_vmax = max(peak_utilization * 1.5, 20)
+
+    # Set adaptive thresholds
+    threshold_low = adaptive_vmax * 0.35        # 35% of scale
+    threshold_medium = adaptive_vmax * 0.60     # 60% of scale
+    threshold_high = adaptive_vmax * 0.80       # 80% of scale
+
+    # Apply adaptive status to each week
+    for week in weeks:
+        utilization = week['utilization']
+        if utilization < threshold_low:
+            week['status'] = 'good'
+        elif utilization < threshold_medium:
+            week['status'] = 'busy'
+        elif utilization < threshold_high:
+            week['status'] = 'warning'
+        else:
+            week['status'] = 'over'
+
+    return weeks
+
+def identify_at_risk_tasks(tasks, team_capacity):
+    """Identify tasks that are at risk of missing deadlines based on Task Progress and project type"""
+    at_risk = []
+    today = datetime.now().date()
+    seven_days = today + timedelta(days=7)
+
+    for task in tasks:
+        if task['completed']:
+            continue
+
+        risk_factors = []
+        task_progress = task.get('task_progress')
+        project = task.get('project')
+
+        # Check if task is overdue
+        if task['due_on']:
+            try:
+                due_date = datetime.fromisoformat(task['due_on']).date() if isinstance(task['due_on'], str) else task['due_on']
+
+                if due_date < today:
+                    risk_factors.append(f"Overdue by {(today - due_date).days} days")
+                elif due_date <= seven_days:
+                    # Due within 7 days - check Task Progress based on project type
+
+                    if project == 'Production':
+                        # Production: at-risk if "Needs Scheduling" and approaching due date
+                        if task_progress == 'Needs Scheduling':
+                            risk_factors.append(f"Due in {(due_date - today).days} days, needs scheduling")
+
+                    elif project == 'Post Production':
+                        # Post Production: at-risk if "Filmed" or "Offloaded" (but NOT "In Progress") and approaching due date
+                        if task_progress in ['Filmed', 'Offloaded']:
+                            risk_factors.append(f"Due in {(due_date - today).days} days, not yet in progress")
+            except:
+                pass
+
+        # Check if running over estimate
+        if task['estimated_allocation'] > 0 and task['actual_allocation'] > 0:
+            variance = ((task['actual_allocation'] - task['estimated_allocation']) / task['estimated_allocation']) * 100
+            if variance > 20:
+                risk_factors.append(f"Over estimate by {variance:.0f}%")
+
+        if risk_factors:
+            assignee = task['assignee']
+            videographer = task.get('videographer', 'N/A')
+            at_risk.append({
+                'name': task['name'],
+                'project': task['project'],
+                'assignee': assignee,
+                'videographer': videographer,
+                'due_on': task.get('due_on', 'No due date'),
+                'risks': risk_factors
+            })
+
+    return at_risk
+
+def generate_capacity_heatmap(tasks, team_capacity_config):
+    """Generate capacity utilization heatmap for next 30 days with adaptive color scaling"""
+    today = datetime.now().date()
+    heatmap_data = []
+
+    # Default span for tasks without dates (matches video_scorer.py CONFIG)
+    DEFAULT_TASK_DURATION_DAYS = 30
+
+    # Match PNG heatmap: MAX_CAPACITY/5 for daily capacity (5-day work week)
+    daily_max = sum(team_capacity_config[member]['max'] for member in team_capacity_config) / 5
+
+    # First pass: calculate all utilization values to find the peak
+    utilization_values = []
+
+    # Generate next 30 days
+    for day_offset in range(30):
+        current_date = today + timedelta(days=day_offset)
+        daily_capacity = 0
+
+        # Calculate capacity needed for tasks active on this day (excluding completed to match PNG)
+        for task in tasks:
+            # Skip completed tasks to match video_scorer.py behavior
+            if task.get('completed', False):
+                continue
+
+            try:
+                # Match video_scorer.py logic for handling missing dates
+                if task['due_on']:
+                    due_date = datetime.fromisoformat(task['due_on']).date() if isinstance(task['due_on'], str) else task['due_on']
+
+                    if task['start_on']:
+                        start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
+                    else:
+                        # Has due but no start: work backwards from due date
+                        calculated_start = due_date - timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+                        start_date = max(today, calculated_start)
+
+                elif task['start_on']:
+                    # Has start but no due: assign default duration from start
+                    start_date = datetime.fromisoformat(task['start_on']).date() if isinstance(task['start_on'], str) else task['start_on']
+                    due_date = start_date + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+
+                else:
+                    # Neither date exists: assign defaults (matches video_scorer.py lines 700-703)
+                    start_date = today
+                    due_date = today + timedelta(days=DEFAULT_TASK_DURATION_DAYS)
+
+                # Only count if this date falls within the task's work period
+                if start_date <= current_date <= due_date:
+                    # Use SAME calculation as PNG heatmap for consistency
+                    # allocation% / 5 = daily workload (5-day work week)
+                    daily_workload = task['estimated_allocation'] / 5
+
+                    # Add to total daily capacity requirement
+                    daily_capacity += daily_workload
+            except Exception as e:
+                pass
+
+        # Calculate utilization as percentage of daily team capacity
+        utilization = (daily_capacity / daily_max * 100) if daily_max > 0 else 0
+        utilization_values.append(utilization)
+
+    # Calculate adaptive vmax using SAME formula as PNG heatmap
+    # video_scorer.py line 863: adaptive_vmax = max(phase_peak * 1.5, 20)
+    peak_utilization = max(utilization_values) if utilization_values else 0
+    adaptive_vmax = max(peak_utilization * 1.5, 20)
+
+    # Second pass: categorize with adaptive thresholds
+    for day_offset in range(30):
+        current_date = today + timedelta(days=day_offset)
+        utilization = utilization_values[day_offset]
+
+        # Use adaptive color scaling matching PNG heatmap with more granular colors
+        # Scale is 0 to adaptive_vmax, divided into 5 color bands for better visualization
+        threshold_very_low = adaptive_vmax * 0.15   # 15% of scale
+        threshold_low = adaptive_vmax * 0.35        # 35% of scale
+        threshold_medium = adaptive_vmax * 0.60     # 60% of scale
+        threshold_high = adaptive_vmax * 0.80       # 80% of scale
+
+        if utilization < threshold_very_low:
+            status = 'very_low'    # Light green
+        elif utilization < threshold_low:
+            status = 'low'         # Green
+        elif utilization < threshold_medium:
+            status = 'medium'      # Yellow-green
+        elif utilization < threshold_high:
+            status = 'high'        # Orange
+        else:
+            status = 'very_high'   # Red
+
+        heatmap_data.append({
+            'date': current_date.strftime('%Y-%m-%d'),
+            'day': current_date.strftime('%a'),
+            'utilization': utilization,
+            'status': status
+        })
+
+    return heatmap_data
+
+def generate_html_dashboard(data):
+    """Generate interactive HTML dashboard"""
+
+    # Extract key metrics
+    total_tasks = data.get('active_task_count', 0)
+
+    # Category metrics (cumulative)
+    category_data = []
+    tracking_period = ""
+    if data['variance'] is not None:
+        for _, row in data['variance'].iterrows():
+            category_data.append({
+                'name': row['Category'],
+                'actual': float(row['Actual %']),
+                'target': float(row['Target %']),
+                'variance': float(row['Variance'])
+            })
+
+        # Calculate tracking period from history
+        if data.get('variance_history') is not None and not data['variance_history'].empty:
+            dates = pd.to_datetime(data['variance_history']['Date'])
+            start_date = dates.min().strftime('%b %d, %Y')
+            end_date = dates.max().strftime('%b %d, %Y')
+            days_tracked = (dates.max() - dates.min()).days + 1
+            tracking_period = f"{start_date} - {end_date} ({days_tracked} days)"
+
+    # Delivery metrics
+    delivery_metrics = {
+        'total_completed': 0,
+        'completed_this_year': 0,
+        'on_time_rate': 0,
+        'avg_capacity_variance': 0,
+        'projects_delayed_capacity': 0,
+        'avg_days_variance': 0
+    }
+
+    if data['delivery_log'] is not None:
+        df = data['delivery_log']
+        delivery_metrics['total_completed'] = len(df)
+
+        # Calculate projects completed this year
+        current_year = datetime.now().year
+        tasks_with_completion_date = df[df['Completed Date'].notna()]
+        completed_this_year = 0
+        for _, task in tasks_with_completion_date.iterrows():
+            try:
+                # Parse completion date (format: YYYY-MM-DD)
+                completion_date = pd.to_datetime(task['Completed Date'])
+                if completion_date.year == current_year:
+                    completed_this_year += 1
+            except (ValueError, TypeError):
+                pass
+        delivery_metrics['completed_this_year'] = completed_this_year
+
+        # On-time completion rate (only count tasks with due dates)
+        # Filter out tasks where Delivery Status is null/NaN (no due date)
+        tasks_with_due_dates = df[df['Delivery Status'].notna()]
+        on_time = len(tasks_with_due_dates[tasks_with_due_dates['Delivery Status'].isin(['On Time', 'Early'])])
+        tasks_with_due_dates_count = len(tasks_with_due_dates)
+        delivery_metrics['on_time_rate'] = (on_time / tasks_with_due_dates_count * 100) if tasks_with_due_dates_count > 0 else 0
+
+        # Calculate avg days variance
+        numeric_variance = df[df['Days Variance'] != 'N/A']['Days Variance']
+        if len(numeric_variance) > 0:
+            delivery_metrics['avg_days_variance'] = numeric_variance.mean()
+
+        # Average capacity variance (allocation variance)
+        tasks_with_actual = df[df['Actual Allocation %'] != 'N/A']
+        if len(tasks_with_actual) > 0:
+            # Calculate variance for each task with actual data
+            variances = []
+            for _, task in tasks_with_actual.iterrows():
+                try:
+                    estimated = float(task['Estimated Allocation %'])
+                    actual = float(task['Actual Allocation %'])
+                    variance_pct = ((actual - estimated) / estimated * 100) if estimated > 0 else 0
+                    variances.append(variance_pct)
+                except (ValueError, TypeError):
+                    continue
+
+            if variances:
+                delivery_metrics['avg_capacity_variance'] = sum(variances) / len(variances)
+
+        # Projects delayed due to capacity (late + over allocation)
+        delayed_capacity = 0
+        for _, task in df.iterrows():
+            is_late = task['Delivery Status'] == 'Late'
+            allocation_over = False
+
+            if task['Allocation Variance %'] != 'N/A':
+                try:
+                    alloc_var = float(task['Allocation Variance %'])
+                    allocation_over = alloc_var > 10  # More than 10% over estimate
+                except (ValueError, TypeError):
+                    pass
+
+            if is_late and allocation_over:
+                delayed_capacity += 1
+
+        delivery_metrics['projects_delayed_capacity'] = delayed_capacity
+
+    # Get team capacity from data (calculated in read_reports)
+    team_capacity = data['team_capacity']
+
+    # Generate HTML
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perimeter Studio Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background-color: {BRAND_OFF_WHITE};
+            color: {BRAND_NAVY};
+            padding: 20px;
+        }}
+
+        .dashboard-container {{
+            max-width: 1400px;
+            margin: 0 auto;
+        }}
+
+        .header {{
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border-left: 5px solid {BRAND_BLUE};
+        }}
+
+        .header h1 {{
+            color: {BRAND_NAVY};
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }}
+
+        .header .subtitle {{
+            color: #6c757d;
+            font-size: 14px;
+        }}
+
+        .header .timestamp {{
+            color: {BRAND_BLUE};
+            font-size: 13px;
+            margin-top: 5px;
+        }}
+
+        .grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }}
+
+        .card {{
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }}
+
+        .card h2 {{
+            color: {BRAND_NAVY};
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            border-bottom: 2px solid {BRAND_BLUE};
+            padding-bottom: 10px;
+        }}
+
+        .metric {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }}
+
+        .metric:last-child {{
+            border-bottom: none;
+        }}
+
+        .metric-label {{
+            font-size: 14px;
+            color: #6c757d;
+        }}
+
+        .metric-value {{
+            font-size: 24px;
+            font-weight: 600;
+            color: {BRAND_NAVY};
+        }}
+
+        .metric-value.positive {{
+            color: #28a745;
+        }}
+
+        .metric-value.negative {{
+            color: #dc3545;
+        }}
+
+        .metric-value.warning {{
+            color: #ffc107;
+        }}
+
+        .progress-bar {{
+            width: 100%;
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            margin-top: 8px;
+        }}
+
+        .progress-fill {{
+            height: 100%;
+            background: linear-gradient(90deg, {BRAND_BLUE}, #4a9fd8);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+        }}
+
+        .progress-fill.over-capacity {{
+            background: linear-gradient(90deg, #dc3545, #c82333);
+        }}
+
+        .alert {{
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }}
+
+        .alert.danger {{
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }}
+
+        .alert.success {{
+            background: #d4edda;
+            border-left-color: #28a745;
+        }}
+
+        .chart-container {{
+            position: relative;
+            height: 300px;
+            margin-top: 15px;
+        }}
+
+        .team-member {{
+            margin-bottom: 20px;
+        }}
+
+        .team-member-name {{
+            font-size: 14px;
+            font-weight: 600;
+            color: {BRAND_NAVY};
+            margin-bottom: 5px;
+        }}
+
+        .team-member-capacity {{
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }}
+
+        .full-width {{
+            grid-column: 1 / -1;
+        }}
+
+        /* Forecast grid default styles */
+        .forecast-grid {{
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }}
+
+        /* Heatmap grid default styles */
+        .heatmap-grid {{
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 5px;
+        }}
+
+        @media print {{
+            body {{
+                background: white;
+            }}
+            .card {{
+                box-shadow: none;
+                border: 1px solid #dee2e6;
+                page-break-inside: avoid;
+            }}
+        }}
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {{
+            body {{
+                padding: 10px;
+            }}
+
+            .header {{
+                padding: 20px 15px;
+            }}
+
+            .header h1 {{
+                font-size: 24px;
+            }}
+
+            .header .subtitle {{
+                font-size: 12px;
+            }}
+
+            .grid {{
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }}
+
+            .card {{
+                padding: 15px;
+            }}
+
+            .card h2 {{
+                font-size: 16px;
+                margin-bottom: 12px;
+            }}
+
+            .metric {{
+                padding: 10px 0;
+            }}
+
+            .metric-label {{
+                font-size: 13px;
+            }}
+
+            .metric-value {{
+                font-size: 20px;
+            }}
+
+            .chart-container {{
+                height: 250px;
+            }}
+
+            .team-member-name {{
+                font-size: 13px;
+            }}
+
+            .alert {{
+                padding: 12px;
+                font-size: 13px;
+            }}
+
+            /* Make chat widget more mobile-friendly */
+            .chat-widget {{
+                bottom: 15px;
+                right: 15px;
+            }}
+
+            .chat-button {{
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }}
+
+            .chat-window {{
+                bottom: 75px;
+                right: 10px;
+                left: 10px;
+                width: auto;
+                max-width: none;
+                height: 500px;
+            }}
+
+            .chat-messages {{
+                padding: 15px;
+            }}
+
+            .chat-message {{
+                max-width: 85%;
+                font-size: 14px;
+            }}
+
+            /* Fix forecast grid - single column on mobile */
+            .forecast-grid {{
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+            }}
+
+            /* Fix heatmap - fewer columns on mobile */
+            .heatmap-grid {{
+                grid-template-columns: repeat(5, 1fr) !important;
+                gap: 3px !important;
+                font-size: 10px !important;
+            }}
+
+            .heatmap-grid > div {{
+                padding: 6px 4px !important;
+                font-size: 10px !important;
+            }}
+        }}
+
+        /* Extra small mobile devices (iPhone SE, etc.) */
+        @media (max-width: 375px) {{
+            .header h1 {{
+                font-size: 20px;
+            }}
+
+            .card {{
+                padding: 12px;
+            }}
+
+            .card h2 {{
+                font-size: 15px;
+            }}
+
+            .metric-value {{
+                font-size: 18px;
+            }}
+
+            .chart-container {{
+                height: 220px;
+            }}
+
+            .chat-button {{
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }}
+
+            .chat-window {{
+                height: 450px;
+            }}
+
+            /* Even more compact heatmap for small screens */
+            .heatmap-grid {{
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 2px !important;
+            }}
+
+            .heatmap-grid > div {{
+                padding: 5px 2px !important;
+                font-size: 9px !important;
+            }}
+        }}
+
+        /* Landscape mobile optimization */
+        @media (max-width: 768px) and (orientation: landscape) {{
+            .chart-container {{
+                height: 200px;
+            }}
+
+            .chat-window {{
+                height: 350px;
+            }}
+        }}
+
+        /* Chat Widget Styles */
+        .chat-widget {{
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }}
+
+        .chat-button {{
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: {BRAND_BLUE};
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }}
+
+        .chat-button:hover {{
+            background: {BRAND_NAVY};
+            transform: scale(1.05);
+        }}
+
+        .chat-window {{
+            display: none;
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 400px;
+            max-width: calc(100vw - 40px);
+            height: 600px;
+            max-height: calc(100vh - 120px);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            flex-direction: column;
+            overflow: hidden;
+        }}
+
+        .chat-window.open {{
+            display: flex;
+        }}
+
+        .chat-header {{
+            background: {BRAND_NAVY};
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }}
+
+        .chat-header h3 {{
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }}
+
+        .chat-close {{
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }}
+
+        .chat-close:hover {{
+            background: rgba(255,255,255,0.1);
+        }}
+
+        .chat-messages {{
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }}
+
+        .chat-message {{
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            line-height: 1.4;
+        }}
+
+        .chat-message.user {{
+            background: {BRAND_BLUE};
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }}
+
+        .chat-message.assistant {{
+            background: white;
+            color: {BRAND_NAVY};
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }}
+
+        .chat-message.system {{
+            background: #ffe69c;
+            color: #856404;
+            margin: 0 auto;
+            text-align: center;
+            font-size: 13px;
+        }}
+
+        .chat-input-container {{
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 10px;
+        }}
+
+        .chat-input {{
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }}
+
+        .chat-input:focus {{
+            outline: none;
+            border-color: {BRAND_BLUE};
+        }}
+
+        .chat-send {{
+            padding: 10px 20px;
+            background: {BRAND_BLUE};
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }}
+
+        .chat-send:hover {{
+            background: {BRAND_NAVY};
+        }}
+
+        .chat-send:disabled {{
+            background: #6c757d;
+            cursor: not-allowed;
+        }}
+
+        .typing-indicator {{
+            display: none;
+            padding: 10px 16px;
+            background: white;
+            border-radius: 12px;
+            max-width: 60px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }}
+
+        .typing-indicator.show {{
+            display: block;
+        }}
+
+        .typing-indicator span {{
+            height: 8px;
+            width: 8px;
+            background: {BRAND_BLUE};
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: typing 1.4s infinite;
+        }}
+
+        .typing-indicator span:nth-child(2) {{
+            animation-delay: 0.2s;
+        }}
+
+        .typing-indicator span:nth-child(3) {{
+            animation-delay: 0.4s;
+        }}
+
+        @keyframes typing {{
+            0%, 60%, 100% {{
+                opacity: 0.3;
+            }}
+            30% {{
+                opacity: 1;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>Perimeter Studio Dashboard</h1>
+            <div class="subtitle">Video Production Capacity Tracking & Performance Metrics</div>
+            <div class="timestamp">Last Updated: {data['timestamp']}</div>
+        </div>
+
+        <div class="grid">
+            <!-- Quick Stats -->
+            <div class="card">
+                <h2>Quick Stats</h2>
+                <div class="metric">
+                    <span class="metric-label">Active Tasks</span>
+                    <span class="metric-value">{total_tasks}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Completed (30 days)</span>
+                    <span class="metric-value">{delivery_metrics['total_completed']}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Total Projects This Year</span>
+                    <span class="metric-value">{delivery_metrics['completed_this_year']}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Avg Days Variance</span>
+                    <span class="metric-value {'positive' if delivery_metrics['avg_days_variance'] <= 0 else 'warning' if delivery_metrics['avg_days_variance'] <= 3 else 'negative'}">{delivery_metrics['avg_days_variance']:+.1f}</span>
+                </div>
+            </div>
+
+            <!-- Delivery Performance -->
+            <div class="card">
+                <h2>Delivery Performance</h2>
+                <div class="metric">
+                    <span class="metric-label">On-Time Completion Rate</span>
+                    <span class="metric-value {'positive' if delivery_metrics['on_time_rate'] >= 80 else 'warning' if delivery_metrics['on_time_rate'] >= 60 else 'negative'}">{delivery_metrics['on_time_rate']:.0f}%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Average Capacity Variance</span>
+                    <span class="metric-value {'positive' if not math.isnan(delivery_metrics['avg_capacity_variance']) and delivery_metrics['avg_capacity_variance'] <= 10 else 'warning' if not math.isnan(delivery_metrics['avg_capacity_variance']) and delivery_metrics['avg_capacity_variance'] <= 20 else 'negative' if not math.isnan(delivery_metrics['avg_capacity_variance']) else ''}">{'N/A' if delivery_metrics['avg_capacity_variance'] == 0 or math.isnan(delivery_metrics['avg_capacity_variance']) else f"{delivery_metrics['avg_capacity_variance']:+.0f}%"}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Projects Completed (30d)</span>
+                    <span class="metric-value">{delivery_metrics['total_completed']}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Projects Completed This Year</span>
+                    <span class="metric-value">{delivery_metrics['completed_this_year']}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Delayed Due to Capacity</span>
+                    <span class="metric-value {'positive' if delivery_metrics['projects_delayed_capacity'] == 0 else 'negative'}">{delivery_metrics['projects_delayed_capacity']}</span>
+                </div>
+            </div>
+
+            <!-- Team Capacity -->
+            <div class="card">
+                <h2>Team Capacity</h2>
+"""
+
+    # Add team members
+    for member in team_capacity:
+        utilization = (member['current'] / member['max'] * 100) if member['max'] > 0 else 0
+        over_capacity = member['current'] > member['max']
+
+        html += f"""
+                <div class="team-member">
+                    <div class="team-member-name">{member['name']}</div>
+                    <div class="team-member-capacity">{member['current']:.0f}% / {member['max']}% capacity</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill {'over-capacity' if over_capacity else ''}" style="width: {min(utilization, 100)}%">
+                            {utilization:.0f}%
+                        </div>
+                    </div>
+                </div>
+"""
+
+    html += """
+            </div>
+
+            <!-- External Projects (Contracted/Outsourced) -->
+            <div class="card">
+                <h2>Contracted/Outsourced Projects</h2>
+"""
+
+    # Add external projects
+    external_projects = data.get('external_projects', [])
+    if external_projects:
+        for project in external_projects:
+            html += f"""
+                <div class="metric">
+                    <span class="metric-label">{project['name']}</span>
+                    <span class="metric-value">{project['active_count']} Active</span>
+                </div>
+"""
+            if project.get('tasks'):
+                html += """
+                <div style="margin-top: 10px; padding-left: 10px; border-left: 2px solid """ + BRAND_BLUE + """;">
+"""
+                for task in project['tasks']:
+                    due_text = f" (Due: {task['due_on']})" if task.get('due_on') else ""
+                    videographer_text = f" | Videographer: {task['videographer']}" if task.get('videographer') else ""
+                    html += f"""
+                    <div style="font-size: 12px; color: #6c757d; margin: 4px 0;">• {task['name']}{videographer_text}{due_text}</div>
+"""
+                html += """
+                </div>
+"""
+    else:
+        html += """
+                <div style="text-align: center; padding: 20px; color: #6c757d;">
+                    <div style="font-size: 14px;">No external projects</div>
+                </div>
+"""
+
+    html += """
+            </div>
+        </div>
+
+        <!-- At-Risk Tasks -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>⚠️ At-Risk Tasks</h2>
+    """
+
+    at_risk = data.get('at_risk_tasks', [])
+    if at_risk:
+        html += """
+            <div style="margin-top: 15px;">
+        """
+        for task in at_risk[:10]:  # Show top 10
+            risks_html = "<br>".join([f"• {risk}" for risk in task['risks']])
+            videographer_display = f" | Videographer: {task.get('videographer', 'N/A')}" if task.get('videographer') else ""
+            html += f"""
+                <div style="border-left: 4px solid #dc3545; padding: 10px; margin-bottom: 10px; background: {BRAND_OFF_WHITE};">
+                    <div style="font-weight: bold; color: {BRAND_NAVY};">{task['name']}</div>
+                    <div style="font-size: 12px; color: #6c757d; margin-top: 5px;">
+                        {task['project']} | {task['assignee']}{videographer_display} | Due: {task['due_on']}
+                    </div>
+                    <div style="font-size: 13px; color: #dc3545; margin-top: 8px;">
+                        {risks_html}
+                    </div>
+                </div>
+            """
+        html += """
+            </div>
+        """
+    else:
+        html += """
+            <div style="text-align: center; padding: 20px; color: #28a745;">
+                <div style="font-size: 48px;">✅</div>
+                <div style="font-size: 18px; margin-top: 10px;">No tasks currently at risk!</div>
+            </div>
+        """
+
+    html += """
+        </div>
+
+        <!-- Upcoming Shoots -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>🎬 Upcoming Shoots</h2>
+    """
+
+    upcoming_shoots = data.get('upcoming_shoots', [])
+    if upcoming_shoots:
+        html += """
+            <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
+        """
+        for shoot in upcoming_shoots:
+            # Format date and time
+            shoot_datetime = shoot['datetime']
+
+            # Convert from UTC to local time
+            from datetime import timezone
+            local_datetime = shoot_datetime.astimezone()
+
+            # Format date as "Mon, Dec 4"
+            date_str = local_datetime.strftime('%a, %b %-d')
+            # Format time as "3:45 PM"
+            time_str = local_datetime.strftime('%-I:%M %p')
+
+            # Generate Asana task URL
+            task_url = f"https://app.asana.com/0/0/{shoot['gid']}/f"
+
+            html += f"""
+                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; background: {BRAND_OFF_WHITE}; transition: box-shadow 0.2s;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <div>
+                            <div style="font-size: 14px; font-weight: bold; color: {BRAND_NAVY};">{date_str}</div>
+                            <div style="font-size: 18px; font-weight: 600; color: {BRAND_BLUE};">{time_str}</div>
+                        </div>
+                        <span style="display: inline-block; padding: 4px 10px; background: {BRAND_NAVY}; color: white; font-size: 11px; border-radius: 12px; white-space: nowrap;">{shoot['project']}</span>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <a href="{task_url}" target="_blank" style="color: {BRAND_NAVY}; text-decoration: none; font-weight: 500; font-size: 15px; line-height: 1.4; display: block; hover: text-decoration: underline;">
+                            {shoot['name']}
+                        </a>
+                    </div>
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #dee2e6;">
+                        <a href="{task_url}" target="_blank" style="color: {BRAND_BLUE}; text-decoration: none; font-size: 12px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            """
+        html += """
+            </div>
+        """
+    else:
+        html += f"""
+            <div style="text-align: center; padding: 30px; color: #6c757d;">
+                <div style="font-size: 48px; margin-bottom: 10px;">📅</div>
+                <div style="font-size: 16px;">No upcoming shoots scheduled</div>
+            </div>
+        """
+
+    html += """
+        </div>
+
+        <!-- Upcoming Project Deadlines -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>⏰ Upcoming Project Deadlines</h2>
+            <p style="color: #6c757d; margin-top: 5px; font-size: 14px;">Projects due within the next 10 days</p>
+    """
+
+    upcoming_deadlines = data.get('upcoming_deadlines', [])
+    if upcoming_deadlines:
+        html += """
+            <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
+        """
+        for deadline in upcoming_deadlines:
+            # Format date
+            due_date = deadline['due_date']
+            date_str = due_date.strftime('%a, %b %-d, %Y')
+
+            # Generate Asana task URL
+            task_url = f"https://app.asana.com/0/0/{deadline['gid']}/f"
+
+            # Determine urgency color
+            days_until = deadline['days_until']
+            if days_until == 0:
+                urgency_color = '#dc3545'  # Red for today
+                urgency_text = 'DUE TODAY'
+            elif days_until == 1:
+                urgency_color = '#fd7e14'  # Orange for tomorrow
+                urgency_text = 'DUE TOMORROW'
+            elif days_until <= 3:
+                urgency_color = '#ffc107'  # Yellow for within 3 days
+                urgency_text = f'{days_until} DAYS'
+            else:
+                urgency_color = BRAND_BLUE
+                urgency_text = f'{days_until} DAYS'
+
+            html += f"""
+                <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; background: {BRAND_OFF_WHITE}; transition: box-shadow 0.2s;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <div>
+                            <div style="font-size: 14px; font-weight: bold; color: {BRAND_NAVY};">{date_str}</div>
+                            <div style="font-size: 24px; font-weight: 600; color: {urgency_color}; margin-top: 5px;">{urgency_text}</div>
+                        </div>
+                        <span style="display: inline-block; padding: 4px 10px; background: {BRAND_NAVY}; color: white; font-size: 11px; border-radius: 12px; white-space: nowrap;">{deadline['project']}</span>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <a href="{task_url}" target="_blank" style="color: {BRAND_NAVY}; text-decoration: none; font-weight: 500; font-size: 15px; line-height: 1.4; display: block; hover: text-decoration: underline;">
+                            {deadline['name']}
+                        </a>
+                    </div>
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #dee2e6;">
+                        <a href="{task_url}" target="_blank" style="color: {BRAND_BLUE}; text-decoration: none; font-size: 12px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            """
+        html += """
+            </div>
+        """
+    else:
+        html += f"""
+            <div style="text-align: center; padding: 30px; color: #6c757d;">
+                <div style="font-size: 48px; margin-bottom: 10px;">✅</div>
+                <div style="font-size: 16px;">No upcoming deadlines in the next 10 days</div>
+            </div>
+        """
+
+    html += """
+        </div>
+
+        <!-- Upcoming Workload Forecast -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>📅 Upcoming Workload Forecast</h2>
+            <div class="forecast-grid">
+    """
+
+    # Add workload forecast data
+    workload = data.get('workload_forecast', {})
+    for period_key in ['7_days', '14_days', '30_days']:
+        period_data = workload.get(period_key, {})
+        period_label = period_key.replace('_', ' ').title()
+        tasks_count = period_data.get('tasks', 0)
+        utilization = period_data.get('utilization', 0)
+        status = period_data.get('status', 'good')
+        relative_note = period_data.get('relative_note')
+
+        # Status color
+        if status == 'over':
+            status_color = '#dc3545'
+            status_icon = '⚠️'
+        elif status == 'busy':
+            status_color = '#ffc107'
+            status_icon = '⚡'
+        else:
+            status_color = '#28a745'
+            status_icon = '✅'
+
+        # Build relative note HTML if present
+        relative_note_html = ""
+        if relative_note:
+            relative_note_html = f"""
+                    <div style="font-size: 11px; color: #6c757d; margin-top: 8px; padding-top: 8px; border-top: 1px solid #dee2e6; font-style: italic;">
+                        📊 {relative_note}
+                    </div>"""
+
+        html += f"""
+                <div style="border: 2px solid {status_color}; border-radius: 8px; padding: 15px; background: {BRAND_OFF_WHITE};">
+                    <div style="font-size: 14px; color: #6c757d; margin-bottom: 5px;">{period_label}</div>
+                    <div style="font-size: 24px; font-weight: bold; color: {BRAND_NAVY}; margin-bottom: 10px;">
+                        {tasks_count} tasks
+                    </div>
+                    <div style="font-size: 18px; color: {status_color}; font-weight: bold; margin-bottom: 5px;">
+                        {status_icon} {utilization:.0f}% capacity
+                    </div>
+                    <div style="font-size: 12px; color: #6c757d;">
+                        {status.replace('_', ' ').title() if status != 'over' else 'Over-allocated'}
+                    </div>{relative_note_html}
+                </div>
+        """
+
+    html += """
+            </div>
+        </div>
+
+        <!-- 6-Month Capacity Timeline -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>📆 6-Month Capacity Timeline</h2>
+            <div style="font-size: 12px; color: #6c757d; margin-bottom: 15px;">
+                Weekly team capacity projection showing workload distribution over the next 26 weeks
+            </div>
+    """
+
+    # Add 6-month timeline data
+    timeline = data.get('six_month_timeline', [])
+
+    html += """
+            <div style="margin-top: 15px;">
+                <!-- Timeline header with month labels -->
+                <div style="display: flex; margin-bottom: 10px; font-size: 12px; font-weight: bold; color: #6c757d;">
+    """
+
+    # Group weeks by month for header labels
+    current_month = None
+    month_week_count = 0
+    for week in timeline:
+        if week['month'] != current_month:
+            if current_month is not None:
+                # Close previous month label
+                html += f"""
+                    <div style="flex: {month_week_count}; text-align: center; border-right: 1px solid #dee2e6;">{current_month}</div>
+                """
+            current_month = week['month']
+            month_week_count = 1
+        else:
+            month_week_count += 1
+
+    # Close last month label
+    if current_month:
+        html += f"""
+                    <div style="flex: {month_week_count}; text-align: center;">{current_month}</div>
+        """
+
+    html += """
+                </div>
+
+                <!-- Timeline bars -->
+                <div style="display: flex; gap: 3px; height: 60px; align-items: flex-end;">
+    """
+
+    # Add timeline bars
+    for week in timeline:
+        utilization = week.get('utilization', 0)
+        status = week.get('status', 'good')
+        task_count = week.get('task_count', 0)
+        week_num = week.get('week_num', 0)
+        start_date = week.get('start_date', '')
+
+        # Color based on status (adaptive scaling like heatmap)
+        if status == 'over':
+            bar_color = '#dc3545'  # Red (very high)
+        elif status == 'warning':
+            bar_color = '#fd7e14'  # Orange (high)
+        elif status == 'busy':
+            bar_color = '#ffc107'  # Yellow (medium)
+        else:
+            bar_color = '#28a745'  # Green (low)
+
+        # Calculate visual bar height with scaling for better visibility
+        # Apply 1.3x multiplier with 5% minimum for maximum variance while keeping bars clickable
+        # This doesn't change the data, just makes differences much more apparent
+        bar_height = max(5, min(utilization * 1.3, 100))
+
+        html += f"""
+                    <div style="flex: 1; background: {bar_color}; height: {bar_height}%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week {week_num} ({start_date}): {utilization:.0f}% capacity, {task_count} tasks">
+                    </div>
+        """
+
+    html += """
+                </div>
+
+                <!-- Week number labels (show every 4th week) -->
+                <div style="display: flex; gap: 3px; margin-top: 5px; font-size: 9px; color: #6c757d;">
+    """
+
+    for i, week in enumerate(timeline):
+        week_num = week.get('week_num', 0)
+        # Show label every 4 weeks
+        if i % 4 == 0:
+            html += f"""
+                    <div style="flex: 1; text-align: center; min-width: 8px;">W{week_num}</div>
+            """
+        else:
+            html += """
+                    <div style="flex: 1; min-width: 8px;"></div>
+            """
+
+    html += """
+                </div>
+
+                <!-- Legend -->
+                <div style="margin-top: 15px; font-size: 11px; color: #6c757d; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: #28a745; border-radius: 2px;"></span> Low</div>
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: #ffc107; border-radius: 2px;"></span> Medium</div>
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: #fd7e14; border-radius: 2px;"></span> High</div>
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: #dc3545; border-radius: 2px;"></span> Very High</div>
+                </div>
+                <div style="margin-top: 5px; font-size: 10px; color: #6c757d; text-align: center; font-style: italic;">
+                    Colors scale adaptively based on peak workload over the 6-month period
+                </div>
+            </div>
+        </div>
+
+        <!-- Capacity Utilization Heatmap -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>📊 Capacity Utilization - Next 30 Days</h2>
+            <div class="heatmap-grid">
+    """
+
+    heatmap = data.get('capacity_heatmap', [])
+    for day_data in heatmap:
+        date_str = day_data.get('date', '')  # Full date like "2025-11-26"
+        day_abbr = day_data.get('day', '')  # Day abbreviation like "Wed"
+        utilization = day_data.get('utilization', 0)
+        status = day_data.get('status', 'low')
+
+        # Format date for display (show month/day)
+        try:
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+            display_date = date_obj.strftime('%m/%d')  # Shows as "11/26"
+        except:
+            display_date = day_abbr
+
+        # Color based on utilization with 5-color gradient
+        if status == 'very_high':
+            bg_color = '#dc3545'  # Red
+        elif status == 'high':
+            bg_color = '#fd7e14'  # Orange
+        elif status == 'medium':
+            bg_color = '#ffc107'  # Yellow
+        elif status == 'low':
+            bg_color = '#28a745'  # Green
+        else:  # very_low
+            bg_color = '#20c997'  # Light teal-green
+
+        html += f"""
+                <div style="background: {bg_color}; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="{date_str}: {utilization:.1f}% capacity">
+                    <div style="font-weight: bold;">{display_date}</div>
+                    <div style="font-size: 9px; margin-top: 2px;">{utilization:.0f}%</div>
+                </div>
+        """
+
+    html += f"""
+            </div>
+            <div style="margin-top: 15px; font-size: 11px; color: #6c757d; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <div><span style="display: inline-block; width: 12px; height: 12px; background: #20c997; border-radius: 2px;"></span> Very Low</div>
+                <div><span style="display: inline-block; width: 12px; height: 12px; background: #28a745; border-radius: 2px;"></span> Low</div>
+                <div><span style="display: inline-block; width: 12px; height: 12px; background: #ffc107; border-radius: 2px;"></span> Medium</div>
+                <div><span style="display: inline-block; width: 12px; height: 12px; background: #fd7e14; border-radius: 2px;"></span> High</div>
+                <div><span style="display: inline-block; width: 12px; height: 12px; background: #dc3545; border-radius: 2px;"></span> Very High</div>
+            </div>
+            <div style="margin-top: 10px; font-size: 11px; color: #6c757d; text-align: center;">
+                <em>Colors scale adaptively based on peak workload over the 30-day period</em>
+            </div>
+        </div>
+
+        <!-- Historical Capacity Utilization -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>📈 Historical Capacity Utilization</h2>
+            <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
+                Team utilization percentage over the last 30 days (click legend items to filter)
+            </div>
+            <div class="chart-container">
+                <canvas id="capacityHistoryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Category Allocation Chart -->
+        <div class="grid">
+            <div class="card full-width">
+                <h2>Category Allocation: Cumulative Average vs Target</h2>
+                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
+                    Cumulative average allocation across tracking period: {tracking_period}
+                </div>
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historical Trends Chart -->
+        <div class="grid">
+            <div class="card full-width">
+                <h2>Historical Allocation Trends</h2>
+                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
+                    Daily allocation percentages over time
+                </div>
+                <div class="chart-container">
+                    <canvas id="trendsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Details -->
+        <div class="grid">
+"""
+
+    # Add category cards
+    for cat in category_data:
+        variance_class = 'positive' if abs(cat['variance']) <= 5 else 'warning' if abs(cat['variance']) <= 10 else 'negative'
+
+        html += f"""
+            <div class="card">
+                <h2>{cat['name']}</h2>
+                <div class="metric">
+                    <span class="metric-label">Cumulative Avg</span>
+                    <span class="metric-value">{cat['actual']:.1f}%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Annual Target</span>
+                    <span class="metric-value">{cat['target']:.1f}%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Avg Variance</span>
+                    <span class="metric-value {variance_class}">{cat['variance']:+.1f}%</span>
+                </div>
+            </div>
+"""
+
+    html += """
+        </div>
+
+        <!-- Category Distribution Donut Charts -->
+        <div class="grid">
+            <div class="card">
+                <h2>📊 Current Period Distribution</h2>
+                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
+                    Today's workload distribution
+                </div>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="currentDonutChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h2>📊 Cumulative Average Distribution</h2>
+                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
+                    Average allocation over tracking period
+                </div>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="cumulativeDonutChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+"""
+
+    # Add Chart.js data
+    category_names = [cat['name'] for cat in category_data]
+    actual_values = [cat['actual'] for cat in category_data]  # Cumulative averages
+    target_values = [cat['target'] for cat in category_data]
+
+    # Extract current period data (latest day from variance_history)
+    current_values = []
+    if 'variance_history' in data and data['variance_history'] is not None:
+        history_df = data['variance_history']
+        if not history_df.empty:
+            latest_date = history_df['Date'].max()
+            latest_data = history_df[history_df['Date'] == latest_date]
+            # Match category order
+            for cat_name in category_names:
+                cat_row = latest_data[latest_data['Category'] == cat_name]
+                if not cat_row.empty:
+                    current_values.append(float(cat_row['Actual %'].iloc[0]))
+                else:
+                    current_values.append(0)
+        else:
+            current_values = actual_values  # Fallback to cumulative
+    else:
+        current_values = actual_values  # Fallback to cumulative
+
+    html += f"""
+        // Category Chart
+        const ctx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(ctx, {{
+            type: 'bar',
+            data: {{
+                labels: {json.dumps(category_names)},
+                datasets: [
+                    {{
+                        label: 'Actual %',
+                        data: {json.dumps(actual_values)},
+                        backgroundColor: '{BRAND_BLUE}',
+                        borderColor: '{BRAND_NAVY}',
+                        borderWidth: 1
+                    }},
+                    {{
+                        label: 'Target %',
+                        data: {json.dumps(target_values)},
+                        backgroundColor: 'rgba(9, 36, 63, 0.3)',
+                        borderColor: '{BRAND_NAVY}',
+                        borderWidth: 2,
+                        borderDash: [5, 5]
+                    }}
+                ]
+            }},
+            options: {{
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {{
+                    y: {{
+                        beginAtZero: true,
+                        max: 50,
+                        ticks: {{
+                            callback: function(value) {{
+                                return value + '%';
+                            }}
+                        }}
+                    }}
+                }},
+                plugins: {{
+                    legend: {{
+                        position: 'top'
+                    }},
+                    tooltip: {{
+                        callbacks: {{
+                            label: function(context) {{
+                                return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
+                            }}
+                        }}
+                    }}
+                }}
+            }}
+        }});
+
+        // Historical Trends Chart
+"""
+
+    # Prepare historical trends data
+    if 'variance_history' in data and data['variance_history'] is not None:
+        history_df = data['variance_history']
+        # Get unique dates and categories
+        dates = sorted(history_df['Date'].unique().tolist())
+        categories = history_df['Category'].unique().tolist()
+
+        # Create datasets for each category
+        trends_datasets = []
+        colors = ['#60BBE9', '#09243F', '#28a745', '#ffc107', '#dc3545']  # Brand colors
+
+        for i, category in enumerate(categories):
+            cat_data = history_df[history_df['Category'] == category]
+            values = []
+            for date in dates:
+                row = cat_data[cat_data['Date'] == date]
+                if not row.empty:
+                    values.append(float(row['Actual %'].iloc[0]))
+                else:
+                    values.append(None)
+
+            color = colors[i % len(colors)]
+            trends_datasets.append({
+                'label': category,
+                'data': values,
+                'borderColor': color,
+                'backgroundColor': color,
+                'borderWidth': 2,
+                'fill': False,
+                'tension': 0.1
+            })
+
+        html += f"""
+        const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+        new Chart(trendsCtx, {{
+            type: 'line',
+            data: {{
+                labels: {json.dumps(dates)},
+                datasets: {json.dumps(trends_datasets)}
+            }},
+            options: {{
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {{
+                    mode: 'index',
+                    intersect: false
+                }},
+                scales: {{
+                    y: {{
+                        beginAtZero: true,
+                        ticks: {{
+                            callback: function(value) {{
+                                return value + '%';
+                            }}
+                        }}
+                    }},
+                    x: {{
+                        ticks: {{
+                            maxRotation: 45,
+                            minRotation: 45
+                        }}
+                    }}
+                }},
+                plugins: {{
+                    legend: {{
+                        position: 'top'
+                    }},
+                    tooltip: {{
+                        callbacks: {{
+                            label: function(context) {{
+                                return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
+                            }}
+                        }}
+                    }}
+                }}
+            }}
+        }});
+"""
+
+    # Add Historical Capacity Utilization Chart with per-member data
+    capacity_history_by_member = data.get('capacity_history_by_member', {})
+
+    html += f"""
+        // Historical Capacity Utilization Chart with per-member datasets
+        document.addEventListener('DOMContentLoaded', function() {{
+            if (document.getElementById('capacityHistoryChart')) {{
+                const historyCtx = document.getElementById('capacityHistoryChart').getContext('2d');
+                const capacityHistoryByMember = {json.dumps(capacity_history_by_member)};
+
+                // Build datasets for each team member
+                const datasets = [];
+                const memberColors = {{
+                    'Zach Welliver': '#9B59B6',
+                    'Nick Clark': '#36A2EB',
+                    'Adriel Abella': '#FFCE56',
+                    'John Meyer': '#4BC0C0',
+                    'Team Total': '{BRAND_BLUE}'
+                }};
+
+                // Extract all unique dates from Team Total (or first available member)
+                let allDates = [];
+                if (capacityHistoryByMember['Team Total']) {{
+                    allDates = capacityHistoryByMember['Team Total'].map(d => d.date);
+                }} else {{
+                    // Fallback to first member with data
+                    const firstMember = Object.keys(capacityHistoryByMember)[0];
+                    if (firstMember) {{
+                        allDates = capacityHistoryByMember[firstMember].map(d => d.date);
+                    }}
+                }}
+
+                // Create dataset for each team member
+                const memberOrder = ['Zach Welliver', 'Nick Clark', 'Adriel Abella', 'John Meyer', 'Team Total'];
+                memberOrder.forEach(memberName => {{
+                    if (capacityHistoryByMember[memberName]) {{
+                        const memberData = capacityHistoryByMember[memberName];
+                        const color = memberColors[memberName] || '#999999';
+                        const isTeamTotal = memberName === 'Team Total';
+
+                        datasets.push({{
+                            label: memberName,
+                            data: memberData.map(d => parseFloat(d.utilization_percent)),
+                            borderColor: color,
+                            backgroundColor: isTeamTotal ? `${{color}}33` : 'transparent',
+                            borderWidth: isTeamTotal ? 3 : 2,
+                            fill: isTeamTotal,
+                            tension: 0.3,
+                            pointRadius: isTeamTotal ? 5 : 3,
+                            pointBackgroundColor: color,
+                            pointBorderColor: color,
+                            pointBorderWidth: 2,
+                            hidden: false
+                        }});
+                    }}
+                }});
+
+                // Add 100% capacity redline
+                datasets.push({{
+                    label: '100% Capacity Threshold',
+                    data: Array(allDates.length).fill(100),
+                    borderColor: '#dc3545',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    borderDash: [10, 5],
+                    fill: false,
+                    tension: 0,
+                    pointRadius: 0,
+                    pointHoverRadius: 0
+                }});
+
+                if (datasets.length > 0) {{
+                    window.capacityHistoryChart = new Chart(historyCtx, {{
+                        type: 'line',
+                        data: {{
+                            labels: allDates,
+                            datasets: datasets
+                        }},
+                        options: {{
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            layout: {{
+                                padding: {{
+                                    top: 20
+                                }}
+                            }},
+                            interaction: {{
+                                mode: 'index',
+                                intersect: false
+                            }},
+                            scales: {{
+                                y: {{
+                                    beginAtZero: true,
+                                    suggestedMax: 100,
+                                    ticks: {{
+                                        callback: function(value) {{
+                                            return value + '%';
+                                        }}
+                                    }}
+                                }},
+                                x: {{
+                                    ticks: {{
+                                        maxRotation: 45,
+                                        minRotation: 45
+                                    }}
+                                }}
+                            }},
+                            plugins: {{
+                                legend: {{
+                                    position: 'top',
+                                    labels: {{
+                                        usePointStyle: true
+                                    }}
+                                }},
+                                tooltip: {{
+                                    callbacks: {{
+                                        label: function(context) {{
+                                            return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
+                                        }}
+                                    }}
+                                }}
+                            }}
+                        }}
+                    }});
+                }}
+            }}
+        }});
+
+        // Category Distribution Donut Charts
+        const categoryColors = [
+            '{BRAND_BLUE}',      // Communications
+            '#28a745',           // Spiritual Formation
+            '#ffc107',           // Creative Resources
+            '{BRAND_NAVY}',      // Pastoral/Strategic
+            '#dc3545'            // Partners
+        ];
+
+        const donutChartOptions = {{
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {{
+                legend: {{
+                    position: 'right',
+                    labels: {{
+                        padding: 12,
+                        font: {{
+                            size: 11
+                        }},
+                        boxWidth: 15,
+                        boxHeight: 15,
+                        usePointStyle: false,
+                        generateLabels: function(chart) {{
+                            const data = chart.data;
+                            if (data.labels.length && data.datasets.length) {{
+                                return data.labels.map((label, i) => {{
+                                    const value = data.datasets[0].data[i];
+                                    return {{
+                                        text: label + ' (' + value.toFixed(1) + '%)',
+                                        fillStyle: data.datasets[0].backgroundColor[i],
+                                        hidden: false,
+                                        index: i
+                                    }};
+                                }});
+                            }}
+                            return [];
+                        }}
+                    }}
+                }},
+                tooltip: {{
+                    callbacks: {{
+                        label: function(context) {{
+                            const label = context.label || '';
+                            const value = context.parsed || 0;
+                            return label + ': ' + value.toFixed(1) + '%';
+                        }}
+                    }}
+                }}
+            }}
+        }};
+
+        // Current Period Donut Chart
+        document.addEventListener('DOMContentLoaded', function() {{
+            if (document.getElementById('currentDonutChart')) {{
+                const currentCtx = document.getElementById('currentDonutChart').getContext('2d');
+                new Chart(currentCtx, {{
+                    type: 'doughnut',
+                    data: {{
+                        labels: {json.dumps(category_names)},
+                        datasets: [{{
+                            data: {json.dumps(current_values)},
+                            backgroundColor: categoryColors,
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }}]
+                    }},
+                    options: donutChartOptions
+                }});
+            }}
+        }});
+
+        // Cumulative Average Donut Chart
+        document.addEventListener('DOMContentLoaded', function() {{
+            if (document.getElementById('cumulativeDonutChart')) {{
+                const cumulativeCtx = document.getElementById('cumulativeDonutChart').getContext('2d');
+                new Chart(cumulativeCtx, {{
+                    type: 'doughnut',
+                    data: {{
+                        labels: {json.dumps(category_names)},
+                        datasets: [{{
+                            data: {json.dumps(actual_values)},
+                            backgroundColor: categoryColors,
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }}]
+                    }},
+                    options: donutChartOptions
+                }});
+            }}
+        }});
+
+        // Chat Widget JavaScript - wait for DOM to load
+        document.addEventListener('DOMContentLoaded', function() {{
+            const chatButton = document.getElementById('chatButton');
+            const chatWindow = document.getElementById('chatWindow');
+            const chatClose = document.getElementById('chatClose');
+            const chatInput = document.getElementById('chatInput');
+            const chatSend = document.getElementById('chatSend');
+            const chatMessages = document.getElementById('chatMessages');
+            const typingIndicator = document.getElementById('typingIndicator');
+
+            // Toggle chat window
+            chatButton.addEventListener('click', () => {{
+            chatWindow.classList.toggle('open');
+            if (chatWindow.classList.contains('open')) {{
+                chatInput.focus();
+            }}
+        }});
+
+        chatClose.addEventListener('click', () => {{
+            chatWindow.classList.remove('open');
+        }});
+
+        // Send message
+        async function sendMessage() {{
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            chatInput.value = '';
+            chatSend.disabled = true;
+
+            // Show typing indicator
+            typingIndicator.classList.add('show');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {{
+                // Call backend API
+                const response = await fetch('http://localhost:5001/api/chat', {{
+                    method: 'POST',
+                    headers: {{
+                        'Content-Type': 'application/json'
+                    }},
+                    body: JSON.stringify({{ message }})
+                }});
+
+                if (!response.ok) {{
+                    throw new Error('Failed to get response');
+                }}
+
+                const data = await response.json();
+
+                // Hide typing indicator
+                typingIndicator.classList.remove('show');
+
+                // Add assistant response
+                addMessage(data.response, 'assistant');
+            }} catch (error) {{
+                typingIndicator.classList.remove('show');
+                addMessage('Sorry, I\\'m having trouble connecting to the backend. Make sure the chat backend is running on localhost:5001.', 'system');
+            }} finally {{
+                chatSend.disabled = false;
+            }}
+        }}
+
+        function addMessage(text, type) {{
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${{type}}`;
+            messageDiv.textContent = text;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }}
+
+        chatSend.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {{
+            if (e.key === 'Enter' && !e.shiftKey) {{
+                e.preventDefault();
+                sendMessage();
+            }}
+        }});
+
+            // Welcome message
+            addMessage('Hi! I\\'m Claude, your capacity dashboard assistant. Ask me anything about team workload, capacity trends, or project planning!', 'assistant');
+        }});
+"""
+
+    html += """
+    </script>
+
+    <!-- Chat Widget -->
+    <div class="chat-widget">
+        <button id="chatButton" class="chat-button" title="Ask Claude about your dashboard data">💬</button>
+        <div id="chatWindow" class="chat-window">
+            <div class="chat-header">
+                <h3>Dashboard Assistant</h3>
+                <button id="chatClose" class="chat-close">&times;</button>
+            </div>
+            <div id="chatMessages" class="chat-messages">
+                <!-- Messages will be added here -->
+            </div>
+            <div id="typingIndicator" class="typing-indicator">
+                <span></span><span></span><span></span>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" id="chatInput" class="chat-input" placeholder="Ask about your dashboard data..." />
+                <button id="chatSend" class="chat-send">Send</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+"""
+
+    # Save HTML dashboard
+    output_file = 'Reports/capacity_dashboard.html'
+    with open(output_file, 'w') as f:
+        f.write(html)
+
+    print(f"✅ HTML dashboard generated: {output_file}")
+    return output_file
+
+def main():
+    """Main dashboard generation function"""
+    print("Generating Perimeter Studio Dashboard...")
+
+    # Read report data
+    data = read_reports()
+
+    # Generate HTML dashboard
+    html_file = generate_html_dashboard(data)
+
+    print(f"\nDashboard generation complete!")
+    print(f"📊 HTML: {html_file}")
+
+if __name__ == "__main__":
+    main()

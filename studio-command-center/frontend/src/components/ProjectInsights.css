@@ -1,0 +1,53 @@
+.project-insights {
+  grid-column: 1 / -1;
+}
+
+.chart-selector {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.chart-selector button {
+  padding: 12px 24px;
+  background: rgba(96, 187, 233, 0.1);
+  border: 1px solid rgba(96, 187, 233, 0.3);
+  border-radius: 12px;
+  color: var(--color-text);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-selector button:hover {
+  background: rgba(96, 187, 233, 0.2);
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+.chart-selector button.active {
+  background: var(--color-accent);
+  color: var(--color-bg-dark);
+  border-color: var(--color-accent);
+  font-weight: 600;
+}
+
+.chart-container {
+  min-height: 300px;
+  padding: 20px 0;
+}
+
+@media (max-width: 768px) {
+  .chart-selector {
+    flex-direction: column;
+  }
+
+  .chart-selector button {
+    width: 100%;
+    justify-content: center;
+  }
+}
