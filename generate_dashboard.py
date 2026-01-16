@@ -2594,9 +2594,12 @@ def generate_html_dashboard(data):
             </div>
         </div>
 
-        <!-- Capacity Utilization Heatmap -->
+        <!-- Daily Workload Distribution Heatmap -->
         <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>📊 Capacity Utilization - Next 30 Days</h2>
+            <h2>📊 Daily Workload Distribution - Next 30 Days</h2>
+            <div style="font-size: 13px; color: #6c757d; margin-bottom: 15px;">
+                <strong>How busy will each day be?</strong> Shows the team's expected workload intensity per day (work distributed across task timelines)
+            </div>
             <div class="heatmap-grid">
     """
 
@@ -2647,11 +2650,11 @@ def generate_html_dashboard(data):
             </div>
         </div>
 
-        <!-- Historical Capacity Utilization -->
+        <!-- Total Capacity Commitments -->
         <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>📈 Historical Capacity Utilization</h2>
-            <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
-                Team utilization percentage over the last 30 days (click legend items to filter)
+            <h2>📈 Total Capacity Commitments - Last 30 Days</h2>
+            <div style="font-size: 13px; color: #6c757d; margin-bottom: 10px;">
+                <strong>How committed is the team?</strong> Shows total active project allocations captured daily at 11:59 PM (click legend to filter)
             </div>
             <div class="chart-container">
                 <canvas id="capacityHistoryChart"></canvas>
