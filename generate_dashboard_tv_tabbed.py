@@ -84,20 +84,18 @@ def create_tabbed_tv_dashboard(html):
             card_html = str(card).replace('class="card full-width"', 'class="card"')
             allocation_cards.append(card_html)
 
-        # Forecast: 6-month timeline, total capacity commitments, forecasted projects (check first before capacity!)
+        # Forecast: 6-month timeline, historical capacity utilization, forecasted projects (check first before capacity!)
         elif '6-Month Capacity' in heading_text or '6 Month' in heading_text:
             forecast_cards.append(str(card))
-        elif heading_text == '📈 Total Capacity Commitments - Last 30 Days':
+        elif heading_text == '📈 Historical Capacity Utilization':
             forecast_cards.append(str(card))
         elif 'Forecasted Projects' in heading_text:
             forecast_cards.append(str(card))
 
-        # Capacity: Team capacity, velocity, 10-day heatmap, daily workload distribution
+        # Capacity: Team capacity, velocity, 10-day and 30-day daily workload distribution
         elif heading_text == 'Team Capacity':
             capacity_cards.append(str(card))
         elif 'Team Velocity' in heading_text or 'Velocity Trend' in heading_text:
-            capacity_cards.append(str(card))
-        elif 'Workload Heat Map' in heading_text:
             capacity_cards.append(str(card))
         elif 'Daily Workload Distribution' in heading_text:
             capacity_cards.append(str(card))
