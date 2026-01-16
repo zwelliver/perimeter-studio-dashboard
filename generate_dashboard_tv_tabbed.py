@@ -92,7 +92,7 @@ def create_tabbed_tv_dashboard(html):
         elif 'Forecasted Projects' in heading_text:
             forecast_cards.append(str(card))
 
-        # Capacity: Team capacity, velocity, 10-day and 30-day daily workload distribution
+        # Capacity: Team capacity, velocity, 30-day daily workload distribution
         elif heading_text == 'Team Capacity':
             capacity_cards.append(str(card))
         elif 'Team Velocity' in heading_text or 'Velocity Trend' in heading_text:
@@ -123,14 +123,13 @@ def create_tabbed_tv_dashboard(html):
     projects_content = '<div class="grid">' + ''.join(project_cards) + '</div>'
 
     # Capacity content - special ordering and team capacity full width
-    # Order: Team Capacity (full width), Velocity, Heatmap, 30-day utilization
+    # Order: Team Capacity (full width), Velocity, 30-day workload distribution
     capacity_content = '<div class="grid">'
 
     # Find and categorize capacity cards
     team_capacity_card = None
     velocity_card = None
-    heatmap_card = None
-    utilization_30_card = None
+    workload_30_card = None
 
     for card_html in capacity_cards:
         if 'Team Capacity</h2>' in card_html:
@@ -138,20 +137,16 @@ def create_tabbed_tv_dashboard(html):
             team_capacity_card = card_html.replace('class="card"', 'class="card full-width"')
         elif 'Velocity' in card_html:
             velocity_card = card_html
-        elif 'Heat Map' in card_html:
-            heatmap_card = card_html
-        elif 'Next 30 Days' in card_html:
-            utilization_30_card = card_html
+        elif 'Daily Workload Distribution' in card_html:
+            workload_30_card = card_html
 
     # Add in desired order
     if team_capacity_card:
         capacity_content += team_capacity_card
     if velocity_card:
         capacity_content += velocity_card
-    if heatmap_card:
-        capacity_content += heatmap_card
-    if utilization_30_card:
-        capacity_content += utilization_30_card
+    if workload_30_card:
+        capacity_content += workload_30_card
 
     capacity_content += '</div>'
 
