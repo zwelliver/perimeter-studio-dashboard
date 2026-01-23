@@ -1013,11 +1013,13 @@ def generate_html_dashboard(data):
             color: #09243F;
             padding: 20px;
             min-height: 100vh;
+            overflow-x: hidden;
         }}
 
         .dashboard-container {{
             max-width: 95%;
             margin: 0 auto;
+            overflow-x: hidden;
         }}
 
         .header {{
@@ -1429,7 +1431,7 @@ def generate_html_dashboard(data):
 
         .grid {{
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 16px;
             margin-bottom: 16px;
         }}
@@ -1440,6 +1442,8 @@ def generate_html_dashboard(data):
             border-radius: 4px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
             border: 1px solid #e9ecef;
+            max-width: 100%;
+            overflow: hidden;
             transition: box-shadow 0.2s;
         }}
 
@@ -1545,6 +1549,8 @@ def generate_html_dashboard(data):
             position: relative;
             height: 280px;
             margin-top: 12px;
+            max-width: 100%;
+            overflow: hidden;
         }}
 
         .team-member {{
@@ -1599,6 +1605,13 @@ def generate_html_dashboard(data):
         @media (max-width: 768px) {{
             body {{
                 padding: 10px;
+                width: 100%;
+                max-width: 100vw;
+            }}
+
+            .dashboard-container {{
+                width: 100%;
+                max-width: 100%;
             }}
 
             .header {{
@@ -1614,12 +1627,39 @@ def generate_html_dashboard(data):
             }}
 
             .grid {{
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr !important;
                 gap: 15px;
+            }}
+
+            /* Override any inline grid styles */
+            .card [style*="grid-template-columns"],
+            [style*="grid-template-columns"] {{
+                grid-template-columns: 1fr !important;
             }}
 
             .card {{
                 padding: 15px;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+            }}
+
+            /* Ensure all child elements respect container width */
+            .card > * {{
+                max-width: 100%;
+                box-sizing: border-box;
+            }}
+
+            /* Prevent tables and images from overflowing */
+            table {{
+                width: 100% !important;
+                display: block;
+                overflow-x: auto;
+            }}
+
+            img {{
+                max-width: 100%;
+                height: auto;
             }}
 
             .card h2 {{
@@ -1641,6 +1681,13 @@ def generate_html_dashboard(data):
 
             .chart-container {{
                 height: 250px;
+                width: 100% !important;
+                max-width: 100% !important;
+            }}
+
+            .chart-container canvas {{
+                max-width: 100% !important;
+                height: auto !important;
             }}
 
             .team-member-name {{
@@ -1703,6 +1750,10 @@ def generate_html_dashboard(data):
 
         /* Extra small mobile devices (iPhone SE, etc.) */
         @media (max-width: 375px) {{
+            body {{
+                padding: 5px;
+            }}
+
             .header h1 {{
                 font-size: 20px;
             }}
@@ -1721,6 +1772,12 @@ def generate_html_dashboard(data):
 
             .chart-container {{
                 height: 220px;
+                width: 100% !important;
+                max-width: 100% !important;
+            }}
+
+            .chart-container canvas {{
+                max-width: 100% !important;
             }}
 
             .chat-button {{
@@ -1749,6 +1806,12 @@ def generate_html_dashboard(data):
         @media (max-width: 768px) and (orientation: landscape) {{
             .chart-container {{
                 height: 200px;
+                width: 100% !important;
+                max-width: 100% !important;
+            }}
+
+            .chart-container canvas {{
+                max-width: 100% !important;
             }}
 
             .chat-window {{
