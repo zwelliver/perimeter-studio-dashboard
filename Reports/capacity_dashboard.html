@@ -667,6 +667,11 @@
                 height: auto;
             }
 
+            /* Fix 6-Month Capacity Timeline bars */
+            [style*="min-width: 8px"] {
+                min-width: 3px !important;
+            }
+
             .card h2 {
                 font-size: 16px;
                 margin-bottom: 12px;
@@ -765,6 +770,11 @@
 
             .card {
                 padding: 12px;
+            }
+
+            /* Further reduce timeline bar width on very small screens */
+            [style*="min-width: 8px"] {
+                min-width: 2px !important;
             }
 
             .card h2 {
@@ -1206,7 +1216,7 @@
         <div class="header">
             <h1>Perimeter Studio Dashboard</h1>
             <div class="subtitle">Video Production Capacity Tracking & Performance Metrics</div>
-            <div class="timestamp">Last Updated: January 22, 2026 at 09:02 PM</div>
+            <div class="timestamp">Last Updated: January 22, 2026 at 09:11 PM</div>
         </div>
 
         <div class="grid">

@@ -1662,6 +1662,11 @@ def generate_html_dashboard(data):
                 height: auto;
             }}
 
+            /* Fix 6-Month Capacity Timeline bars */
+            [style*="min-width: 8px"] {{
+                min-width: 3px !important;
+            }}
+
             .card h2 {{
                 font-size: 16px;
                 margin-bottom: 12px;
@@ -1760,6 +1765,11 @@ def generate_html_dashboard(data):
 
             .card {{
                 padding: 12px;
+            }}
+
+            /* Further reduce timeline bar width on very small screens */
+            [style*="min-width: 8px"] {{
+                min-width: 2px !important;
             }}
 
             .card h2 {{
