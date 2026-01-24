@@ -94,7 +94,7 @@ def read_reports():
 
     # Fetch active tasks from Asana to calculate team capacity accurately
     team_capacity_config = {
-        'Zach Welliver': {'max': 50},
+        'Zach Welliver': {'max': 80},
         'Nick Clark': {'max': 100},
         'Adriel Abella': {'max': 100},
         'John Meyer': {'max': 30}

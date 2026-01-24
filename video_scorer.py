@@ -118,8 +118,8 @@ TARGETS = {
     'Partners': 0.05
 }
 
-# Calculate total team capacity from individual limits (Zach 50% + Nick 100% + Adriel 100% + John 30%)
-MAX_CAPACITY = sum(member["capacity"] for member in TEAM_CAPACITY.values())  # 280%
+# Calculate total team capacity from individual limits (Zach 80% + Nick 100% + Adriel 100% + John 30%)
+MAX_CAPACITY = sum(member["capacity"] for member in TEAM_CAPACITY.values())  # 310%
 
 # Phase effort multipliers for allocation calculation
 # Post production (editing) requires significantly more time than planning/filming
