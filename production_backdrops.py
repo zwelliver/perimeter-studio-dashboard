@@ -180,7 +180,7 @@ def filter_new_tasks(tasks, added_gids, last_run_time, processed_tasks):
 
 def generate_prompts(project_details):
     payload = {
-        "model": "grok-fast-turbo",  # Grok 4 fast for creative image prompt generation
+        "model": "grok-4-fast-non-reasoning",  # Grok 4 fast for creative image prompt generation
         "max_tokens": 1024,
         "messages": [
             {"role": "system", "content": "You are an AI assistant that generates image prompts for virtual production backdrops."},

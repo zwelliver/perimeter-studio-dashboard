@@ -49,7 +49,7 @@ GROK_HEADERS = {
     "Authorization": f"Bearer {XAI_API_KEY}",
     "Content-Type": "application/json"
 }
-GROK_MODEL = "grok-fast-turbo"  # Grok 4 fast
+GROK_MODEL = "grok-4-fast-non-reasoning"  # Grok 4 fast
 
 # Project GIDs
 POST_PRODUCTION_PROJECT_GID = '1209581743268502'

@@ -300,7 +300,7 @@ def get_availability_summary(service, today_str, due_date_str):
 
 def get_timeline_suggestion(project_details, complexity, availability_summary, today, due_date):
     grok_payload = {
-        "model": "grok-fast-turbo",  # Grok 4 fast for timeline planning
+        "model": "grok-4-fast-non-reasoning",  # Grok 4 fast for timeline planning
         "max_tokens": 1024,
         "messages": [
             {"role": "system", "content": "You are a video production timeline optimizer."},

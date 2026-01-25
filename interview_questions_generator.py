@@ -50,7 +50,7 @@ GROK_HEADERS = {
     "Authorization": f"Bearer {XAI_API_KEY}",
     "Content-Type": "application/json"
 }
-GROK_MODEL = "grok-fast-turbo"  # Grok 4 fast for creative interview questions
+GROK_MODEL = "grok-4-fast-non-reasoning"  # Grok 4 fast for creative interview questions
 
 # Tracking file for processed tasks
 PROCESSED_FILE = os.path.join(BASE_DIR, "interview_questions_processed.txt")
