@@ -51,12 +51,14 @@ PERCENT_ALLOCATION_FIELD_GID = "1208923995383367"
 # Preproduction project for capacity tracking
 PREPRODUCTION_PROJECT_GID = "1208336083003480"
 
-# Grok setup
-GROK_API_KEY = os.getenv("GROK_API_KEY")
+# Grok API setup (switched from Claude to free up Claude API)
+XAI_API_KEY = os.getenv("GROK_API_KEY")
 GROK_ENDPOINT = "https://api.x.ai/v1/chat/completions"
-GROK_HEADERS = {"Authorization": f"Bearer {GROK_API_KEY}", "Content-Type": "application/json"}
-GROK_PROMPT_TIMELINE = """
-You are a video production timeline optimizer. Create a BRIEF, scannable timeline with ONLY 3-5 critical milestones from today ({{today}}) to due date ({{due_date}}).
+GROK_HEADERS = {
+    "Authorization": f"Bearer {XAI_API_KEY}",
+    "Content-Type": "application/json"
+}
+GROK_PROMPT_TIMELINE = """You are a video production timeline optimizer. Create a BRIEF, scannable timeline with ONLY 3-5 critical milestones from today ({{today}}) to due date ({{due_date}}).
 
 RULES:
 - Maximum 5 lines total
@@ -67,8 +69,7 @@ RULES:
 - Account for complexity and team availability
 
 Return EXACTLY this JSON format with a bulleted list, no additional text:
-{{"timeline": "• Nov 18-20: Script & prep\n• Nov 21-22: Film\n• Nov 25-27: Edit & review\n• Nov 28: Deliver"}}
-"""
+{{"timeline": "• Nov 18-20: Script & prep\n• Nov 21-22: Film\n• Nov 25-27: Edit & review\n• Nov 28: Deliver"}}"""
 
 # Google Calendar setup
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
@@ -299,10 +300,11 @@ def get_availability_summary(service, today_str, due_date_str):
 
 def get_timeline_suggestion(project_details, complexity, availability_summary, today, due_date):
     grok_payload = {
-        "model": "grok-4-fast",
+        "model": "grok-fast-turbo",  # Grok 4 fast for timeline planning
+        "max_tokens": 1024,
         "messages": [
-            {"role": "system", "content": GROK_PROMPT_TIMELINE.replace("{{today}}", today).replace("{{due_date}}", due_date)},
-            {"role": "user", "content": f"{project_details}\nComplexity: {complexity}\nAvailability: {availability_summary}"}
+            {"role": "system", "content": "You are a video production timeline optimizer."},
+            {"role": "user", "content": f"{GROK_PROMPT_TIMELINE.replace('{{today}}', today).replace('{{due_date}}', due_date)}\n\nProject details:\n{project_details}\nComplexity: {complexity}\nAvailability: {availability_summary}"}
         ]
     }
     print(f"Debug: Sending Grok payload (length: {len(json.dumps(grok_payload))} chars)")

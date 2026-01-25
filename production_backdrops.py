@@ -8,6 +8,7 @@ import base64
 import time
 from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor
+import replicate
 
 # Load environment variables from .env file in the current directory
 load_dotenv(".env")
@@ -19,21 +20,26 @@ ASANA_HEADERS = {"Authorization": f"Bearer {ASANA_PAT_BACKDROP}", "Content-Type"
 TASK_LIST_ENDPOINT = f"https://app.asana.com/api/1.0/projects/{PRODUCTION_PROJECT_ID}/tasks?opt_fields=gid,name,created_at,modified_at,notes,custom_fields"
 EVENTS_ENDPOINT = f"https://app.asana.com/api/1.0/projects/{PRODUCTION_PROJECT_ID}/events"
 
-# Grok setup (for text prompts only)
-GROK_API_KEY = os.getenv("GROK_API_KEY")
-GROK_TEXT_ENDPOINT = "https://api.x.ai/v1/chat/completions"
-GROK_HEADERS = {"Authorization": f"Bearer {GROK_API_KEY}", "Content-Type": "application/json"}
-GROK_PROMPT = """
-Based on the provided Asana task details, generate 3 unique image prompts for virtual production backdrops. Ensure the prompts:
+# Grok API setup (for text prompts only, switched from Claude to free up Claude API)
+XAI_API_KEY = os.getenv("GROK_API_KEY")
+GROK_ENDPOINT = "https://api.x.ai/v1/chat/completions"
+GROK_HEADERS = {
+    "Authorization": f"Bearer {XAI_API_KEY}",
+    "Content-Type": "application/json"
+}
+GROK_PROMPT = """Based on the provided Asana task details, generate 3 unique image prompts for virtual production backdrops. Ensure the prompts:
 - Generate INDOOR environments by default (office, living room, kitchen, hallway, conference room, studio, library, etc.)
 - Only generate outdoor environments if the task details specifically mention outdoor filming or locations
 - Reflect the task's themes or context
 - Are simple, grounded settings with no people
 - Avoid specific objects or focal points, focusing on ambiance and space
-Return JSON: {"prompts": ["prompt 1", "prompt 2", "prompt 3"]}.
-"""
+Return JSON: {"prompts": ["prompt 1", "prompt 2", "prompt 3"]}."""
 
-# Stable Diffusion setup (upgraded to Ultra for higher quality, more photorealistic results)
+# Replicate API for FLUX.2 Pro (primary image generation)
+REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
+os.environ["REPLICATE_API_TOKEN"] = REPLICATE_API_TOKEN  # Set for replicate client
+
+# Stable Diffusion setup (fallback if FLUX fails)
 SD_API_KEY = os.getenv("STABLE_DIFFUSION_API_KEY")
 SD_ENDPOINT = "https://api.stability.ai/v2beta/stable-image/generate/ultra"
 SD_HEADERS = {"Authorization": f"Bearer {SD_API_KEY}", "Accept": "image/*"}
@@ -174,16 +180,17 @@ def filter_new_tasks(tasks, added_gids, last_run_time, processed_tasks):
 
 def generate_prompts(project_details):
     payload = {
-        "model": "grok-4-fast",  # Faster and more cost-effective than grok-4
+        "model": "grok-fast-turbo",  # Grok 4 fast for creative image prompt generation
+        "max_tokens": 1024,
         "messages": [
-            {"role": "system", "content": GROK_PROMPT},
-            {"role": "user", "content": project_details}
+            {"role": "system", "content": "You are an AI assistant that generates image prompts for virtual production backdrops."},
+            {"role": "user", "content": f"{GROK_PROMPT}\n\nTask details:\n{project_details}"}
         ]
     }
     prompts = []
     for attempt in range(3):
         try:
-            response = requests.post(GROK_TEXT_ENDPOINT, json=payload, headers=GROK_HEADERS, timeout=60)
+            response = requests.post(GROK_ENDPOINT, json=payload, headers=GROK_HEADERS, timeout=60)
             response.raise_for_status()
             content = response.json()["choices"][0]["message"]["content"]
             json_match = re.search(r'```json\s*(.*?)\s*```', content, re.DOTALL)
@@ -208,19 +215,50 @@ def generate_prompts(project_details):
     return prompts
 
 def generate_image(prompt):
-    files = {
-        "prompt": (None, prompt),
-        "aspect_ratio": (None, "21:9"),  # Ultra-wide format for virtual production backdrops (closest to 5:2)
-        "output_format": (None, "png")  # PNG format for the generated image
-    }
+    """Generate image using FLUX.2 Pro (primary) with Stable Diffusion fallback"""
+
+    # Try FLUX.2 Pro first (best quality for Marble 3D generation)
     try:
+        print(f"Generating with FLUX.2 Pro...")
+        output = replicate.run(
+            "black-forest-labs/flux-2-max",
+            input={
+                "prompt": prompt,
+                "aspect_ratio": "16:9",  # Wide format for virtual production
+                "output_format": "png",
+                "output_quality": 100,
+                "safety_tolerance": 2,  # Allow professional production content
+            }
+        )
+
+        # FLUX returns a FileOutput object, get the URL
+        if output:
+            image_url = str(output)  # Convert FileOutput to URL string
+            # Download the image
+            img_response = requests.get(image_url, timeout=30)
+            img_response.raise_for_status()
+            image_content = img_response.content
+            print(f"✅ FLUX.2 Pro generated successfully")
+            return base64.b64encode(image_content).decode('utf-8')
+    except Exception as e:
+        print(f"⚠️  FLUX.2 Pro error: {e}, falling back to Stable Diffusion...")
+
+    # Fallback to Stable Diffusion Ultra
+    try:
+        print(f"Generating with Stable Diffusion Ultra (fallback)...")
+        files = {
+            "prompt": (None, prompt),
+            "aspect_ratio": (None, "21:9"),
+            "output_format": (None, "png")
+        }
         response = requests.post(SD_ENDPOINT, headers=SD_HEADERS, files=files, timeout=60)
-        print(f"Debug: Image gen status: {response.status_code}")
         response.raise_for_status()
         image_content = response.content
+        print(f"✅ Stable Diffusion generated successfully")
         return base64.b64encode(image_content).decode('utf-8')
     except Exception as e:
-        print(f"Stable Diffusion image gen error: {e}")
+        print(f"❌ Stable Diffusion error: {e}")
+
     return None
 
 def post_comment(task_id, comment):
