@@ -100,14 +100,14 @@ PERCENT_ALLOCATION_FIELD_GID = "1208923995383367"
 ACTUAL_ALLOCATION_FIELD_GID = "1212060330747288"  # Post Production project
 
 # Claude/Anthropic setup (migrated from Grok xAI - API deprecated Feb 20, 2026)
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
-CLAUDE_ENDPOINT = "https://api.anthropic.com/v1/messages"
-CLAUDE_HEADERS = {
-    "x-api-key": ANTHROPIC_API_KEY,
-    "anthropic-version": "2023-06-01",
-    "content-type": "application/json"
+# Grok API Configuration (switched from Claude to free up Claude API for clawdbot)
+XAI_API_KEY = os.getenv("GROK_API_KEY")
+GROK_ENDPOINT = "https://api.x.ai/v1/chat/completions"
+GROK_HEADERS = {
+    "Authorization": f"Bearer {XAI_API_KEY}",
+    "Content-Type": "application/json"
 }
-CLAUDE_MODEL = "claude-sonnet-4-20250514"  # Fast, capable model for scoring
+GROK_MODEL = "grok-2-1212"  # Fast Grok model for scoring
 
 # Target allocations
 TARGETS = {
@@ -357,20 +357,20 @@ def score_task(task):
 
     # Claude/Anthropic API payload format
     payload = {
-        "model": CLAUDE_MODEL,
+        "model": GROK_MODEL,
         "max_tokens": 1024,
-        "system": SYSTEM_PROMPT,
         "messages": [
+            {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": project_details}
         ]
     }
-    
+
     priority, complexity, category, mapped_type, manip_check = None, None, None, None, None
     try:
-        response = requests.post(CLAUDE_ENDPOINT, json=payload, headers=CLAUDE_HEADERS, timeout=60)
+        response = requests.post(GROK_ENDPOINT, json=payload, headers=GROK_HEADERS, timeout=60)
         response.raise_for_status()
-        # Claude API response format: {"content": [{"type": "text", "text": "..."}]}
-        content = response.json()["content"][0]["text"]
+        # Grok API response format: {"choices": [{"message": {"content": "..."}}]}
+        content = response.json()["choices"][0]["message"]["content"]
         json_match = re.search(r'```json\s*(.*?)\s*```', content, re.DOTALL)
         json_content = json_match.group(1) if json_match else content
         result = json.loads(json_content)
@@ -384,7 +384,7 @@ def score_task(task):
         if manip_check and manip_check.lower() != "no issues":
             logger.debug(f"Check={manip_check}")
     except Exception as e:
-        logger.error(f"Claude error for {task_name}: {e}")
+        logger.error(f"Grok error for {task_name}: {e}")
         return None, None, None, None, None
 
     return priority, complexity, category, mapped_type, manip_check
@@ -404,27 +404,27 @@ async def score_task_async(session, task):
                 custom = {cf['name']: cf for cf in data['custom_fields']}
             type_raw = safe_enum_name(custom.get('Type'))
             project_details = f"Content Summary and Form Details: {data.get('notes', 'No description provided')}. Type: {type_raw}. Start: {data.get('start_on', 'N/A')}. Due: {data.get('due_on', 'N/A')}."
-            logger.debug(f"Sending to Claude for task {task_name}")
+            logger.debug(f"Sending to Grok for task {task_name}")
     except Exception as e:
         logger.error(f"Error fetching task {task_name}: {e}")
         return None, None, None, None, None, None
 
-    # Claude/Anthropic API payload format
+    # Grok API payload format
     payload = {
-        "model": CLAUDE_MODEL,
+        "model": GROK_MODEL,
         "max_tokens": 1024,
-        "system": SYSTEM_PROMPT,
         "messages": [
+            {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": project_details}
         ]
     }
 
     priority, complexity, category, mapped_type, manip_check = None, None, None, None, None
     try:
-        async with session.post(CLAUDE_ENDPOINT, json=payload, headers=CLAUDE_HEADERS, timeout=aiohttp.ClientTimeout(total=60)) as response:
+        async with session.post(GROK_ENDPOINT, json=payload, headers=GROK_HEADERS, timeout=aiohttp.ClientTimeout(total=60)) as response:
             response.raise_for_status()
-            # Claude API response format: {"content": [{"type": "text", "text": "..."}]}
-            content = (await response.json())["content"][0]["text"]
+            # Grok API response format: {"choices": [{"message": {"content": "..."}}]}
+            content = (await response.json())["choices"][0]["message"]["content"]
             json_match = re.search(r'```json\s*(.*?)\s*```', content, re.DOTALL)
             json_content = json_match.group(1) if json_match else content
             result = json.loads(json_content)
@@ -438,7 +438,7 @@ async def score_task_async(session, task):
             if manip_check and manip_check.lower() != "no issues":
                 logger.debug(f"Check={manip_check}")
     except Exception as e:
-        logger.error(f"Claude error for {task_name}: {e}")
+        logger.error(f"Grok error for {task_name}: {e}")
         return None, None, None, None, None, None
 
     return priority, complexity, category, mapped_type, broll_required, manip_check
