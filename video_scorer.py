@@ -107,7 +107,7 @@ GROK_HEADERS = {
     "Authorization": f"Bearer {XAI_API_KEY}",
     "Content-Type": "application/json"
 }
-GROK_MODEL = "grok-2-1212"  # Fast Grok model for scoring
+GROK_MODEL = "grok-fast-turbo"  # Grok 4 fast for scoring
 
 # Target allocations
 TARGETS = {
