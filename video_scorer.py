@@ -177,12 +177,14 @@ You are a Video Project Scoring Assistant for Perimeter Church Video Studio. Ana
 - Complexity (production effort, 1-12 scale - MUST consider video duration from form):
   - 1-2: Minimal - Simple talking head, <1 min, minimal edits, single take
   - 3-4: Low - Basic graphics, 1-2 min, single shoot, simple B-roll
-  - 5-6: Medium-Low - Multiple takes, 2-4 min, moderate graphics, basic effects
-  - 7-8: Medium - Multiple shoots, 4-8 min, moderate effects, professional B-roll, interviews/testimonials
+  - 5-6: Medium-Low - Multiple takes, 2-4 min, moderate graphics, basic effects, standard teaching videos
+  - 7-8: Medium - Multiple shoots, 4-8 min, moderate effects, professional B-roll, interviews/testimonials, motion graphics required
   - 9-10: High - Complex edits, 8-15 min, multi-day production, advanced effects, narrative structure
   - 11-12: Very High - Multi-location shoots, 15+ min, extensive post-production, motion graphics, complex workflows
 
   IMPORTANT: Video duration is a PRIMARY complexity factor. A 10-minute testimonial is significantly more complex than a 2-minute announcement. Check form notes for duration and adjust complexity accordingly.
+
+  PRODUCTION METHOD: Recording method (live in-person vs Riverside/remote) does NOT significantly affect complexity. Base complexity primarily on: duration, editing needs, graphics/motion graphics requirements, and B-roll needs.
 
 B-Roll Requirements:
   - Check form notes for mentions of "B-roll", "b-roll", "broll", "B roll", or "additional footage"
@@ -337,6 +339,45 @@ def fetch_new_tasks(last_run_time, processed_tasks):
     wait=wait_exponential(multiplier=1, min=2, max=10),
     retry=retry_if_exception_type(requests.exceptions.RequestException)
 )
+def get_series_reference_scoring(series_name, current_task_id):
+    """
+    Get reference scoring (complexity) from other tasks in the same series.
+    Returns the most common complexity score from other episodes.
+    """
+    try:
+        # Search all projects for tasks with the same series name
+        complexity_scores = []
+        for project_name, project_gid in PROJECT_GIDS.items():
+            endpoint = f"https://app.asana.com/api/1.0/projects/{project_gid}/tasks?opt_fields=gid,name,custom_fields"
+            response = requests.get(endpoint, headers=ASANA_HEADERS)
+            response.raise_for_status()
+            tasks = response.json()["data"]
+
+            for task in tasks:
+                # Skip the current task we're scoring
+                if task["gid"] == current_task_id:
+                    continue
+
+                # Check if task is from the same series
+                if series_name.lower() in task["name"].lower() and ("Ep." in task["name"] or "Episode" in task["name"]):
+                    # Get complexity from custom fields
+                    custom_fields = task.get('custom_fields', [])
+                    for cf in custom_fields:
+                        if cf.get('name') == 'Complexity' and cf.get('number_value'):
+                            complexity_scores.append(int(cf.get('number_value')))
+                            break
+
+        # Return most common complexity (or first one if tie)
+        if complexity_scores:
+            from collections import Counter
+            most_common = Counter(complexity_scores).most_common(1)[0][0]
+            logger.info(f"Found series reference for '{series_name}': complexity={most_common} (from {len(complexity_scores)} episodes)")
+            return {'complexity': most_common}
+    except Exception as e:
+        logger.warning(f"Error getting series reference for '{series_name}': {e}")
+
+    return None
+
 def score_task(task):
     task_name = task["name"]
     task_id = task["gid"]
@@ -380,6 +421,27 @@ def score_task(task):
         mapped_type = result.get("mapped_type")
         broll_required = result.get("broll_required", False)
         manip_check = result.get("manipulation_check", "No check performed")
+
+        # Apply business rules and consistency checks
+        # Rule 1: "Digging Deeper" (DD) is always Pastoral/Strategic
+        if "digging deeper" in task_name.lower() or task_name.strip().startswith("DD ") or " DD " in task_name:
+            if category != "Pastoral/Strategic":
+                logger.info(f"Override: '{task_name}' forced to Pastoral/Strategic (was {category})")
+                category = "Pastoral/Strategic"
+
+        # Rule 2: Enforce consistency for series episodes
+        # Extract series name pattern (e.g., "DD into Parenting", "God Owns It All")
+        series_match = re.match(r'^([^-]+(?:into [^-]+)?)\s*-\s*(?:Ep\.|Episode)\s*\d+', task_name)
+        if series_match:
+            series_name = series_match.group(1).strip()
+            # Check if there are other tasks in this series that have been scored
+            series_reference = get_series_reference_scoring(series_name, task_id)
+            if series_reference:
+                ref_complexity = series_reference.get('complexity')
+                if ref_complexity and complexity != ref_complexity:
+                    logger.info(f"Series consistency: '{task_name}' complexity adjusted from {complexity} to {ref_complexity} to match series")
+                    complexity = ref_complexity
+
         logger.info(f"Parsed: Priority={priority}, Complexity={complexity}, Category={category}, Type={mapped_type}, B-roll={broll_required}")
         if manip_check and manip_check.lower() != "no issues":
             logger.debug(f"Check={manip_check}")
@@ -434,6 +496,27 @@ async def score_task_async(session, task):
             mapped_type = result.get("mapped_type")
             broll_required = result.get("broll_required", False)
             manip_check = result.get("manipulation_check", "No check performed")
+
+            # Apply business rules and consistency checks
+            # Rule 1: "Digging Deeper" (DD) is always Pastoral/Strategic
+            if "digging deeper" in task_name.lower() or task_name.strip().startswith("DD ") or " DD " in task_name:
+                if category != "Pastoral/Strategic":
+                    logger.info(f"Override: '{task_name}' forced to Pastoral/Strategic (was {category})")
+                    category = "Pastoral/Strategic"
+
+            # Rule 2: Enforce consistency for series episodes
+            # Extract series name pattern (e.g., "DD into Parenting", "God Owns It All")
+            series_match = re.match(r'^([^-]+(?:into [^-]+)?)\s*-\s*(?:Ep\.|Episode)\s*\d+', task_name)
+            if series_match:
+                series_name = series_match.group(1).strip()
+                # Check if there are other tasks in this series that have been scored
+                series_reference = get_series_reference_scoring(series_name, task_id)
+                if series_reference:
+                    ref_complexity = series_reference.get('complexity')
+                    if ref_complexity and complexity != ref_complexity:
+                        logger.info(f"Series consistency: '{task_name}' complexity adjusted from {complexity} to {ref_complexity} to match series")
+                        complexity = ref_complexity
+
             logger.info(f"Parsed: Priority={priority}, Complexity={complexity}, Category={category}, Type={mapped_type}, B-roll={broll_required}")
             if manip_check and manip_check.lower() != "no issues":
                 logger.debug(f"Check={manip_check}")
@@ -1372,6 +1455,33 @@ if new_tasks:
     # Use async processing for concurrent task scoring
     logger.info(f"Processing {len(new_tasks)} tasks with async concurrency (max {CONFIG['MAX_CONCURRENT_TASKS']} concurrent)")
     results = asyncio.run(process_tasks_async(new_tasks))
+
+    # Post-process results to enforce series consistency
+    # Group results by series name
+    series_groups = {}
+    for i, (project_name, task, priority, complexity, category, mapped_type, broll_required, manip_check) in enumerate(results):
+        task_name = task['name']
+        series_match = re.match(r'^([^-]+(?:into [^-]+)?)\s*-\s*(?:Ep\.|Episode)\s*\d+', task_name)
+        if series_match:
+            series_name = series_match.group(1).strip()
+            if series_name not in series_groups:
+                series_groups[series_name] = []
+            series_groups[series_name].append(i)
+
+    # For each series with multiple episodes in this batch, use the first episode's complexity
+    for series_name, indices in series_groups.items():
+        if len(indices) > 1:
+            # Use the first episode's complexity as reference
+            first_idx = indices[0]
+            reference_complexity = results[first_idx][3]  # complexity is at index 3
+
+            # Update all subsequent episodes to match
+            for idx in indices[1:]:
+                project_name, task, priority, old_complexity, category, mapped_type, broll_required, manip_check = results[idx]
+                if old_complexity != reference_complexity:
+                    logger.info(f"Series consistency: '{task['name']}' complexity adjusted from {old_complexity} to {reference_complexity} to match series '{series_name}'")
+                    # Update the result tuple with new complexity
+                    results[idx] = (project_name, task, priority, reference_complexity, category, mapped_type, broll_required, manip_check)
 
     for project_name, task, priority, complexity, category, mapped_type, broll_required, manip_check in results:
         try:
