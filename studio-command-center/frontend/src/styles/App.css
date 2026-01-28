@@ -6,8 +6,8 @@
   --color-bg-light: rgba(9, 36, 63, 0.6);
   --color-accent: #60BBE9;
   --color-accent-dim: rgba(96, 187, 233, 0.3);
-  --color-text: #e0e6ed;
-  --color-text-dim: #a8c5da;
+  --color-text: #f0f4f8; /* Improved contrast from #e0e6ed */
+  --color-text-dim: #b8d4e8; /* Improved contrast from #a8c5da */
   --color-success: #4ecca3;
   --color-warning: #ffc107;
   --color-danger: #dc3545;
@@ -16,6 +16,62 @@
   --card-border: 1px solid rgba(96, 187, 233, 0.3);
   --card-shadow: 0 0 20px rgba(96, 187, 233, 0.2);
   --card-bg: rgba(9, 36, 63, 0.4);
+
+  /* Focus and accessibility */
+  --focus-color: #60BBE9;
+  --focus-shadow: 0 0 0 2px #60BBE9, 0 0 0 4px rgba(96, 187, 233, 0.3);
+}
+
+/* Light Theme */
+:root[data-theme="light"] {
+  --color-bg-dark: #f5f7fa;
+  --color-bg-medium: #ffffff;
+  --color-bg-light: rgba(255, 255, 255, 0.8);
+  --color-accent: #2196F3;
+  --color-accent-dim: rgba(33, 150, 243, 0.3);
+  --color-text: #1a202c;
+  --color-text-dim: #4a5568;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-critical: #dc2626;
+
+  --card-border: 1px solid rgba(33, 150, 243, 0.2);
+  --card-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  --card-bg: rgba(255, 255, 255, 0.9);
+
+  --focus-color: #2196F3;
+  --focus-shadow: 0 0 0 2px #2196F3, 0 0 0 4px rgba(33, 150, 243, 0.3);
+}
+
+/* Light theme specific adjustments */
+:root[data-theme="light"] .status-dot.normal { background: var(--color-success); }
+:root[data-theme="light"] .status-dot.high { background: var(--color-warning); }
+:root[data-theme="light"] .status-dot.overloaded { background: var(--color-danger); }
+:root[data-theme="light"] .status-dot.critical { background: var(--color-critical); }
+
+:root[data-theme="light"] .error-container {
+  background: var(--card-bg);
+  border-color: var(--color-danger);
+}
+
+:root[data-theme="light"] .loading-placeholder,
+:root[data-theme="light"] .modal-loading {
+  background: var(--card-bg);
+  color: var(--color-text-dim);
+}
+
+/* Light theme scrollbar */
+:root[data-theme="light"] ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+:root[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: var(--color-accent-dim);
+}
+
+:root[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
 }
 
 * {
@@ -65,6 +121,60 @@ body {
   to { transform: rotate(360deg); }
 }
 
+/* Lazy loading placeholders */
+.loading-placeholder, .modal-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--color-text-dim);
+  background: var(--card-bg);
+  border: var(--card-border);
+  border-radius: 16px;
+  min-height: 200px;
+}
+
+.modal-loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  background: var(--color-bg-medium);
+  min-height: 100px;
+  min-width: 200px;
+}
+
+/* Error Boundary Styles */
+.error-container {
+  background: var(--card-bg);
+  border: 1px solid var(--color-danger);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 20px;
+  text-align: center;
+}
+
+.error-content h2 {
+  color: var(--color-danger);
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+}
+
+.error-content p {
+  color: var(--color-text);
+  margin-bottom: 24px;
+  font-size: 1.1rem;
+}
+
+.error-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.error-actions button,
 .error-container button {
   padding: 12px 24px;
   background: var(--color-accent);
@@ -72,6 +182,45 @@ body {
   border: none;
   border-radius: 8px;
   font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.retry-button:hover {
+  background: var(--color-success);
+}
+
+.reload-button {
+  background: var(--color-danger) !important;
+  color: white !important;
+}
+
+.reload-button:hover {
+  background: var(--color-critical) !important;
+}
+
+.error-details {
+  text-align: left;
+  margin-top: 20px;
+  padding: 16px;
+  background: var(--color-bg-dark);
+  border-radius: 8px;
+  border: 1px solid var(--color-text-dim);
+}
+
+.error-details summary {
+  cursor: pointer;
+  color: var(--color-accent);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.error-details pre {
+  color: var(--color-text-dim);
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
   cursor: pointer;
   transition: all 0.3s;
 }
@@ -153,6 +302,30 @@ button:hover {
   transform: translateY(-1px);
 }
 
+button:focus {
+  outline: none;
+  box-shadow: var(--focus-shadow);
+}
+
+/* Focus styles for interactive elements */
+.clickable:focus,
+[tabindex]:focus,
+[role="button"]:focus {
+  outline: none;
+  box-shadow: var(--focus-shadow);
+  border-radius: 8px;
+}
+
+/* High contrast focus for better visibility */
+.clickable:focus-visible,
+[tabindex]:focus-visible,
+[role="button"]:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--focus-color);
+  outline-offset: 2px;
+  box-shadow: var(--focus-shadow);
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
   .grid-row-2col {
@@ -163,6 +336,7 @@ button:hover {
 @media (max-width: 768px) {
   .dashboard-grid {
     padding: 10px;
+    gap: 12px;
   }
 
   .card {
@@ -171,6 +345,57 @@ button:hover {
 
   .card h2 {
     font-size: 1.3rem;
+    margin-bottom: 12px;
+  }
+
+  /* Mobile-friendly buttons */
+  .header-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .header-controls button {
+    width: 100%;
+    padding: 12px;
+    min-height: 44px; /* Touch target size */
+  }
+
+  /* Stack grid items on mobile */
+  .grid-row-2col {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* Improved mobile accessibility */
+@media (max-width: 480px) {
+  .dashboard-grid {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .card h2 {
+    font-size: 1.2rem;
+  }
+
+  /* Ensure minimum touch targets */
+  .clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Stack all controls vertically on very small screens */
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-controls {
+    margin-top: 12px;
   }
 }
 

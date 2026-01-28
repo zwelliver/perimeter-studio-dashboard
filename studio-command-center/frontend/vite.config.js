@@ -12,5 +12,19 @@ export default defineConfig({
         changeOrigin: true,
       }
     }
+  },
+  build: {
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+          'chart-vendor': ['recharts'],
+          'date-vendor': ['date-fns'],
+          'pdf-vendor': ['jspdf', 'html2canvas'],
+          'csv-vendor': ['papaparse']
+        }
+      }
+    }
   }
 })
