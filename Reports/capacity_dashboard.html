@@ -271,8 +271,10 @@
             }
 
             .theme-toggle {
-                padding: 6px 12px;
+                padding: 10px 16px;
                 font-size: 13px;
+                /* Ensure minimum touch target of 44x44px for accessibility */
+                min-height: 44px;
             }
 
             .grid {
@@ -354,7 +356,10 @@
 
             .export-btn {
                 font-size: 12px;
-                padding: 6px 10px;
+                padding: 10px 14px;
+                /* Ensure minimum touch target of 44x44px for accessibility */
+                min-height: 44px;
+                min-width: 44px;
             }
 
             .card {
@@ -449,10 +454,25 @@
             /* Mobile table styles */
             table {
                 font-size: 14px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
 
             th, td {
-                padding: 8px 4px;
+                padding: 8px 6px;
+                white-space: nowrap;
+            }
+
+            /* Add visual scroll indicator for tables */
+            .card:has(table)::after {
+                content: '← Scroll →';
+                position: absolute;
+                bottom: 10px;
+                right: 10px;
+                font-size: 11px;
+                color: var(--text-muted);
+                opacity: 0.6;
+                pointer-events: none;
             }
 
             .at-risk-item {
@@ -760,6 +780,65 @@
         .project-card-meta {
             color: var(--text-muted);
             font-size: 12px;
+        }
+
+        /* Mobile project card optimizations */
+        @media (max-width: 768px) {
+            .project-card {
+                padding: 14px;
+                margin-bottom: 14px;
+            }
+
+            .project-card-header {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .project-card-date {
+                font-size: 15px;
+            }
+
+            .project-card-time {
+                font-size: 18px;
+            }
+
+            .project-card-badge {
+                padding: 5px 10px;
+                font-size: 13px;
+                align-self: flex-start;
+            }
+
+            .project-card-title {
+                font-size: 15px;
+                line-height: 1.5;
+                /* Ensure touch targets are at least 44x44px */
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .project-card {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+
+            .project-card-date {
+                font-size: 14px;
+            }
+
+            .project-card-time {
+                font-size: 16px;
+            }
+
+            .project-card-title {
+                font-size: 14px;
+            }
+
+            .project-card-details {
+                font-size: 13px;
+            }
         }
 
         /* Task list and detail styles */
@@ -1078,9 +1157,32 @@
         /* ===== RADAR/SPIDER CHART STYLES ===== */
         .radar-container {
             position: relative;
-            width: 600px;
+            width: 100%;
+            max-width: 600px;
             height: 600px;
             margin: 20px auto;
+        }
+
+        @media (max-width: 768px) {
+            .radar-container {
+                height: 400px;
+                max-width: 100%;
+            }
+
+            .radar-container svg {
+                max-width: 100%;
+                height: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .radar-container {
+                height: 300px;
+            }
+
+            .radar-label {
+                font-size: 10px !important;
+            }
         }
 
         .radar-grid {
@@ -1117,9 +1219,36 @@
         /* ===== SUNBURST CHART STYLES ===== */
         .sunburst-container {
             position: relative;
-            width: 400px;
+            width: 100%;
+            max-width: 400px;
             height: 400px;
             margin: 20px auto;
+        }
+
+        @media (max-width: 768px) {
+            .sunburst-container {
+                height: 300px;
+                max-width: 100%;
+            }
+
+            .sunburst-container svg {
+                max-width: 100%;
+                height: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sunburst-container {
+                height: 250px;
+            }
+
+            .sunburst-text {
+                font-size: 9px !important;
+            }
+
+            .sunburst-center-text {
+                font-size: 18px !important;
+            }
         }
 
         .sunburst-slice {
@@ -1160,6 +1289,54 @@
             grid-template-columns: auto repeat(10, 1fr);
             gap: 4px;
             margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        @media (max-width: 1024px) {
+            .heatmap-calendar {
+                grid-template-columns: auto repeat(7, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .heatmap-calendar {
+                grid-template-columns: auto repeat(5, 1fr);
+                gap: 3px;
+                font-size: 12px;
+            }
+
+            .heatmap-day-label {
+                font-size: 10px;
+                padding: 6px 8px;
+            }
+
+            .heatmap-date {
+                font-size: 9px;
+            }
+
+            .heatmap-cell {
+                font-size: 9px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .heatmap-calendar {
+                grid-template-columns: auto repeat(3, 1fr);
+                gap: 2px;
+            }
+
+            .heatmap-day-label {
+                font-size: 9px;
+                padding: 4px 6px;
+            }
+
+            .heatmap-date {
+                font-size: 8px;
+            }
+
+            .heatmap-cell {
+                font-size: 8px;
+            }
         }
 
         .heatmap-day-label {
@@ -1462,6 +1639,24 @@
                 width: 100% !important;
                 display: block;
                 overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                /* Add scrollbar hint */
+                box-shadow: inset 0 -1px 0 var(--border-color);
+            }
+
+            /* Mobile table wrapper for better scrolling */
+            .card table {
+                min-width: 300px;
+            }
+
+            /* Make table headers sticky on mobile for better UX */
+            @supports (position: sticky) {
+                table thead {
+                    position: sticky;
+                    top: 0;
+                    background: var(--bg-secondary);
+                    z-index: 10;
+                }
             }
 
             img {
@@ -1797,7 +1992,7 @@
 
             <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
             <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 29, 2026 at 01:30 PM</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 29, 2026 at 01:45 PM</p>
         </header>
 
         <main role="main" aria-labelledby="dashboard-title">
@@ -3341,33 +3536,61 @@ Dec 1...
                         beginAtZero: true,
                         ticks: {
                             color: getChartTextColor(),
+                            font: {
+                                size: window.innerWidth < 768 ? 10 : 12
+                            },
                             callback: function(value) {
                                 return value + '%';
-                            }
+                            },
+                            maxTicksLimit: window.innerWidth < 768 ? 6 : 10
                         },
                         grid: {
-                            color: getChartGridColor()
+                            color: getChartGridColor(),
+                            display: window.innerWidth >= 480
                         }
                     },
                     x: {
                         ticks: {
                             color: getChartTextColor(),
-                            maxRotation: 45,
-                            minRotation: 45
+                            font: {
+                                size: window.innerWidth < 768 ? 9 : 11
+                            },
+                            maxRotation: window.innerWidth < 768 ? 90 : 45,
+                            minRotation: window.innerWidth < 768 ? 90 : 45,
+                            autoSkip: true,
+                            autoSkipPadding: window.innerWidth < 768 ? 20 : 10,
+                            maxTicksLimit: window.innerWidth < 480 ? 10 : (window.innerWidth < 768 ? 15 : 20)
                         },
                         grid: {
-                            color: getChartGridColor()
+                            color: getChartGridColor(),
+                            display: false
                         }
                     }
                 },
                 plugins: {
                     legend: {
-                        position: 'top',
+                        position: window.innerWidth < 768 ? 'bottom' : 'top',
                         labels: {
-                            color: getChartTextColor()
+                            color: getChartTextColor(),
+                            font: {
+                                size: window.innerWidth < 768 ? 10 : 12
+                            },
+                            padding: window.innerWidth < 768 ? 8 : 10,
+                            boxWidth: window.innerWidth < 768 ? 12 : 15,
+                            boxHeight: window.innerWidth < 768 ? 12 : 15
                         }
                     },
                     tooltip: {
+                        enabled: true,
+                        mode: 'index',
+                        intersect: false,
+                        titleFont: {
+                            size: window.innerWidth < 768 ? 11 : 13
+                        },
+                        bodyFont: {
+                            size: window.innerWidth < 768 ? 10 : 12
+                        },
+                        padding: window.innerWidth < 768 ? 8 : 12,
                         callbacks: {
                             label: function(context) {
                                 return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
@@ -3457,7 +3680,8 @@ Dec 1...
                             maintainAspectRatio: false,
                             layout: {
                                 padding: {
-                                    top: 20
+                                    top: window.innerWidth < 768 ? 10 : 20,
+                                    bottom: window.innerWidth < 768 ? 10 : 0
                                 }
                             },
                             interaction: {
@@ -3470,34 +3694,62 @@ Dec 1...
                                     suggestedMax: 100,
                                     ticks: {
                                         color: getChartTextColor(),
+                                        font: {
+                                            size: window.innerWidth < 768 ? 10 : 12
+                                        },
                                         callback: function(value) {
                                             return value + '%';
-                                        }
+                                        },
+                                        maxTicksLimit: window.innerWidth < 768 ? 6 : 10
                                     },
                                     grid: {
-                                        color: getChartGridColor()
+                                        color: getChartGridColor(),
+                                        display: window.innerWidth >= 480
                                     }
                                 },
                                 x: {
                                     ticks: {
                                         color: getChartTextColor(),
-                                        maxRotation: 45,
-                                        minRotation: 45
+                                        font: {
+                                            size: window.innerWidth < 768 ? 9 : 11
+                                        },
+                                        maxRotation: window.innerWidth < 768 ? 90 : 45,
+                                        minRotation: window.innerWidth < 768 ? 90 : 45,
+                                        autoSkip: true,
+                                        autoSkipPadding: window.innerWidth < 768 ? 20 : 10,
+                                        maxTicksLimit: window.innerWidth < 480 ? 8 : (window.innerWidth < 768 ? 12 : 20)
                                     },
                                     grid: {
-                                        color: getChartGridColor()
+                                        color: getChartGridColor(),
+                                        display: false
                                     }
                                 }
                             },
                             plugins: {
                                 legend: {
-                                    position: 'top',
+                                    position: window.innerWidth < 768 ? 'bottom' : 'top',
                                     labels: {
                                         color: getChartTextColor(),
-                                        usePointStyle: true
+                                        usePointStyle: true,
+                                        font: {
+                                            size: window.innerWidth < 768 ? 10 : 12
+                                        },
+                                        padding: window.innerWidth < 768 ? 6 : 10,
+                                        boxWidth: window.innerWidth < 768 ? 10 : 12,
+                                        boxHeight: window.innerWidth < 768 ? 10 : 12
                                     }
                                 },
                                 tooltip: {
+                                    enabled: true,
+                                    mode: 'index',
+                                    intersect: false,
+                                    titleFont: {
+                                        size: window.innerWidth < 768 ? 11 : 13
+                                    },
+                                    bodyFont: {
+                                        size: window.innerWidth < 768 ? 10 : 12
+                                    },
+                                    padding: window.innerWidth < 768 ? 8 : 12,
                                     callbacks: {
                                         label: function(context) {
                                             return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
@@ -4127,6 +4379,39 @@ Dec 1...
             setupInteractiveFeatures();
             setupTableSorting();
         });
+
+        // Handle window resize for responsive charts
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                // Regenerate charts on orientation change or significant resize
+                if (window.capacityHistoryChart) {
+                    window.capacityHistoryChart.destroy();
+                }
+
+                // Trigger chart regeneration
+                const event = new Event('DOMContentLoaded');
+                document.dispatchEvent(event);
+            }, 250);
+        });
+
+        // Optimize touch interactions for mobile
+        if ('ontouchstart' in window) {
+            document.body.classList.add('touch-device');
+
+            // Improve chart tooltips for touch devices
+            const style = document.createElement('style');
+            style.textContent = `
+                .touch-device .chart-container {
+                    -webkit-tap-highlight-color: transparent;
+                }
+                .touch-device canvas {
+                    touch-action: pan-y;
+                }
+            `;
+            document.head.appendChild(style);
+        }
 
     </script>
 
