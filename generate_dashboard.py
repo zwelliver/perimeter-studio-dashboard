@@ -1188,14 +1188,15 @@ def generate_html_dashboard(data):
             background: var(--brand-primary);
             color: white;
             border: none;
-            border-radius: 6px;
-            padding: 8px 12px;
+            border-radius: 25px;
+            padding: 8px 16px;
             cursor: pointer;
             font-size: 13px;
             font-weight: 500;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 4px;
         }}
 
@@ -1379,10 +1380,11 @@ def generate_html_dashboard(data):
 
             .export-btn {{
                 font-size: 12px;
-                padding: 10px 14px;
+                padding: 8px 14px;
                 /* Ensure minimum touch target of 44x44px for accessibility */
                 min-height: 44px;
                 min-width: 44px;
+                border-radius: 22px;
             }}
 
             .card {{
