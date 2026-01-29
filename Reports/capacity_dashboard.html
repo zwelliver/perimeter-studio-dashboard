@@ -1055,7 +1055,7 @@
             position: absolute;
             height: 24px;
             border-radius: 4px;
-            background: #60BBE9;
+            background: var(--brand-primary);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1073,7 +1073,7 @@
         }
 
         .timeline-bar.normal {
-            background: #60BBE9;
+            background: var(--brand-primary);
         }
 
         .timeline-bar.info {
@@ -1090,12 +1090,12 @@
 
         .radar-grid {
             fill: none;
-            stroke: #dee2e6;
+            stroke: var(--border-color);
             stroke-width: 1;
         }
 
         .radar-axis {
-            stroke: #adb5bd;
+            stroke: var(--text-secondary);
             stroke-width: 1;
         }
 
@@ -1113,7 +1113,7 @@
         }
 
         .radar-label {
-            fill: #09243F;
+            fill: var(--text-primary);
             font-size: 12px;
             font-weight: 600;
             text-anchor: middle;
@@ -1802,7 +1802,7 @@
 
             <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
             <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 29, 2026 at 09:30 AM</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 29, 2026 at 09:45 AM</p>
         </header>
 
         <main role="main" aria-labelledby="dashboard-title">
@@ -1892,15 +1892,17 @@
             </div>
         </div>
 
-        <!-- At-Risk Tasks -->
-        <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>⚠️ At-Risk Tasks</h2>
+        <div class="grid">
+            <!-- At-Risk Tasks -->
+            <div class="card full-width" style="margin-bottom: 30px;">
+                <h2>⚠️ At-Risk Tasks</h2>
     
             <div class="success-state">
                 <div style="font-size: 48px;">✅</div>
                 <div style="font-size: 18px; margin-top: 10px;">No tasks currently at risk!</div>
             </div>
         
+        </div>
         </div>
 
         <!-- Upcoming Shoots -->
@@ -3352,6 +3354,17 @@ Dec 1...
 
         // Historical Trends Chart
 
+        // Function to get theme-aware colors
+        function getChartTextColor() {
+            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            return isDarkMode ? '#ffffff' : '#333333';
+        }
+
+        function getChartGridColor() {
+            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            return isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+        }
+
         const trendsCtx = document.getElementById('trendsChart').getContext('2d');
         new Chart(trendsCtx, {
             type: 'line',
@@ -3370,21 +3383,32 @@ Dec 1...
                     y: {
                         beginAtZero: true,
                         ticks: {
+                            color: getChartTextColor(),
                             callback: function(value) {
                                 return value + '%';
                             }
+                        },
+                        grid: {
+                            color: getChartGridColor()
                         }
                     },
                     x: {
                         ticks: {
+                            color: getChartTextColor(),
                             maxRotation: 45,
                             minRotation: 45
+                        },
+                        grid: {
+                            color: getChartGridColor()
                         }
                     }
                 },
                 plugins: {
                     legend: {
-                        position: 'top'
+                        position: 'top',
+                        labels: {
+                            color: getChartTextColor()
+                        }
                     },
                     tooltip: {
                         callbacks: {
@@ -3488,15 +3512,23 @@ Dec 1...
                                     beginAtZero: true,
                                     suggestedMax: 100,
                                     ticks: {
+                                        color: getChartTextColor(),
                                         callback: function(value) {
                                             return value + '%';
                                         }
+                                    },
+                                    grid: {
+                                        color: getChartGridColor()
                                     }
                                 },
                                 x: {
                                     ticks: {
+                                        color: getChartTextColor(),
                                         maxRotation: 45,
                                         minRotation: 45
+                                    },
+                                    grid: {
+                                        color: getChartGridColor()
                                     }
                                 }
                             },
@@ -3504,6 +3536,7 @@ Dec 1...
                                 legend: {
                                     position: 'top',
                                     labels: {
+                                        color: getChartTextColor(),
                                         usePointStyle: true
                                     }
                                 },
@@ -3778,8 +3811,8 @@ Dec 1...
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, ticks: { stepSize: 2, color: '#a8c5da' }, grid: { color: 'rgba(96, 187, 233, 0.1)' } },
-                        x: { ticks: { color: '#a8c5da' }, grid: { color: 'rgba(96, 187, 233, 0.1)' } }
+                        y: { beginAtZero: true, ticks: { stepSize: 2, color: getChartTextColor() }, grid: { color: getChartGridColor() } },
+                        x: { ticks: { color: getChartTextColor() }, grid: { color: getChartGridColor() } }
                     }
                 }
             });
@@ -3820,6 +3853,23 @@ Dec 1...
 
             // Store preference in localStorage
             localStorage.setItem('theme', newTheme);
+
+            // Refresh charts to update text colors
+            if (typeof window.capacityHistoryChart !== 'undefined') {
+                window.capacityHistoryChart.destroy();
+            }
+
+            // Regenerate charts with new theme colors
+            setTimeout(() => {
+                generateRadarChart();
+                generateVelocityChart();
+
+                // Regenerate capacity history chart if container exists
+                if (document.getElementById('capacityHistoryChart')) {
+                    const historyEvent = new Event('DOMContentLoaded');
+                    document.dispatchEvent(historyEvent);
+                }
+            }, 100);
         }
 
         // Initialize theme from localStorage
@@ -4038,7 +4088,7 @@ Dec 1...
                         }
 
                         .progress-fill {
-                            background: #60BBE9 !important;
+                            background: var(--brand-primary) !important;
                         }
 
                         .team-member {
