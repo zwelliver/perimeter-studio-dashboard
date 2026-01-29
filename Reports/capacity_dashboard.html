@@ -30,7 +30,7 @@
             /* Status Colors */
             --success-color: #28a745;
             --warning-color: #ffc107;
-            --danger-color: #dc3545;
+            --danger-color: var(--danger-color);
             --info-color: #17a2b8;
 
             /* Chart Colors */
@@ -142,12 +142,20 @@
         /* Header controls layout */
         .header-controls {
             position: absolute;
-            top: 20px;
+            top: 15px;
             right: 30px;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 12px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        @media (min-width: 640px) {
+            .header-controls {
+                flex-direction: row;
+                align-items: center;
+            }
         }
 
         .export-controls {
@@ -324,16 +332,20 @@
                 flex-direction: column;
                 align-items: flex-start;
                 position: relative;
+                padding-top: 60px; /* Make room for buttons */
             }
 
             .header-controls {
-                position: static;
-                margin-bottom: 15px;
-                align-self: stretch;
-                width: 100%;
+                position: absolute;
+                top: 15px;
+                left: 15px;
+                right: 15px;
+                display: flex;
                 justify-content: space-between;
+                align-items: flex-start;
                 flex-wrap: wrap;
                 gap: 8px;
+                z-index: 10;
             }
 
             .theme-toggle {
@@ -689,6 +701,148 @@
             }
         }
 
+        /* ===== PROJECT CARDS (Shoots, Deadlines, Forecast) ===== */
+        .project-card {
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px;
+            background: var(--bg-secondary);
+            margin-bottom: 16px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .project-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .project-card-date {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .project-card-time {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--brand-primary);
+            margin-top: 4px;
+        }
+
+        .project-card-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--brand-secondary);
+            color: white;
+            font-size: 14px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        .project-card-title {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 1.4;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .project-card-title:hover {
+            color: var(--brand-primary);
+        }
+
+        .project-card-details {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .project-card-meta {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* Task list and detail styles */
+        .task-list-item {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin: 4px 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+        }
+
+        .success-state {
+            text-align: center;
+            padding: 20px;
+            color: var(--success-color);
+        }
+
+        .task-name {
+            font-weight: bold;
+            color: var(--brand-secondary);
+        }
+
+        .task-detail {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .task-risk {
+            font-size: 13px;
+            color: var(--danger-color);
+            margin-top: 8px;
+        }
+
+        .project-link {
+            color: var(--brand-primary);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .project-link:hover {
+            text-decoration: underline;
+        }
+
+        .section-description {
+            color: var(--text-secondary);
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        /* At-risk and external project sections */
+        .at-risk-item {
+            border-left: 4px solid var(--danger-color);
+            padding: 10px;
+            margin-bottom: 10px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+
+        .external-project-item {
+            margin-top: 10px;
+            padding-left: 10px;
+            border-left: 2px solid var(--brand-primary);
+        }
+
+        .project-task-name {
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
         /* ===== GAUGE CHART STYLES ===== */
         .gauge-container {
             position: relative;
@@ -1015,14 +1169,14 @@
 
         .heatmap-day-label {
             font-size: 11px;
-            color: #6c757d;
+            color: var(--text-secondary);
             padding: 8px 12px;
             text-align: right;
         }
 
         .heatmap-date {
             font-size: 10px;
-            color: #6c757d;
+            color: var(--text-secondary);
             text-align: center;
             margin-bottom: 4px;
         }
@@ -1070,20 +1224,20 @@
         }
 
         .header h1 {
-            color: #09243F;
+            color: var(--text-primary);
             font-size: 28px;
             margin-bottom: 8px;
             font-weight: 600;
         }
 
         .header .subtitle {
-            color: #6c757d;
+            color: var(--text-secondary);
             font-size: 13px;
             margin-bottom: 5px;
         }
 
         .header .timestamp {
-            color: #60BBE9;
+            color: var(--brand-primary);
             font-size: 12px;
         }
 
@@ -1110,11 +1264,11 @@
         }
 
         .card h2 {
-            color: #09243F;
+            color: var(--text-primary);
             font-size: 16px;
             margin-bottom: 18px;
             font-weight: 600;
-            border-bottom: 2px solid #60BBE9;
+            border-bottom: 2px solid var(--brand-primary);
             padding-bottom: 8px;
         }
 
@@ -1132,13 +1286,13 @@
 
         .metric-label {
             font-size: 13px;
-            color: #6c757d;
+            color: var(--text-secondary);
         }
 
         .metric-value {
             font-size: 22px;
             font-weight: 600;
-            color: #60BBE9;
+            color: var(--brand-primary);
         }
 
         .metric-value.positive {
@@ -1146,7 +1300,7 @@
         }
 
         .metric-value.negative {
-            color: #dc3545;
+            color: var(--danger-color);
         }
 
         .metric-value.warning {
@@ -1179,20 +1333,20 @@
         }
 
         .alert {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
+            background: rgba(255, 193, 7, 0.1);
+            border-left: 4px solid var(--warning-color);
             padding: 12px;
             border-radius: 4px;
             margin-bottom: 10px;
             font-size: 13px;
-            border: 1px solid #ffc107;
-            color: #856404;
+            border: 1px solid var(--warning-color);
+            color: var(--text-primary);
         }
 
         .alert.danger {
             background: #f8d7da;
-            border-left-color: #dc3545;
-            border-color: #dc3545;
+            border-left-color: var(--danger-color);
+            border-color: var(--danger-color);
             color: #721c24;
         }
 
@@ -1218,13 +1372,13 @@
         .team-member-name {
             font-size: 13px;
             font-weight: 600;
-            color: #09243F;
+            color: var(--text-primary);
             margin-bottom: 4px;
         }
 
         .team-member-capacity {
             font-size: 12px;
-            color: #6c757d;
+            color: var(--text-secondary);
             margin-bottom: 4px;
         }
 
@@ -1648,7 +1802,7 @@
 
             <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
             <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 29, 2026 at 09:15 AM</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 29, 2026 at 09:30 AM</p>
         </header>
 
         <main role="main" aria-labelledby="dashboard-title">
@@ -1683,22 +1837,22 @@
                 <h2 id="team-capacity-title">Team Capacity</h2>
                 <div class="team-capacity-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 10px;" role="list" aria-label="Team member capacity overview">
 
-                    <div class="team-member tooltip" role="listitem" tabindex="0" aria-labelledby="member-zach-welliver-name" data-tooltip="Current: 212.0% • Target: 80% • Utilization: 265.0% • OVER CAPACITY by 165.0%">
+                    <div class="team-member tooltip" role="listitem" tabindex="0" aria-labelledby="member-zach-welliver-name" data-tooltip="Current: 207.0% • Target: 80% • Utilization: 258.8% • OVER CAPACITY by 158.8%">
                         <div id="member-zach-welliver-name" class="team-member-name">Zach Welliver</div>
-                        <div class="team-member-capacity" aria-label="Current capacity utilization">212% / 80% capacity</div>
-                        <div class="progress-bar" role="progressbar" aria-valuenow="265" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 265%">
+                        <div class="team-member-capacity" aria-label="Current capacity utilization">207% / 80% capacity</div>
+                        <div class="progress-bar" role="progressbar" aria-valuenow="259" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 259%">
                             <div class="progress-fill over-capacity" style="width: 100%" aria-hidden="true">
-                                265%
+                                259%
                             </div>
                         </div>
                     </div>
 
-                    <div class="team-member tooltip" role="listitem" tabindex="0" aria-labelledby="member-nick-clark-name" data-tooltip="Current: 64.0% • Target: 100% • Utilization: 64.0%">
+                    <div class="team-member tooltip" role="listitem" tabindex="0" aria-labelledby="member-nick-clark-name" data-tooltip="Current: 69.0% • Target: 100% • Utilization: 69.0%">
                         <div id="member-nick-clark-name" class="team-member-name">Nick Clark</div>
-                        <div class="team-member-capacity" aria-label="Current capacity utilization">64% / 100% capacity</div>
-                        <div class="progress-bar" role="progressbar" aria-valuenow="64" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 64%">
-                            <div class="progress-fill " style="width: 64.0%" aria-hidden="true">
-                                64%
+                        <div class="team-member-capacity" aria-label="Current capacity utilization">69% / 100% capacity</div>
+                        <div class="progress-bar" role="progressbar" aria-valuenow="69" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 69%">
+                            <div class="progress-fill " style="width: 69.0%" aria-hidden="true">
+                                69%
                             </div>
                         </div>
                     </div>
@@ -1742,7 +1896,7 @@
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>⚠️ At-Risk Tasks</h2>
     
-            <div style="text-align: center; padding: 20px; color: #28a745;">
+            <div class="success-state">
                 <div style="font-size: 48px;">✅</div>
                 <div style="font-size: 18px; margin-top: 10px;">No tasks currently at risk!</div>
             </div>
@@ -1755,16 +1909,16 @@
     
             <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
         
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div>
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Mon, Feb 2</div>
-                            <div style="font-size: 20px; font-weight: 600; color: #60BBE9; margin-top: 4px;">1:00 PM</div>
+                            <div class="project-card-date">Mon, Feb 2</div>
+                            <div class="project-card-time">1:00 PM</div>
                         </div>
-                        <span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Production</span>
+                        <span class="project-card-badge">Production</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212955372729195/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212955372729195/f" target="_blank" class="project-card-title">
                             DD into Parenting - Ep. 3: Parenting in a Digital Age
                         </a>
                     </div>
@@ -1775,16 +1929,16 @@
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div>
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Tue, Feb 3</div>
-                            <div style="font-size: 20px; font-weight: 600; color: #60BBE9; margin-top: 4px;">12:00 PM</div>
+                            <div class="project-card-date">Tue, Feb 3</div>
+                            <div class="project-card-time">12:00 PM</div>
                         </div>
-                        <span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Production</span>
+                        <span class="project-card-badge">Production</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212879706977817/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212879706977817/f" target="_blank" class="project-card-title">
                             DD into Parenting - Ep. 7: Parenting Prodigals/Parenting Adult Children
                         </a>
                     </div>
@@ -1795,16 +1949,16 @@
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div>
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Wed, Feb 4</div>
-                            <div style="font-size: 20px; font-weight: 600; color: #60BBE9; margin-top: 4px;">2:00 PM</div>
+                            <div class="project-card-date">Wed, Feb 4</div>
+                            <div class="project-card-time">2:00 PM</div>
                         </div>
-                        <span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Production</span>
+                        <span class="project-card-badge">Production</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212815426339753/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212815426339753/f" target="_blank" class="project-card-title">
                             LOL French Audio Recording
                         </a>
                     </div>
@@ -1815,16 +1969,16 @@
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div>
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Mon, Feb 9</div>
-                            <div style="font-size: 20px; font-weight: 600; color: #60BBE9; margin-top: 4px;">2:30 PM</div>
+                            <div class="project-card-date">Mon, Feb 9</div>
+                            <div class="project-card-time">2:30 PM</div>
                         </div>
-                        <span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Production</span>
+                        <span class="project-card-badge">Production</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212652709332311/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212652709332311/f" target="_blank" class="project-card-title">
                             Jeff's Do/Done Diagram Video
                         </a>
                     </div>
@@ -1835,16 +1989,16 @@
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div>
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Tue, Feb 10</div>
-                            <div style="font-size: 20px; font-weight: 600; color: #60BBE9; margin-top: 4px;">12:30 PM</div>
+                            <div class="project-card-date">Tue, Feb 10</div>
+                            <div class="project-card-time">12:30 PM</div>
                         </div>
-                        <span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Production</span>
+                        <span class="project-card-badge">Production</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212955373192693/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212955373192693/f" target="_blank" class="project-card-title">
                             DD into Parenting - Ep. 6: Parenting Through Trauma
                         </a>
                     </div>
@@ -1855,16 +2009,16 @@
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div>
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Tue, Feb 10</div>
-                            <div style="font-size: 20px; font-weight: 600; color: #60BBE9; margin-top: 4px;">2:00 PM</div>
+                            <div class="project-card-date">Tue, Feb 10</div>
+                            <div class="project-card-time">2:00 PM</div>
                         </div>
-                        <span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Production</span>
+                        <span class="project-card-badge">Production</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212955372735433/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212955372735433/f" target="_blank" class="project-card-title">
                             DD into Parenting - Ep. 5: Love Languages and Parenting
                         </a>
                     </div>
@@ -1875,16 +2029,16 @@
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div>
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Wed, Feb 11</div>
-                            <div style="font-size: 20px; font-weight: 600; color: #60BBE9; margin-top: 4px;">12:00 AM</div>
+                            <div class="project-card-date">Wed, Feb 11</div>
+                            <div class="project-card-time">12:00 AM</div>
                         </div>
-                        <span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Production</span>
+                        <span class="project-card-badge">Production</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1213018813832209/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1213018813832209/f" target="_blank" class="project-card-title">
                             Volunteer Commissioning Service
                         </a>
                     </div>
@@ -1895,16 +2049,16 @@
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div>
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Wed, Feb 11</div>
-                            <div style="font-size: 20px; font-weight: 600; color: #60BBE9; margin-top: 4px;">10:00 AM</div>
+                            <div class="project-card-date">Wed, Feb 11</div>
+                            <div class="project-card-time">10:00 AM</div>
                         </div>
-                        <span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Production</span>
+                        <span class="project-card-badge">Production</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212955372720028/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212955372720028/f" target="_blank" class="project-card-title">
                             DD into Parenting - Ep. 1: God's Design for Parenting
                         </a>
                     </div>
@@ -1915,16 +2069,16 @@
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div>
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Wed, Feb 11</div>
-                            <div style="font-size: 20px; font-weight: 600; color: #60BBE9; margin-top: 4px;">11:45 AM</div>
+                            <div class="project-card-date">Wed, Feb 11</div>
+                            <div class="project-card-time">11:45 AM</div>
                         </div>
-                        <span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Production</span>
+                        <span class="project-card-badge">Production</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212955371981515/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212955371981515/f" target="_blank" class="project-card-title">
                             DD into Parenting - Ep. 4: Parenting in an Anxious Age
                         </a>
                     </div>
@@ -1935,16 +2089,16 @@
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div>
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Thu, Feb 12</div>
-                            <div style="font-size: 20px; font-weight: 600; color: #60BBE9; margin-top: 4px;">11:00 AM</div>
+                            <div class="project-card-date">Thu, Feb 12</div>
+                            <div class="project-card-time">11:00 AM</div>
                         </div>
-                        <span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Production</span>
+                        <span class="project-card-badge">Production</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212955368760383/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212955368760383/f" target="_blank" class="project-card-title">
                             DD into Parenting - Ep. 2: Parenting by Grace
                         </a>
                     </div>
@@ -1962,20 +2116,20 @@
         <!-- Upcoming Project Deadlines -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>⏰ Upcoming Project Deadlines</h2>
-            <p style="color: #6c757d; margin-top: 8px; font-size: 14px;">Projects due within the next 10 days</p>
+            <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Projects due within the next 10 days</p>
     
             <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
         
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div>
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Thu, Jan 29, 2026</div>
+                            <div class="project-card-date">Thu, Jan 29, 2026</div>
                             <div style="font-size: 22px; font-weight: 600; color: #dc3545; margin-top: 6px;">DUE TODAY</div>
                         </div>
-                        <span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Post Production</span>
+                        <span class="project-card-badge">Post Production</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212753445542451/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212753445542451/f" target="_blank" class="project-card-title">
                             WOV - Evan Forester
                         </a>
                     </div>
@@ -1986,16 +2140,16 @@
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div>
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Thu, Jan 29, 2026</div>
+                            <div class="project-card-date">Thu, Jan 29, 2026</div>
                             <div style="font-size: 22px; font-weight: 600; color: #dc3545; margin-top: 6px;">DUE TODAY</div>
                         </div>
-                        <span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Post Production</span>
+                        <span class="project-card-badge">Post Production</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1211997186982728/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1211997186982728/f" target="_blank" class="project-card-title">
                             Perimeter Live Worship Album Songs
                         </a>
                     </div>
@@ -2006,16 +2160,16 @@
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div>
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Thu, Jan 29, 2026</div>
+                            <div class="project-card-date">Thu, Jan 29, 2026</div>
                             <div style="font-size: 22px; font-weight: 600; color: #dc3545; margin-top: 6px;">DUE TODAY</div>
                         </div>
-                        <span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Post Production</span>
+                        <span class="project-card-badge">Post Production</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1213001704778921/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1213001704778921/f" target="_blank" class="project-card-title">
                             WOV - Debbie Mason
                         </a>
                     </div>
@@ -2026,16 +2180,16 @@
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div>
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Thu, Jan 29, 2026</div>
+                            <div class="project-card-date">Thu, Jan 29, 2026</div>
                             <div style="font-size: 22px; font-weight: 600; color: #dc3545; margin-top: 6px;">DUE TODAY</div>
                         </div>
-                        <span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Post Production</span>
+                        <span class="project-card-badge">Post Production</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1211914381587215/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1211914381587215/f" target="_blank" class="project-card-title">
                             Women's Retreat Karen Tejeda testimony #2
                         </a>
                     </div>
@@ -2046,16 +2200,16 @@
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div>
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Fri, Jan 30, 2026</div>
+                            <div class="project-card-date">Fri, Jan 30, 2026</div>
                             <div style="font-size: 22px; font-weight: 600; color: #fd7e14; margin-top: 6px;">DUE TOMORROW</div>
                         </div>
-                        <span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Post Production</span>
+                        <span class="project-card-badge">Post Production</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212722489719345/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212722489719345/f" target="_blank" class="project-card-title">
                             Unlimited Grace - Podcast-January
                         </a>
                     </div>
@@ -2066,16 +2220,16 @@
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div>
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Fri, Jan 30, 2026</div>
+                            <div class="project-card-date">Fri, Jan 30, 2026</div>
                             <div style="font-size: 22px; font-weight: 600; color: #fd7e14; margin-top: 6px;">DUE TOMORROW</div>
                         </div>
-                        <span style="display: inline-block; padding: 6px 12px; background: #09243F; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">Post Production</span>
+                        <span class="project-card-badge">Post Production</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1211995020691865/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1211995020691865/f" target="_blank" class="project-card-title">
                             Radical Dependence Teaching Series
                         </a>
                     </div>
@@ -2133,7 +2287,7 @@
         <!-- Timeline Gantt -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>Project Timeline</h2>
-            <p style="color: #6c757d; margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Next 10 days</p>
+            <p style="color: var(--text-secondary); margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Next 10 days</p>
             <div class="timeline-container" id="projectTimeline">
                 <!-- Timeline will be generated by JavaScript -->
             </div>
@@ -2142,7 +2296,7 @@
         <!-- Radar/Spider Chart -->
         <div class="card full-width" style="margin-bottom: 30px; overflow: visible;">
             <h2>Workload Balance</h2>
-            <p style="color: #6c757d; margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Actual vs Target distribution across categories</p>
+            <p style="color: var(--text-secondary); margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Actual vs Target distribution across categories</p>
             <div class="radar-container" id="radarChart">
                 <!-- Radar will be generated by JavaScript -->
             </div>
@@ -2151,7 +2305,7 @@
         <!-- Velocity Trend Chart -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>Team Velocity Trend</h2>
-            <p style="color: #6c757d; margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Projects completed per week over the last 8 weeks</p>
+            <p style="color: var(--text-secondary); margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Projects completed per week over the last 8 weeks</p>
             <div class="velocity-container">
                 <canvas id="velocityChart"></canvas>
             </div>
@@ -2160,13 +2314,13 @@
         <!-- 6-Month Capacity Timeline -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>📆 6-Month Capacity Timeline</h2>
-            <div style="font-size: 12px; color: #6c757d; margin-bottom: 15px;">
+            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 15px;">
                 Weekly team capacity projection showing workload distribution over the next 26 weeks
             </div>
     
             <div style="margin-top: 15px;">
                 <!-- Timeline header with month labels -->
-                <div style="display: flex; margin-bottom: 10px; font-size: 12px; font-weight: bold; color: #6c757d;">
+                <div style="display: flex; margin-bottom: 10px; font-size: 12px; font-weight: bold; color: var(--text-secondary);">
     
                     <div style="flex: 1; text-align: center; border-right: 1px solid #dee2e6;">Jan</div>
                 
@@ -2294,7 +2448,7 @@
                 </div>
 
                 <!-- Week number labels (show every 4th week) -->
-                <div style="display: flex; gap: 3px; margin-top: 5px; font-size: 9px; color: #6c757d;">
+                <div style="display: flex; gap: 3px; margin-top: 5px; font-size: 9px; color: var(--text-secondary);">
     
                     <div style="flex: 1; text-align: center; min-width: 8px;">W1</div>
             
@@ -2351,13 +2505,13 @@
                 </div>
 
                 <!-- Legend -->
-                <div style="margin-top: 15px; font-size: 11px; color: #6c757d; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <div style="margin-top: 15px; font-size: 11px; color: var(--text-secondary); display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                     <div><span style="display: inline-block; width: 12px; height: 12px; background: #28a745; border-radius: 2px;"></span> Low</div>
                     <div><span style="display: inline-block; width: 12px; height: 12px; background: #ffc107; border-radius: 2px;"></span> Medium</div>
                     <div><span style="display: inline-block; width: 12px; height: 12px; background: #fd7e14; border-radius: 2px;"></span> High</div>
                     <div><span style="display: inline-block; width: 12px; height: 12px; background: #dc3545; border-radius: 2px;"></span> Very High</div>
                 </div>
-                <div style="margin-top: 5px; font-size: 10px; color: #6c757d; text-align: center; font-style: italic;">
+                <div style="margin-top: 5px; font-size: 10px; color: var(--text-secondary); text-align: center; font-style: italic;">
                     Colors scale adaptively based on peak workload over the 6-month period
                 </div>
             </div>
@@ -2366,7 +2520,7 @@
         <!-- Daily Workload Distribution Heatmap -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>📊 Daily Workload Distribution - Next 30 Days</h2>
-            <div style="font-size: 13px; color: #6c757d; margin-bottom: 15px;">
+            <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 15px;">
                 <strong>How busy will each day be?</strong> Shows the team's expected workload intensity per day (work distributed across task timelines)
             </div>
             <div class="heatmap-grid">
@@ -2522,14 +2676,14 @@
                 </div>
         
             </div>
-            <div style="margin-top: 15px; font-size: 11px; color: #6c757d; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+            <div style="margin-top: 15px; font-size: 11px; color: var(--text-secondary); display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #20c997; border-radius: 2px;"></span> Very Low</div>
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #28a745; border-radius: 2px;"></span> Low</div>
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #ffc107; border-radius: 2px;"></span> Medium</div>
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #fd7e14; border-radius: 2px;"></span> High</div>
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #dc3545; border-radius: 2px;"></span> Very High</div>
             </div>
-            <div style="margin-top: 10px; font-size: 11px; color: #6c757d; text-align: center;">
+            <div style="margin-top: 10px; font-size: 11px; color: var(--text-secondary); text-align: center;">
                 <em>Colors scale adaptively based on peak workload over the 30-day period</em>
             </div>
         </div>
@@ -2537,7 +2691,7 @@
         <!-- Historical Capacity Utilization -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>📈 Historical Capacity Utilization</h2>
-            <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
+            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
                 Team utilization percentage over the last 30 days (click legend items to filter)
             </div>
             <div class="chart-container">
@@ -2548,23 +2702,23 @@
         <!-- Forecasted Projects -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>🔮 Forecasted Projects</h2>
-            <p style="color: #6c757d; margin-top: 8px; font-size: 14px;">Upcoming projects in the forecast pipeline</p>
+            <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Upcoming projects in the forecast pipeline</p>
     
             <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
         
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div style="flex: 1;">
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Mar 1, 2026</div>
+                            <div class="project-card-date">Mar 1, 2026</div>
                         </div>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212347340841821/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212347340841821/f" target="_blank" class="project-card-title" style="font-weight: 600;">
                             March: Testimonial Video
                         </a>
                     </div>
             
-                    <div style="margin-bottom: 12px; color: #6c757d; font-size: 14px; line-height: 1.5;">
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
                         Project Title:
 March: Testimonial Video
 
@@ -2588,19 +2742,19 @@ Mar 1, 202...
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div style="flex: 1;">
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Mar 27, 2026</div>
+                            <div class="project-card-date">Mar 27, 2026</div>
                         </div>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212060238750800/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212060238750800/f" target="_blank" class="project-card-title" style="font-weight: 600;">
                             Holy Week Video Devotionals
                         </a>
                     </div>
             
-                    <div style="margin-bottom: 12px; color: #6c757d; font-size: 14px; line-height: 1.5;">
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
                         Project Title:
 Holy Week Video Devotionals
 
@@ -2624,19 +2778,19 @@ Mar...
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div style="flex: 1;">
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Apr 1, 2026</div>
+                            <div class="project-card-date">Apr 1, 2026</div>
                         </div>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212347357383339/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212347357383339/f" target="_blank" class="project-card-title" style="font-weight: 600;">
                             April: Frontier Testimonial
                         </a>
                     </div>
             
-                    <div style="margin-bottom: 12px; color: #6c757d; font-size: 14px; line-height: 1.5;">
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
                         Project Title:
 April: Frontier Testimonial
 
@@ -2660,19 +2814,19 @@ Apr 1, ...
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div style="flex: 1;">
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">May 31, 2026</div>
+                            <div class="project-card-date">May 31, 2026</div>
                         </div>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212293853905359/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212293853905359/f" target="_blank" class="project-card-title" style="font-weight: 600;">
                             Q2 Frontier Update
                         </a>
                     </div>
             
-                    <div style="margin-bottom: 12px; color: #6c757d; font-size: 14px; line-height: 1.5;">
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
                         Project Title:
 Frontier Q2 Update
 
@@ -2695,19 +2849,19 @@ General idea or dir...
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div style="flex: 1;">
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Jun 1, 2026</div>
+                            <div class="project-card-date">Jun 1, 2026</div>
                         </div>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212287883501284/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212287883501284/f" target="_blank" class="project-card-title" style="font-weight: 600;">
                             June: Frontier Testimonial
                         </a>
                     </div>
             
-                    <div style="margin-bottom: 12px; color: #6c757d; font-size: 14px; line-height: 1.5;">
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
                         Project Title:
 June: Frontier Testimonial
 
@@ -2731,19 +2885,19 @@ Jun 1, 2...
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div style="flex: 1;">
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Jun 8, 2026</div>
+                            <div class="project-card-date">Jun 8, 2026</div>
                         </div>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212122463356396/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212122463356396/f" target="_blank" class="project-card-title" style="font-weight: 600;">
                             Discipleship Spotlight Video
                         </a>
                     </div>
             
-                    <div style="margin-bottom: 12px; color: #6c757d; font-size: 14px; line-height: 1.5;">
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
                         Project Title:
 Discipleship Spotlight Video
 
@@ -2767,19 +2921,19 @@ Jun 8,...
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div style="flex: 1;">
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Jun 30, 2026</div>
+                            <div class="project-card-date">Jun 30, 2026</div>
                         </div>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212122465319896/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212122465319896/f" target="_blank" class="project-card-title" style="font-weight: 600;">
                             Camp Spotlight Video
                         </a>
                     </div>
             
-                    <div style="margin-bottom: 12px; color: #6c757d; font-size: 14px; line-height: 1.5;">
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
                         Project Title:
 Camp Spotlight Video
 
@@ -2803,19 +2957,19 @@ Jun 30,...
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div style="flex: 1;">
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Jul 1, 2026</div>
+                            <div class="project-card-date">Jul 1, 2026</div>
                         </div>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212291280322883/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212291280322883/f" target="_blank" class="project-card-title" style="font-weight: 600;">
                             July: Frontier Testimonial
                         </a>
                     </div>
             
-                    <div style="margin-bottom: 12px; color: #6c757d; font-size: 14px; line-height: 1.5;">
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
                         Project Title:
 JULY: Frontier Testimonial 
 
@@ -2839,19 +2993,19 @@ Jul 1, 2...
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div style="flex: 1;">
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Jul 17, 2026</div>
+                            <div class="project-card-date">Jul 17, 2026</div>
                         </div>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212118499750510/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212118499750510/f" target="_blank" class="project-card-title" style="font-weight: 600;">
                             Rush Broll Capture & Highlight Video
                         </a>
                     </div>
             
-                    <div style="margin-bottom: 12px; color: #6c757d; font-size: 14px; line-height: 1.5;">
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
                         Project Title:
 Rush Broll Capture & Highlight Video
 
@@ -2874,19 +3028,19 @@ Estimated D...
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div style="flex: 1;">
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Aug 23, 2026</div>
+                            <div class="project-card-date">Aug 23, 2026</div>
                         </div>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212293854312682/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212293854312682/f" target="_blank" class="project-card-title" style="font-weight: 600;">
                             Q3 Frontier Update
                         </a>
                     </div>
             
-                    <div style="margin-bottom: 12px; color: #6c757d; font-size: 14px; line-height: 1.5;">
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
                         Project Title:
 Q3 Frontier Update
 
@@ -2910,19 +3064,19 @@ Aug 23, 20...
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div style="flex: 1;">
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Aug 28, 2026</div>
+                            <div class="project-card-date">Aug 28, 2026</div>
                         </div>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212154797482792/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212154797482792/f" target="_blank" class="project-card-title" style="font-weight: 600;">
                             Digging Deeper 2026 - Season 2
                         </a>
                     </div>
             
-                    <div style="margin-bottom: 12px; color: #6c757d; font-size: 14px; line-height: 1.5;">
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
                         Project Title:
 Digging Deeper 2026 - Season 2
 
@@ -2946,19 +3100,19 @@ Estimated Due Date:
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div style="flex: 1;">
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Sep 1, 2026</div>
+                            <div class="project-card-date">Sep 1, 2026</div>
                         </div>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212347847751095/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212347847751095/f" target="_blank" class="project-card-title" style="font-weight: 600;">
                             September: Frontier Testimonial
                         </a>
                     </div>
             
-                    <div style="margin-bottom: 12px; color: #6c757d; font-size: 14px; line-height: 1.5;">
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
                         Project Title:
 September: Frontier Testimonial
 
@@ -2981,19 +3135,19 @@ General...
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div style="flex: 1;">
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Oct 1, 2026</div>
+                            <div class="project-card-date">Oct 1, 2026</div>
                         </div>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212347868675560/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212347868675560/f" target="_blank" class="project-card-title" style="font-weight: 600;">
                             October: Fronter Video
                         </a>
                     </div>
             
-                    <div style="margin-bottom: 12px; color: #6c757d; font-size: 14px; line-height: 1.5;">
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
                         Project Title:
 OCTOBER: Fronter Video
 
@@ -3019,19 +3173,19 @@ Oct 1, 2026
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div style="flex: 1;">
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Nov 22, 2026</div>
+                            <div class="project-card-date">Nov 22, 2026</div>
                         </div>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212347063656932/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212347063656932/f" target="_blank" class="project-card-title" style="font-weight: 600;">
                             Q4 Frontier Update
                         </a>
                     </div>
             
-                    <div style="margin-bottom: 12px; color: #6c757d; font-size: 14px; line-height: 1.5;">
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
                         Project Title:
 Q4 Frontier Update 
 
@@ -3055,19 +3209,19 @@ Nov 22, ...
                     </div>
                 </div>
             
-                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div class="project-card">
+                    <div class="project-card-header">
                         <div style="flex: 1;">
-                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">Dec 1, 2026</div>
+                            <div class="project-card-date">Dec 1, 2026</div>
                         </div>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212347895231264/f" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.4; display: block;">
+                        <a href="https://app.asana.com/0/0/1212347895231264/f" target="_blank" class="project-card-title" style="font-weight: 600;">
                             December: Frontier Testimonial
                         </a>
                     </div>
             
-                    <div style="margin-bottom: 12px; color: #6c757d; font-size: 14px; line-height: 1.5;">
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
                         Project Title:
 December: Frontier Testimonial
 
@@ -3099,7 +3253,7 @@ Dec 1...
         <div class="grid">
             <div class="card full-width">
                 <h2>Historical Allocation Trends</h2>
-                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
                     Daily allocation percentages over time
                 </div>
                 <div class="chart-container">
@@ -3876,11 +4030,11 @@ Dec 1...
                         }
 
                         h1, h2 {
-                            color: #09243F !important;
+                            color: var(--text-primary) !important;
                         }
 
                         .metric-value {
-                            color: #09243F !important;
+                            color: var(--text-primary) !important;
                         }
 
                         .progress-fill {
