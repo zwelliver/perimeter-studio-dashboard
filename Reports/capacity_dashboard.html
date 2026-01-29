@@ -30,7 +30,7 @@
             /* Status Colors */
             --success-color: #28a745;
             --warning-color: #ffc107;
-            --danger-color: var(--danger-color);
+            --danger-color: #dc3545;
             --info-color: #17a2b8;
 
             /* Chart Colors */
@@ -108,9 +108,6 @@
 
         /* Theme Toggle Button */
         .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 30px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
             border-radius: 25px;
@@ -274,8 +271,6 @@
             }
 
             .theme-toggle {
-                top: 15px;
-                right: 20px;
                 padding: 6px 12px;
                 font-size: 13px;
             }
@@ -1802,7 +1797,7 @@
 
             <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
             <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 29, 2026 at 11:00 AM</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 29, 2026 at 11:15 AM</p>
         </header>
 
         <main role="main" aria-labelledby="dashboard-title">
@@ -1880,7 +1875,11 @@
                 </div>
             </div>
 
-            <!-- External Projects (Contracted/Outsourced) -->
+        </div>
+
+        <!-- Two-column layout for Contracted/Outsourced and At-Risk Tasks -->
+        <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top: 30px; margin-bottom: 30px;">
+            <!-- Contracted/Outsourced Projects -->
             <div class="card">
                 <h2>Contracted/Outsourced Projects</h2>
 
@@ -1890,11 +1889,9 @@
                 </div>
 
             </div>
-        </div>
 
-        <div class="grid">
             <!-- At-Risk Tasks -->
-            <div class="card full-width" style="margin-bottom: 30px;">
+            <div class="card">
                 <h2>⚠️ At-Risk Tasks</h2>
     
             <div class="success-state">
@@ -1902,7 +1899,7 @@
                 <div style="font-size: 18px; margin-top: 10px;">No tasks currently at risk!</div>
             </div>
         
-        </div>
+            </div>
         </div>
 
         <!-- Upcoming Shoots -->
