@@ -3124,27 +3124,6 @@ def generate_html_dashboard(data):
             }}
         }}
 
-        /* Dual chart system for mobile/desktop */
-        .desktop-chart {{
-            display: block;
-        }}
-
-        .mobile-chart {{
-            display: none;
-        }}
-
-        @media (max-width: 768px) {{
-            .desktop-chart {{
-                display: none !important;
-            }}
-
-            .mobile-chart {{
-                display: block !important;
-                width: 100% !important;
-                height: 250px !important;
-            }}
-        }}
-
     </style>
 </head>
 <body>
@@ -3688,8 +3667,7 @@ def generate_html_dashboard(data):
                 Team utilization percentage over the last 30 days (click legend items to filter)
             </div>
             <div class="chart-container">
-                <canvas id="capacityHistoryChart" class="desktop-chart"></canvas>
-                <canvas id="capacityHistoryChartMobile" class="mobile-chart" style="display: none;"></canvas>
+                <canvas id="capacityHistoryChart"></canvas>
             </div>
         </div>
 
@@ -4049,13 +4027,8 @@ def generate_html_dashboard(data):
         // Historical Capacity Utilization Chart with per-member datasets
         function generateCapacityHistoryChart() {{
             console.log('=== generateCapacityHistoryChart called ===');
-            const isMobile = window.innerWidth <= 768;
-            console.log('Device type:', isMobile ? 'Mobile' : 'Desktop');
-
-            // Select appropriate canvas based on device type
-            const chartElementId = isMobile ? 'capacityHistoryChartMobile' : 'capacityHistoryChart';
-            const chartElement = document.getElementById(chartElementId);
-            console.log('Using chart element:', chartElementId, 'found:', !!chartElement);
+            const chartElement = document.getElementById('capacityHistoryChart');
+            console.log('Chart element found:', !!chartElement);
 
             if (chartElement) {{
                 console.log('Chart container dimensions:', chartElement.offsetWidth, 'x', chartElement.offsetHeight);
@@ -4133,43 +4106,7 @@ def generate_html_dashboard(data):
                     console.log('Dataset details:', datasets.map(d => ({{name: d.label, dataPoints: d.data.length}})));
                 }}
 
-                console.log('Chart element dimensions before mobile styling:', chartElement.offsetWidth, chartElement.offsetHeight);
-
                 if (datasets.length > 0) {{
-                    // Mobile-specific: ensure canvas is properly sized
-                    const isMobile = window.innerWidth <= 768;
-                    console.log('Is mobile device:', isMobile);
-
-                    // ALWAYS apply mobile-specific styling for smaller screens
-                    if (window.innerWidth <= 768) {{
-                        console.log('Applying mobile-specific canvas styling for screen width:', window.innerWidth);
-
-                        // More aggressive mobile styling
-                        chartElement.style.cssText = 'display: block !important; width: 100% !important; height: 250px !important; visibility: visible !important;';
-
-                        // Additional container styling
-                        const container = chartElement.closest('.chart-container');
-                        if (container) {{
-                            container.style.cssText = 'display: block !important; width: 100% !important; min-height: 250px !important;';
-                        }}
-
-                        // Force multiple reflows
-                        chartElement.offsetHeight;
-                        setTimeout(() => {{ chartElement.offsetHeight; }}, 10);
-
-                        console.log('Mobile canvas size after aggressive styling:', chartElement.offsetWidth, chartElement.offsetHeight);
-
-                        if (chartElement.offsetWidth === 0 || chartElement.offsetHeight === 0) {{
-                            console.error('MOBILE ISSUE: Canvas has zero dimensions after styling!');
-                            // Try to fix container visibility issues
-                            const parentCard = chartElement.closest('.dashboard-card');
-                            if (parentCard) {{
-                                console.log('Checking parent card visibility');
-                                parentCard.style.display = 'block';
-                                parentCard.style.visibility = 'visible';
-                            }}
-                        }}
-                    }}
 
                     window.capacityHistoryChart = new Chart(historyCtx, {{
                         type: 'line',
@@ -4634,43 +4571,26 @@ def generate_html_dashboard(data):
             // Store preference in localStorage
             localStorage.setItem('theme', newTheme);
 
-            // Refresh charts to update text colors - only destroy desktop chart
-            const isMobile = window.innerWidth <= 768;
+            // Refresh charts to update text colors
             if (typeof window.capacityHistoryChart !== 'undefined') {{
-                if (!isMobile) {{
-                    console.log('Destroying desktop capacity chart for theme toggle');
-                    window.capacityHistoryChart.destroy();
-                    window.capacityHistoryChart = null;
-                }} else {{
-                    console.log('Mobile detected: Preserving mobile capacity chart during theme toggle');
-                }}
+                window.capacityHistoryChart.destroy();
             }}
 
             // Regenerate charts with new theme colors
             setTimeout(() => {{
                 generateRadarChart();
                 generateVelocityChart();
+                generateCapacityHistoryChart();
 
-                // Only regenerate capacity chart for desktop or if mobile chart doesn't exist
-                const isMobile = window.innerWidth <= 768;
-                if (!isMobile || !window.capacityHistoryChart) {{
-                    console.log('Regenerating capacity chart for:', isMobile ? 'Mobile' : 'Desktop');
-                    generateCapacityHistoryChart();
-                }} else {{
-                    console.log('Preserving existing mobile capacity chart');
-                }}
-
-                // Immediate mobile check after chart recreation
-                const isMobile = window.innerWidth <= 768;
-                if (isMobile) {{
-                    console.log('Post-theme mobile check for capacity chart');
-                    setTimeout(() => {{
-                        ensureMobileCapacityChart();
-                    }}, 200);
-
-                    setTimeout(() => {{
-                        ensureMobileCapacityChart();
-                    }}, 500);
+                // Immediate and aggressive mobile recovery
+                if (window.innerWidth <= 768) {{
+                    console.log('Immediate mobile capacity chart check');
+                    // Multiple immediate checks
+                    setTimeout(() => ensureMobileCapacityChart(), 50);
+                    setTimeout(() => ensureMobileCapacityChart(), 150);
+                    setTimeout(() => ensureMobileCapacityChart(), 300);
+                    setTimeout(() => ensureMobileCapacityChart(), 600);
+                    setTimeout(() => ensureMobileCapacityChart(), 1000);
                 }}
             }}, 100);
 
