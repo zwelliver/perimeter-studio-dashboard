@@ -2101,6 +2101,27 @@
             }
         }
 
+        /* Dual chart system for mobile/desktop */
+        .desktop-chart {
+            display: block;
+        }
+
+        .mobile-chart {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .desktop-chart {
+                display: none !important;
+            }
+
+            .mobile-chart {
+                display: block !important;
+                width: 100% !important;
+                height: 250px !important;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -2108,7 +2129,7 @@
         <header class="header" role="banner">
             <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
             <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 02:15 PM</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 02:17 PM</p>
 
             <div class="header-controls">
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
@@ -2982,7 +3003,8 @@
                 Team utilization percentage over the last 30 days (click legend items to filter)
             </div>
             <div class="chart-container">
-                <canvas id="capacityHistoryChart"></canvas>
+                <canvas id="capacityHistoryChart" class="desktop-chart"></canvas>
+                <canvas id="capacityHistoryChartMobile" class="mobile-chart" style="display: none;"></canvas>
             </div>
         </div>
 
@@ -3740,8 +3762,10 @@ Dec 1...
             const isMobile = window.innerWidth <= 768;
             console.log('Device type:', isMobile ? 'Mobile' : 'Desktop');
 
-            const chartElement = document.getElementById('capacityHistoryChart');
-            console.log('Chart element found:', !!chartElement);
+            // Select appropriate canvas based on device type
+            const chartElementId = isMobile ? 'capacityHistoryChartMobile' : 'capacityHistoryChart';
+            const chartElement = document.getElementById(chartElementId);
+            console.log('Using chart element:', chartElementId, 'found:', !!chartElement);
 
             if (chartElement) {
                 console.log('Chart container dimensions:', chartElement.offsetWidth, 'x', chartElement.offsetHeight);
@@ -4320,16 +4344,31 @@ Dec 1...
             // Store preference in localStorage
             localStorage.setItem('theme', newTheme);
 
-            // Refresh charts to update text colors
+            // Refresh charts to update text colors - only destroy desktop chart
+            const isMobile = window.innerWidth <= 768;
             if (typeof window.capacityHistoryChart !== 'undefined') {
-                window.capacityHistoryChart.destroy();
+                if (!isMobile) {
+                    console.log('Destroying desktop capacity chart for theme toggle');
+                    window.capacityHistoryChart.destroy();
+                    window.capacityHistoryChart = null;
+                } else {
+                    console.log('Mobile detected: Preserving mobile capacity chart during theme toggle');
+                }
             }
 
             // Regenerate charts with new theme colors
             setTimeout(() => {
                 generateRadarChart();
                 generateVelocityChart();
-                generateCapacityHistoryChart();
+
+                // Only regenerate capacity chart for desktop or if mobile chart doesn't exist
+                const isMobile = window.innerWidth <= 768;
+                if (!isMobile || !window.capacityHistoryChart) {
+                    console.log('Regenerating capacity chart for:', isMobile ? 'Mobile' : 'Desktop');
+                    generateCapacityHistoryChart();
+                } else {
+                    console.log('Preserving existing mobile capacity chart');
+                }
 
                 // Immediate mobile check after chart recreation
                 const isMobile = window.innerWidth <= 768;

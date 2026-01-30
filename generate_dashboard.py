@@ -3124,6 +3124,27 @@ def generate_html_dashboard(data):
             }}
         }}
 
+        /* Dual chart system for mobile/desktop */
+        .desktop-chart {{
+            display: block;
+        }}
+
+        .mobile-chart {{
+            display: none;
+        }}
+
+        @media (max-width: 768px) {{
+            .desktop-chart {{
+                display: none !important;
+            }}
+
+            .mobile-chart {{
+                display: block !important;
+                width: 100% !important;
+                height: 250px !important;
+            }}
+        }}
+
     </style>
 </head>
 <body>
@@ -3667,7 +3688,8 @@ def generate_html_dashboard(data):
                 Team utilization percentage over the last 30 days (click legend items to filter)
             </div>
             <div class="chart-container">
-                <canvas id="capacityHistoryChart"></canvas>
+                <canvas id="capacityHistoryChart" class="desktop-chart"></canvas>
+                <canvas id="capacityHistoryChartMobile" class="mobile-chart" style="display: none;"></canvas>
             </div>
         </div>
 
@@ -4030,8 +4052,10 @@ def generate_html_dashboard(data):
             const isMobile = window.innerWidth <= 768;
             console.log('Device type:', isMobile ? 'Mobile' : 'Desktop');
 
-            const chartElement = document.getElementById('capacityHistoryChart');
-            console.log('Chart element found:', !!chartElement);
+            // Select appropriate canvas based on device type
+            const chartElementId = isMobile ? 'capacityHistoryChartMobile' : 'capacityHistoryChart';
+            const chartElement = document.getElementById(chartElementId);
+            console.log('Using chart element:', chartElementId, 'found:', !!chartElement);
 
             if (chartElement) {{
                 console.log('Chart container dimensions:', chartElement.offsetWidth, 'x', chartElement.offsetHeight);
@@ -4610,16 +4634,31 @@ def generate_html_dashboard(data):
             // Store preference in localStorage
             localStorage.setItem('theme', newTheme);
 
-            // Refresh charts to update text colors
+            // Refresh charts to update text colors - only destroy desktop chart
+            const isMobile = window.innerWidth <= 768;
             if (typeof window.capacityHistoryChart !== 'undefined') {{
-                window.capacityHistoryChart.destroy();
+                if (!isMobile) {{
+                    console.log('Destroying desktop capacity chart for theme toggle');
+                    window.capacityHistoryChart.destroy();
+                    window.capacityHistoryChart = null;
+                }} else {{
+                    console.log('Mobile detected: Preserving mobile capacity chart during theme toggle');
+                }}
             }}
 
             // Regenerate charts with new theme colors
             setTimeout(() => {{
                 generateRadarChart();
                 generateVelocityChart();
-                generateCapacityHistoryChart();
+
+                // Only regenerate capacity chart for desktop or if mobile chart doesn't exist
+                const isMobile = window.innerWidth <= 768;
+                if (!isMobile || !window.capacityHistoryChart) {{
+                    console.log('Regenerating capacity chart for:', isMobile ? 'Mobile' : 'Desktop');
+                    generateCapacityHistoryChart();
+                }} else {{
+                    console.log('Preserving existing mobile capacity chart');
+                }}
 
                 // Immediate mobile check after chart recreation
                 const isMobile = window.innerWidth <= 768;
