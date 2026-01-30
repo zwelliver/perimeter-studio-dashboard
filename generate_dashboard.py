@@ -1464,12 +1464,16 @@ def generate_html_dashboard(data):
                 margin: 10px 0;
                 padding: 10px;
                 position: relative;
+                min-height: 250px;
+                overflow: visible;
             }}
 
             .chart-container canvas {{
                 width: 100% !important;
-                height: 100% !important;
+                height: 250px !important;
                 max-width: 100% !important;
+                min-width: 200px !important;
+                display: block !important;
             }}
 
             /* Force canvas to render properly on mobile */
@@ -1477,6 +1481,8 @@ def generate_html_dashboard(data):
                 display: block !important;
                 width: 100% !important;
                 height: 250px !important;
+                min-width: 200px !important;
+                visibility: visible !important;
             }}
 
             .progress-rings-container {{
@@ -4032,11 +4038,16 @@ def generate_html_dashboard(data):
     html += f"""
         // Historical Capacity Utilization Chart with per-member datasets
         function generateCapacityHistoryChart() {{
-            if (document.getElementById('capacityHistoryChart')) {{
-                const historyCtx = document.getElementById('capacityHistoryChart').getContext('2d');
-                const capacityHistoryByMember = {json.dumps(capacity_history_by_member)};
+            const chartElement = document.getElementById('capacityHistoryChart');
+            if (chartElement) {{
+                console.log('Generating capacity history chart...');
 
-                console.log('Capacity History Data:', capacityHistoryByMember);
+                try {{
+                    const historyCtx = chartElement.getContext('2d');
+                    const capacityHistoryByMember = {json.dumps(capacity_history_by_member)};
+
+                    console.log('Capacity History Data:', capacityHistoryByMember);
+                    console.log('Chart canvas dimensions:', chartElement.offsetWidth, 'x', chartElement.offsetHeight);
 
                 // Build datasets for each team member
                 const datasets = [];
@@ -4106,8 +4117,18 @@ def generate_html_dashboard(data):
                     const canvas = document.getElementById('capacityHistoryChart');
                     canvas.style.width = '100%';
                     canvas.style.height = '250px';
-                    canvas.width = canvas.offsetWidth;
-                    canvas.height = 250;
+
+                    // Wait for layout to complete, then set dimensions
+                    setTimeout(() => {{
+                        const containerWidth = canvas.parentElement.offsetWidth || 300;
+                        canvas.width = containerWidth;
+                        canvas.height = 250;
+
+                        // Force a redraw if chart exists
+                        if (window.capacityHistoryChart) {{
+                            window.capacityHistoryChart.resize();
+                        }}
+                    }}, 100);
 
                     window.capacityHistoryChart = new Chart(historyCtx, {{
                         type: 'line',
@@ -4200,13 +4221,31 @@ def generate_html_dashboard(data):
                             }}
                         }}
                     }});
+
+                    console.log('Capacity history chart created successfully');
+                }} catch (error) {{
+                    console.error('Error creating capacity history chart:', error);
                 }}
+            }} else {{
+                console.error('Capacity history chart element not found');
             }}
         }}
 
         // Initialize capacity history chart on page load
         document.addEventListener('DOMContentLoaded', function() {{
-            generateCapacityHistoryChart();
+            setTimeout(() => {{
+                generateCapacityHistoryChart();
+            }}, 500);
+        }});
+
+        // Fallback for mobile browsers
+        window.addEventListener('load', function() {{
+            setTimeout(() => {{
+                if (!window.capacityHistoryChart) {{
+                    console.log('Fallback: Regenerating capacity history chart');
+                    generateCapacityHistoryChart();
+                }}
+            }}, 1000);
         }});
 
         // ===== NEW CHART VISUALIZATIONS =====
