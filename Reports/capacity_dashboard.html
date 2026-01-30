@@ -326,14 +326,20 @@
             }
 
             .header {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
+                display: grid;
+                grid-template-areas:
+                    "controls"
+                    "title"
+                    "subtitle"
+                    "timestamp";
+                grid-template-rows: auto auto auto auto;
+                gap: 10px;
                 position: relative;
-                padding-top: 80px; /* Make room for buttons */
+                padding-top: 100px; /* Increased space for buttons */
             }
 
             .header-controls {
+                grid-area: controls;
                 position: absolute;
                 top: 15px;
                 left: 15px;
@@ -344,6 +350,22 @@
                 flex-wrap: wrap;
                 gap: 8px;
                 z-index: 10;
+            }
+
+            .header h1 {
+                grid-area: title;
+                font-size: 24px;
+                margin: 0;
+            }
+
+            .header .subtitle {
+                grid-area: subtitle;
+                margin: 0;
+            }
+
+            .header .timestamp {
+                grid-area: timestamp;
+                margin: 0;
             }
 
             .theme-toggle {
@@ -420,6 +442,21 @@
             .chart-container {
                 height: 250px;
                 margin: 10px 0;
+                padding: 10px;
+                position: relative;
+            }
+
+            .chart-container canvas {
+                width: 100% !important;
+                height: 100% !important;
+                max-width: 100% !important;
+            }
+
+            /* Force canvas to render properly on mobile */
+            #capacityHistoryChart {
+                display: block !important;
+                width: 100% !important;
+                height: 250px !important;
             }
 
             .progress-rings-container {
@@ -451,6 +488,48 @@
             .timeline-project-name {
                 min-width: 120px;
                 width: 120px;
+            }
+
+            /* Mobile timeline card layout */
+            @media (max-width: 480px) {
+                .timeline-container {
+                    display: block;
+                }
+
+                .timeline-header {
+                    display: none; /* Hide desktop header on mobile */
+                }
+
+                .timeline-row {
+                    display: block;
+                    background: var(--bg-secondary);
+                    border: 1px solid var(--border-color);
+                    border-radius: 8px;
+                    padding: 12px;
+                    margin-bottom: 12px;
+                    min-width: auto;
+                }
+
+                .timeline-project-name {
+                    width: 100%;
+                    font-size: 14px;
+                    font-weight: 600;
+                    margin-bottom: 8px;
+                    color: var(--brand-primary);
+                }
+
+                .timeline-bars {
+                    display: block;
+                    height: auto;
+                }
+
+                .timeline-bar {
+                    position: relative;
+                    width: 100%;
+                    margin-bottom: 4px;
+                    height: 32px;
+                    font-size: 12px;
+                }
             }
 
             /* Mobile table styles */
@@ -1995,7 +2074,7 @@
 
             <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
             <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 08:30 AM</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 08:45 AM</p>
         </header>
 
         <main role="main" aria-labelledby="dashboard-title">
@@ -3665,6 +3744,13 @@ Dec 1...
                 console.log('Generated datasets:', datasets.length, datasets);
 
                 if (datasets.length > 0) {
+                    // Ensure canvas has explicit dimensions for mobile
+                    const canvas = document.getElementById('capacityHistoryChart');
+                    canvas.style.width = '100%';
+                    canvas.style.height = '250px';
+                    canvas.width = canvas.offsetWidth;
+                    canvas.height = 250;
+
                     window.capacityHistoryChart = new Chart(historyCtx, {
                         type: 'line',
                         data: {
@@ -3674,6 +3760,7 @@ Dec 1...
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
+                            devicePixelRatio: window.devicePixelRatio || 1,
                             layout: {
                                 padding: {
                                     top: window.innerWidth < 768 ? 10 : 20,
