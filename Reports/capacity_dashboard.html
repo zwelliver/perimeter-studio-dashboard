@@ -2108,7 +2108,7 @@
         <header class="header" role="banner">
             <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
             <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 01:11 PM</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 01:15 PM</p>
 
             <div class="header-controls">
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
@@ -3736,10 +3736,22 @@ Dec 1...
 
         // Historical Capacity Utilization Chart with per-member datasets
         function generateCapacityHistoryChart() {
+            console.log('=== generateCapacityHistoryChart called ===');
+            const isMobile = window.innerWidth <= 768;
+            console.log('Device type:', isMobile ? 'Mobile' : 'Desktop');
+
             const chartElement = document.getElementById('capacityHistoryChart');
+            console.log('Chart element found:', !!chartElement);
+
             if (chartElement) {
+                console.log('Chart container dimensions:', chartElement.offsetWidth, 'x', chartElement.offsetHeight);
+                console.log('Chart container style:', chartElement.style.cssText);
+
                 const historyCtx = chartElement.getContext('2d');
+                console.log('Canvas context obtained:', !!historyCtx);
+
                 const capacityHistoryByMember = {"Zach Welliver": [{"date": "2025-12-31", "utilization_percent": 176.0}, {"date": "2026-01-01", "utilization_percent": 176.0}, {"date": "2026-01-02", "utilization_percent": 176.0}, {"date": "2026-01-03", "utilization_percent": 176.0}, {"date": "2026-01-04", "utilization_percent": 176.0}, {"date": "2026-01-05", "utilization_percent": 198.0}, {"date": "2026-01-06", "utilization_percent": 198.0}, {"date": "2026-01-07", "utilization_percent": 194.0}, {"date": "2026-01-08", "utilization_percent": 194.0}, {"date": "2026-01-09", "utilization_percent": 180.0}, {"date": "2026-01-10", "utilization_percent": 180.0}, {"date": "2026-01-11", "utilization_percent": 180.0}, {"date": "2026-01-12", "utilization_percent": 130.0}, {"date": "2026-01-13", "utilization_percent": 120.0}, {"date": "2026-01-14", "utilization_percent": 130.0}, {"date": "2026-01-15", "utilization_percent": 130.0}, {"date": "2026-01-16", "utilization_percent": 130.0}, {"date": "2026-01-17", "utilization_percent": 130.0}, {"date": "2026-01-18", "utilization_percent": 130.0}, {"date": "2026-01-19", "utilization_percent": 130.0}, {"date": "2026-01-20", "utilization_percent": 130.0}, {"date": "2026-01-21", "utilization_percent": 140.0}, {"date": "2026-01-22", "utilization_percent": 140.0}, {"date": "2026-01-23", "utilization_percent": 140.0}, {"date": "2026-01-24", "utilization_percent": 292.0}, {"date": "2026-01-25", "utilization_percent": 324.0}, {"date": "2026-01-26", "utilization_percent": 196.2}, {"date": "2026-01-27", "utilization_percent": 227.5}, {"date": "2026-01-28", "utilization_percent": 265.0}, {"date": "2026-01-29", "utilization_percent": 258.8}], "Nick Clark": [{"date": "2025-12-31", "utilization_percent": 35.0}, {"date": "2026-01-01", "utilization_percent": 35.0}, {"date": "2026-01-02", "utilization_percent": 35.0}, {"date": "2026-01-03", "utilization_percent": 35.0}, {"date": "2026-01-04", "utilization_percent": 35.0}, {"date": "2026-01-05", "utilization_percent": 51.0}, {"date": "2026-01-06", "utilization_percent": 51.0}, {"date": "2026-01-07", "utilization_percent": 58.0}, {"date": "2026-01-08", "utilization_percent": 42.0}, {"date": "2026-01-09", "utilization_percent": 71.0}, {"date": "2026-01-10", "utilization_percent": 59.0}, {"date": "2026-01-11", "utilization_percent": 59.0}, {"date": "2026-01-12", "utilization_percent": 71.0}, {"date": "2026-01-13", "utilization_percent": 150.0}, {"date": "2026-01-14", "utilization_percent": 64.0}, {"date": "2026-01-15", "utilization_percent": 64.0}, {"date": "2026-01-16", "utilization_percent": 64.0}, {"date": "2026-01-17", "utilization_percent": 64.0}, {"date": "2026-01-18", "utilization_percent": 64.0}, {"date": "2026-01-19", "utilization_percent": 64.0}, {"date": "2026-01-20", "utilization_percent": 64.0}, {"date": "2026-01-21", "utilization_percent": 64.0}, {"date": "2026-01-22", "utilization_percent": 58.0}, {"date": "2026-01-23", "utilization_percent": 58.0}, {"date": "2026-01-24", "utilization_percent": 58.0}, {"date": "2026-01-25", "utilization_percent": 58.0}, {"date": "2026-01-26", "utilization_percent": 58.0}, {"date": "2026-01-27", "utilization_percent": 58.0}, {"date": "2026-01-28", "utilization_percent": 64.0}, {"date": "2026-01-29", "utilization_percent": 64.0}], "Adriel Abella": [{"date": "2025-12-31", "utilization_percent": 27.0}, {"date": "2026-01-01", "utilization_percent": 27.0}, {"date": "2026-01-02", "utilization_percent": 27.0}, {"date": "2026-01-03", "utilization_percent": 27.0}, {"date": "2026-01-04", "utilization_percent": 27.0}, {"date": "2026-01-05", "utilization_percent": 27.0}, {"date": "2026-01-06", "utilization_percent": 27.0}, {"date": "2026-01-07", "utilization_percent": 27.0}, {"date": "2026-01-08", "utilization_percent": 27.0}, {"date": "2026-01-09", "utilization_percent": 27.0}, {"date": "2026-01-10", "utilization_percent": 27.0}, {"date": "2026-01-11", "utilization_percent": 27.0}, {"date": "2026-01-12", "utilization_percent": 27.0}, {"date": "2026-01-13", "utilization_percent": 27.0}, {"date": "2026-01-14", "utilization_percent": 32.0}, {"date": "2026-01-15", "utilization_percent": 27.0}, {"date": "2026-01-16", "utilization_percent": 27.0}, {"date": "2026-01-17", "utilization_percent": 27.0}, {"date": "2026-01-18", "utilization_percent": 27.0}, {"date": "2026-01-19", "utilization_percent": 27.0}, {"date": "2026-01-20", "utilization_percent": 27.0}, {"date": "2026-01-21", "utilization_percent": 27.0}, {"date": "2026-01-22", "utilization_percent": 27.0}, {"date": "2026-01-23", "utilization_percent": 27.0}, {"date": "2026-01-24", "utilization_percent": 27.0}, {"date": "2026-01-25", "utilization_percent": 39.0}, {"date": "2026-01-26", "utilization_percent": 44.0}, {"date": "2026-01-27", "utilization_percent": 44.0}, {"date": "2026-01-28", "utilization_percent": 44.0}, {"date": "2026-01-29", "utilization_percent": 49.0}], "John Meyer": [{"date": "2025-12-31", "utilization_percent": 40.0}, {"date": "2026-01-01", "utilization_percent": 40.0}, {"date": "2026-01-02", "utilization_percent": 40.0}, {"date": "2026-01-03", "utilization_percent": 40.0}, {"date": "2026-01-04", "utilization_percent": 40.0}, {"date": "2026-01-05", "utilization_percent": 40.0}, {"date": "2026-01-06", "utilization_percent": 40.0}, {"date": "2026-01-07", "utilization_percent": 40.0}, {"date": "2026-01-08", "utilization_percent": 40.0}, {"date": "2026-01-09", "utilization_percent": 40.0}, {"date": "2026-01-10", "utilization_percent": 40.0}, {"date": "2026-01-11", "utilization_percent": 40.0}, {"date": "2026-01-12", "utilization_percent": 40.0}, {"date": "2026-01-13", "utilization_percent": 40.0}, {"date": "2026-01-14", "utilization_percent": 40.0}, {"date": "2026-01-15", "utilization_percent": 40.0}, {"date": "2026-01-16", "utilization_percent": 40.0}, {"date": "2026-01-17", "utilization_percent": 40.0}, {"date": "2026-01-18", "utilization_percent": 40.0}, {"date": "2026-01-19", "utilization_percent": 40.0}, {"date": "2026-01-20", "utilization_percent": 40.0}, {"date": "2026-01-21", "utilization_percent": 40.0}, {"date": "2026-01-22", "utilization_percent": 40.0}, {"date": "2026-01-23", "utilization_percent": 40.0}, {"date": "2026-01-24", "utilization_percent": 40.0}, {"date": "2026-01-25", "utilization_percent": 40.0}, {"date": "2026-01-26", "utilization_percent": 40.0}, {"date": "2026-01-27", "utilization_percent": 40.0}, {"date": "2026-01-28", "utilization_percent": 40.0}, {"date": "2026-01-29", "utilization_percent": 0.0}], "Team Total": [{"date": "2025-12-31", "utilization_percent": 57.9}, {"date": "2026-01-01", "utilization_percent": 57.9}, {"date": "2026-01-02", "utilization_percent": 57.9}, {"date": "2026-01-03", "utilization_percent": 57.9}, {"date": "2026-01-04", "utilization_percent": 57.9}, {"date": "2026-01-05", "utilization_percent": 67.5}, {"date": "2026-01-06", "utilization_percent": 67.5}, {"date": "2026-01-07", "utilization_percent": 69.3}, {"date": "2026-01-08", "utilization_percent": 63.6}, {"date": "2026-01-09", "utilization_percent": 71.4}, {"date": "2026-01-10", "utilization_percent": 67.1}, {"date": "2026-01-11", "utilization_percent": 67.1}, {"date": "2026-01-12", "utilization_percent": 62.5}, {"date": "2026-01-13", "utilization_percent": 88.9}, {"date": "2026-01-14", "utilization_percent": 61.8}, {"date": "2026-01-15", "utilization_percent": 60.0}, {"date": "2026-01-16", "utilization_percent": 60.0}, {"date": "2026-01-17", "utilization_percent": 60.0}, {"date": "2026-01-18", "utilization_percent": 60.0}, {"date": "2026-01-19", "utilization_percent": 60.0}, {"date": "2026-01-20", "utilization_percent": 60.0}, {"date": "2026-01-21", "utilization_percent": 61.8}, {"date": "2026-01-22", "utilization_percent": 59.6}, {"date": "2026-01-23", "utilization_percent": 59.6}, {"date": "2026-01-24", "utilization_percent": 86.8}, {"date": "2026-01-25", "utilization_percent": 96.8}, {"date": "2026-01-26", "utilization_percent": 87.4}, {"date": "2026-01-27", "utilization_percent": 95.5}, {"date": "2026-01-28", "utilization_percent": 107.1}, {"date": "2026-01-29", "utilization_percent": 103.2}]};
+                console.log('Data received:', Object.keys(capacityHistoryByMember), 'members with data');
 
                 // Build datasets for each team member
                 const datasets = [];
@@ -3802,8 +3814,12 @@ Dec 1...
                     pointHoverRadius: 0
                 });
 
-                console.log('Generated datasets:', datasets.length, datasets);
-                console.log('Chart element dimensions:', chartElement.offsetWidth, chartElement.offsetHeight);
+                console.log('Generated datasets:', datasets.length, 'datasets for chart');
+                if (datasets.length > 0) {
+                    console.log('Dataset details:', datasets.map(d => ({name: d.label, dataPoints: d.data.length})));
+                }
+
+                console.log('Chart element dimensions before mobile styling:', chartElement.offsetWidth, chartElement.offsetHeight);
 
                 if (datasets.length > 0) {
                     // Mobile-specific: ensure canvas is properly sized
@@ -3819,6 +3835,10 @@ Dec 1...
                         // Force reflow
                         chartElement.offsetHeight;
                         console.log('Mobile canvas size after styling:', chartElement.offsetWidth, chartElement.offsetHeight);
+
+                        if (chartElement.offsetWidth === 0 || chartElement.offsetHeight === 0) {
+                            console.error('MOBILE ISSUE: Canvas has zero dimensions after styling!');
+                        }
                     }
 
                     window.capacityHistoryChart = new Chart(historyCtx, {
@@ -3912,6 +3932,11 @@ Dec 1...
                             }
                         }
                     });
+
+                    console.log('Chart created successfully:', !!window.capacityHistoryChart);
+                    if (window.capacityHistoryChart) {
+                        console.log('Chart status - datasets:', window.capacityHistoryChart.data.datasets.length, 'visible:', window.capacityHistoryChart.canvas.style.display !== 'none');
+                    }
 
                     // Mobile-specific post-creation validation
                     if (isMobile && window.capacityHistoryChart) {
