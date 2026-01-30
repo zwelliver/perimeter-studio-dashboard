@@ -4579,40 +4579,92 @@ def generate_html_dashboard(data):
                 generateRadarChart();
                 generateVelocityChart();
                 generateCapacityHistoryChart();
-
-                // Mobile-specific fallback after theme change
-                const isMobile = window.innerWidth <= 768;
-                if (isMobile) {{
-                    setTimeout(() => {{
-                        const chartElement = document.getElementById('capacityHistoryChart');
-                        const chartExists = window.capacityHistoryChart;
-
-                        if (chartElement && chartExists) {{
-                            console.log('Theme toggle mobile fallback check');
-
-                            // Ensure mobile styling is applied
-                            chartElement.style.display = 'block';
-                            chartElement.style.width = '100%';
-                            chartElement.style.height = '250px';
-
-                            // Check if chart has data
-                            const hasData = chartExists.data && chartExists.data.datasets && chartExists.data.datasets.length > 0;
-                            const hasVisibleData = hasData && chartExists.data.datasets.some(dataset => dataset.data.length > 0);
-
-                            if (!hasData || !hasVisibleData) {{
-                                console.log('Theme toggle: Capacity chart missing data on mobile, recreating');
-                                chartExists.destroy();
-                                window.capacityHistoryChart = null;
-                                generateCapacityHistoryChart();
-                            }} else {{
-                                // Force update and resize
-                                chartExists.resize();
-                                chartExists.update();
-                            }}
-                        }}
-                    }}, 200);
-                }}
             }}, 100);
+
+            // Enhanced mobile-specific fallback after theme change
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {{
+                console.log('Mobile device detected during theme toggle');
+
+                // Multiple fallback attempts with increasing delays
+                setTimeout(() => {{
+                    console.log('Mobile theme fallback attempt 1 (300ms)');
+                    ensureMobileCapacityChart();
+                }}, 300);
+
+                setTimeout(() => {{
+                    console.log('Mobile theme fallback attempt 2 (600ms)');
+                    ensureMobileCapacityChart();
+                }}, 600);
+
+                setTimeout(() => {{
+                    console.log('Mobile theme fallback attempt 3 (1000ms)');
+                    ensureMobileCapacityChart();
+                }}, 1000);
+            }}
+        }}
+
+        // Mobile capacity chart helper function
+        function ensureMobileCapacityChart() {{
+            const chartElement = document.getElementById('capacityHistoryChart');
+            const chartExists = window.capacityHistoryChart;
+
+            if (!chartElement) {{
+                console.log('Mobile fallback: Chart element not found');
+                return;
+            }}
+
+            console.log('Ensuring mobile capacity chart exists and is visible');
+            console.log('Chart element found:', !!chartElement);
+            console.log('Chart instance exists:', !!chartExists);
+
+            // Force mobile styling regardless
+            chartElement.style.display = 'block';
+            chartElement.style.width = '100%';
+            chartElement.style.height = '250px';
+            chartElement.style.visibility = 'visible';
+
+            if (!chartExists) {{
+                console.log('Mobile fallback: No chart instance, creating new one');
+                generateCapacityHistoryChart();
+            }} else {{
+                // Check if chart is actually visible and has data
+                const hasData = chartExists.data && chartExists.data.datasets && chartExists.data.datasets.length > 0;
+                const hasVisibleData = hasData && chartExists.data.datasets.some(dataset => dataset.data && dataset.data.length > 0);
+                const isVisible = chartElement.offsetWidth > 0 && chartElement.offsetHeight > 0;
+
+                console.log('Chart has data:', hasData);
+                console.log('Chart has visible data:', hasVisibleData);
+                console.log('Chart is visible:', isVisible);
+
+                if (!hasData || !hasVisibleData || !isVisible) {{
+                    console.log('Mobile fallback: Chart missing data or not visible, recreating');
+                    try {{
+                        chartExists.destroy();
+                    }} catch (e) {{
+                        console.log('Error destroying chart:', e);
+                    }}
+                    window.capacityHistoryChart = null;
+
+                    // Force element reset before recreating
+                    chartElement.style.display = 'none';
+                    setTimeout(() => {{
+                        chartElement.style.display = 'block';
+                        generateCapacityHistoryChart();
+                    }}, 50);
+                }} else {{
+                    console.log('Mobile fallback: Chart exists with data, forcing update');
+                    try {{
+                        chartExists.resize();
+                        chartExists.update('none');
+                    }} catch (e) {{
+                        console.log('Error updating chart, recreating:', e);
+                        chartExists.destroy();
+                        window.capacityHistoryChart = null;
+                        generateCapacityHistoryChart();
+                    }}
+                }}
+            }}
         }}
 
         // Initialize theme from localStorage
