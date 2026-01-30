@@ -1161,14 +1161,12 @@ def generate_html_dashboard(data):
 
         /* Header controls layout */
         .header-controls {{
-            position: absolute;
-            top: 15px;
-            right: 30px;
             display: flex;
-            align-items: flex-start;
+            justify-content: center;
+            align-items: center;
             gap: 12px;
             flex-direction: column;
-            z-index: 10;
+            margin-top: 15px;
         }}
 
         @media (min-width: 640px) {{
@@ -1349,24 +1347,42 @@ def generate_html_dashboard(data):
             }}
 
             .header {{
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
+                display: grid;
+                grid-template-areas:
+                    "title"
+                    "subtitle"
+                    "timestamp"
+                    "controls";
+                grid-template-rows: auto auto auto auto;
+                gap: 15px;
                 position: relative;
-                padding-top: 60px; /* Make room for buttons */
+                padding: 20px 15px; /* Normal padding */
             }}
 
             .header-controls {{
-                position: absolute;
-                top: 15px;
-                left: 15px;
-                right: 15px;
+                grid-area: controls;
                 display: flex;
                 justify-content: space-between;
                 align-items: flex-start;
                 flex-wrap: wrap;
                 gap: 8px;
                 z-index: 10;
+            }}
+
+            .header h1 {{
+                grid-area: title;
+                font-size: 24px;
+                margin: 0;
+            }}
+
+            .header .subtitle {{
+                grid-area: subtitle;
+                margin: 0;
+            }}
+
+            .header .timestamp {{
+                grid-area: timestamp;
+                margin: 0;
             }}
 
             .theme-toggle {{
@@ -1443,6 +1459,21 @@ def generate_html_dashboard(data):
             .chart-container {{
                 height: 250px;
                 margin: 10px 0;
+                padding: 10px;
+                position: relative;
+            }}
+
+            .chart-container canvas {{
+                width: 100% !important;
+                height: 100% !important;
+                max-width: 100% !important;
+            }}
+
+            /* Force canvas to render properly on mobile */
+            #capacityHistoryChart {{
+                display: block !important;
+                width: 100% !important;
+                height: 250px !important;
             }}
 
             .progress-rings-container {{
@@ -1474,6 +1505,48 @@ def generate_html_dashboard(data):
             .timeline-project-name {{
                 min-width: 120px;
                 width: 120px;
+            }}
+
+            /* Mobile timeline card layout */
+            @media (max-width: 480px) {{
+                .timeline-container {{
+                    display: block;
+                }}
+
+                .timeline-header {{
+                    display: none; /* Hide desktop header on mobile */
+                }}
+
+                .timeline-row {{
+                    display: block;
+                    background: var(--bg-secondary);
+                    border: 1px solid var(--border-color);
+                    border-radius: 8px;
+                    padding: 12px;
+                    margin-bottom: 12px;
+                    min-width: auto;
+                }}
+
+                .timeline-project-name {{
+                    width: 100%;
+                    font-size: 14px;
+                    font-weight: 600;
+                    margin-bottom: 8px;
+                    color: var(--brand-primary);
+                }}
+
+                .timeline-bars {{
+                    display: block;
+                    height: auto;
+                }}
+
+                .timeline-bar {{
+                    position: relative;
+                    width: 100%;
+                    margin-bottom: 4px;
+                    height: 32px;
+                    font-size: 12px;
+                }}
             }}
 
             /* Mobile table styles */
@@ -1523,6 +1596,7 @@ def generate_html_dashboard(data):
 
             .header {{
                 padding: 12px;
+                padding-top: 80px;
             }}
 
             .header h1 {{
@@ -2998,6 +3072,10 @@ def generate_html_dashboard(data):
 <body>
     <div class="dashboard-container">
         <header class="header" role="banner">
+            <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
+            <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: {data['timestamp']}</p>
+
             <div class="header-controls">
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
                     <span class="theme-icon" id="themeIcon">🌙</span>
@@ -3014,10 +3092,6 @@ def generate_html_dashboard(data):
                 </div>
             </div>
             <span id="theme-description" class="sr-only">Switch between dark and light themes for better visibility</span>
-
-            <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
-            <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: {data['timestamp']}</p>
         </header>
 
         <main role="main" aria-labelledby="dashboard-title">
@@ -3894,10 +3968,12 @@ def generate_html_dashboard(data):
 
     html += f"""
         // Historical Capacity Utilization Chart with per-member datasets
-        document.addEventListener('DOMContentLoaded', function() {{
+        function generateCapacityHistoryChart() {{
             if (document.getElementById('capacityHistoryChart')) {{
                 const historyCtx = document.getElementById('capacityHistoryChart').getContext('2d');
                 const capacityHistoryByMember = {json.dumps(capacity_history_by_member)};
+
+                console.log('Capacity History Data:', capacityHistoryByMember);
 
                 // Build datasets for each team member
                 const datasets = [];
@@ -3960,7 +4036,16 @@ def generate_html_dashboard(data):
                     pointHoverRadius: 0
                 }});
 
+                console.log('Generated datasets:', datasets.length, datasets);
+
                 if (datasets.length > 0) {{
+                    // Ensure canvas has explicit dimensions for mobile
+                    const canvas = document.getElementById('capacityHistoryChart');
+                    canvas.style.width = '100%';
+                    canvas.style.height = '250px';
+                    canvas.width = canvas.offsetWidth;
+                    canvas.height = 250;
+
                     window.capacityHistoryChart = new Chart(historyCtx, {{
                         type: 'line',
                         data: {{
@@ -3970,6 +4055,7 @@ def generate_html_dashboard(data):
                         options: {{
                             responsive: true,
                             maintainAspectRatio: false,
+                            devicePixelRatio: window.devicePixelRatio || 1,
                             layout: {{
                                 padding: {{
                                     top: window.innerWidth < 768 ? 10 : 20,
@@ -4053,6 +4139,11 @@ def generate_html_dashboard(data):
                     }});
                 }}
             }}
+        }}
+
+        // Initialize capacity history chart on page load
+        document.addEventListener('DOMContentLoaded', function() {{
+            generateCapacityHistoryChart();
         }});
 
         // ===== NEW CHART VISUALIZATIONS =====
@@ -4364,12 +4455,7 @@ def generate_html_dashboard(data):
             setTimeout(() => {{
                 generateRadarChart();
                 generateVelocityChart();
-
-                // Regenerate capacity history chart if container exists
-                if (document.getElementById('capacityHistoryChart')) {{
-                    const historyEvent = new Event('DOMContentLoaded');
-                    document.dispatchEvent(historyEvent);
-                }}
+                generateCapacityHistoryChart();
             }}, 100);
         }}
 
@@ -4682,9 +4768,10 @@ def generate_html_dashboard(data):
                     window.capacityHistoryChart.destroy();
                 }}
 
-                // Trigger chart regeneration
-                const event = new Event('DOMContentLoaded');
-                document.dispatchEvent(event);
+                // Regenerate all charts
+                generateRadarChart();
+                generateVelocityChart();
+                generateCapacityHistoryChart();
             }}, 250);
         }});
 

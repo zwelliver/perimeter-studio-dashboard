@@ -138,14 +138,12 @@
 
         /* Header controls layout */
         .header-controls {
-            position: absolute;
-            top: 15px;
-            right: 30px;
             display: flex;
-            align-items: flex-start;
+            justify-content: center;
+            align-items: center;
             gap: 12px;
             flex-direction: column;
-            z-index: 10;
+            margin-top: 15px;
         }
 
         @media (min-width: 640px) {
@@ -328,22 +326,18 @@
             .header {
                 display: grid;
                 grid-template-areas:
-                    "controls"
                     "title"
                     "subtitle"
-                    "timestamp";
+                    "timestamp"
+                    "controls";
                 grid-template-rows: auto auto auto auto;
-                gap: 10px;
+                gap: 15px;
                 position: relative;
-                padding-top: 100px; /* Increased space for buttons */
+                padding: 20px 15px; /* Normal padding */
             }
 
             .header-controls {
                 grid-area: controls;
-                position: absolute;
-                top: 15px;
-                left: 15px;
-                right: 15px;
                 display: flex;
                 justify-content: space-between;
                 align-items: flex-start;
@@ -2055,6 +2049,10 @@
 <body>
     <div class="dashboard-container">
         <header class="header" role="banner">
+            <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
+            <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 09:26 AM</p>
+
             <div class="header-controls">
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
                     <span class="theme-icon" id="themeIcon">🌙</span>
@@ -2071,10 +2069,6 @@
                 </div>
             </div>
             <span id="theme-description" class="sr-only">Switch between dark and light themes for better visibility</span>
-
-            <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
-            <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 09:15 AM</p>
         </header>
 
         <main role="main" aria-labelledby="dashboard-title">
