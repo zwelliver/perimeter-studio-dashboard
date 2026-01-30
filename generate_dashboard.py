@@ -1520,6 +1520,11 @@ def generate_html_dashboard(data):
                     position: relative;
                 }}
 
+                /* Hide the vertical line on mobile */
+                .timeline-container::before {{
+                    display: none;
+                }}
+
                 /* Add scroll indicator */
                 .timeline-container::after {{
                     content: '← Swipe to see timeline →';
@@ -1545,8 +1550,11 @@ def generate_html_dashboard(data):
                     50% {{ opacity: 1; }}
                 }}
 
+                .timeline-header,
                 .timeline-row {{
                     min-width: 700px;
+                    display: flex;
+                    align-items: center;
                 }}
 
                 .timeline-project-col,
@@ -1559,6 +1567,13 @@ def generate_html_dashboard(data):
                     z-index: 10;
                     border-right: 2px solid var(--border-color);
                     box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+                    flex-shrink: 0;
+                }}
+
+                .timeline-dates,
+                .timeline-bars {{
+                    flex: 1;
+                    min-width: 560px;
                 }}
 
                 .timeline-date {{
@@ -1586,8 +1601,14 @@ def generate_html_dashboard(data):
                     font-size: 9px;
                 }}
 
+                .timeline-header,
                 .timeline-row {{
                     min-width: 600px;
+                }}
+
+                .timeline-dates,
+                .timeline-bars {{
+                    min-width: 500px;
                 }}
             }}
 
