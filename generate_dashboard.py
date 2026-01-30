@@ -4093,14 +4093,22 @@ def generate_html_dashboard(data):
                 }});
 
                 console.log('Generated datasets:', datasets.length, datasets);
+                console.log('Chart element dimensions:', chartElement.offsetWidth, chartElement.offsetHeight);
 
                 if (datasets.length > 0) {{
                     // Mobile-specific: ensure canvas is properly sized
                     const isMobile = window.innerWidth <= 768;
+                    console.log('Is mobile device:', isMobile);
+
                     if (isMobile) {{
+                        console.log('Applying mobile-specific canvas styling');
                         chartElement.style.display = 'block';
                         chartElement.style.width = '100%';
                         chartElement.style.height = '250px';
+
+                        // Force reflow
+                        chartElement.offsetHeight;
+                        console.log('Mobile canvas size after styling:', chartElement.offsetWidth, chartElement.offsetHeight);
                     }}
 
                     window.capacityHistoryChart = new Chart(historyCtx, {{
@@ -4194,11 +4202,25 @@ def generate_html_dashboard(data):
                             }}
                         }}
                     }});
+
+                    // Mobile-specific post-creation validation
+                    if (isMobile && window.capacityHistoryChart) {{
+                        setTimeout(() => {{
+                            console.log('Post-creation mobile validation for capacity chart');
+                            const chart = window.capacityHistoryChart;
+                            if (chart && (!chart.data || !chart.data.datasets || chart.data.datasets.length === 0)) {{
+                                console.log('Mobile chart missing data after creation - forcing update');
+                                chart.update('none');
+                            }}
+                        }}, 200);
+                    }}
+                }} else {{
+                    console.log('No datasets generated for capacity history chart');
                 }}
             }}
         }}
 
-        // Fallback for mobile browsers - specifically for capacity chart
+        // Enhanced fallback for mobile browsers - specifically for capacity chart
         window.addEventListener('load', function() {{
             setTimeout(() => {{
                 const isMobile = window.innerWidth <= 768;
@@ -4206,17 +4228,36 @@ def generate_html_dashboard(data):
                 const chartElement = document.getElementById('capacityHistoryChart');
 
                 if (isMobile && chartElement) {{
+                    console.log('Mobile fallback check for capacity history chart');
+
                     if (!chartExists) {{
                         console.log('Mobile fallback: Creating missing capacity history chart');
                         generateCapacityHistoryChart();
                     }} else {{
                         // Chart exists but may not be displaying data on mobile
                         const hasData = chartExists.data && chartExists.data.datasets && chartExists.data.datasets.length > 0;
-                        if (!hasData) {{
-                            console.log('Mobile fallback: Recreating chart with no data');
+                        const hasVisibleData = hasData && chartExists.data.datasets.some(dataset => dataset.data.length > 0);
+
+                        if (!hasData || !hasVisibleData) {{
+                            console.log('Mobile fallback: Recreating chart - no data or invisible data');
                             chartExists.destroy();
                             window.capacityHistoryChart = null;
+
+                            // Force canvas reset
+                            chartElement.style.display = 'block';
+                            chartElement.style.width = '100%';
+                            chartElement.style.height = '250px';
+                            chartElement.width = chartElement.offsetWidth;
+                            chartElement.height = 250;
+
                             generateCapacityHistoryChart();
+                        }} else {{
+                            // Force canvas redraw for mobile
+                            chartElement.style.display = 'block';
+                            chartElement.style.width = '100%';
+                            chartElement.style.height = '250px';
+                            chartExists.resize();
+                            chartExists.update();
                         }}
                     }}
                 }}
