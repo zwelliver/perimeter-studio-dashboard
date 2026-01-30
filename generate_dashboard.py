@@ -4579,6 +4579,39 @@ def generate_html_dashboard(data):
                 generateRadarChart();
                 generateVelocityChart();
                 generateCapacityHistoryChart();
+
+                // Mobile-specific fallback after theme change
+                const isMobile = window.innerWidth <= 768;
+                if (isMobile) {{
+                    setTimeout(() => {{
+                        const chartElement = document.getElementById('capacityHistoryChart');
+                        const chartExists = window.capacityHistoryChart;
+
+                        if (chartElement && chartExists) {{
+                            console.log('Theme toggle mobile fallback check');
+
+                            // Ensure mobile styling is applied
+                            chartElement.style.display = 'block';
+                            chartElement.style.width = '100%';
+                            chartElement.style.height = '250px';
+
+                            // Check if chart has data
+                            const hasData = chartExists.data && chartExists.data.datasets && chartExists.data.datasets.length > 0;
+                            const hasVisibleData = hasData && chartExists.data.datasets.some(dataset => dataset.data.length > 0);
+
+                            if (!hasData || !hasVisibleData) {{
+                                console.log('Theme toggle: Capacity chart missing data on mobile, recreating');
+                                chartExists.destroy();
+                                window.capacityHistoryChart = null;
+                                generateCapacityHistoryChart();
+                            }} else {{
+                                // Force update and resize
+                                chartExists.resize();
+                                chartExists.update();
+                            }}
+                        }}
+                    }}, 200);
+                }}
             }}, 100);
         }}
 

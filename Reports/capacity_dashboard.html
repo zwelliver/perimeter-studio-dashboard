@@ -2108,7 +2108,7 @@
         <header class="header" role="banner">
             <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
             <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 12:51 PM</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 12:58 PM</p>
 
             <div class="header-controls">
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
@@ -4289,6 +4289,39 @@ Dec 1...
                 generateRadarChart();
                 generateVelocityChart();
                 generateCapacityHistoryChart();
+
+                // Mobile-specific fallback after theme change
+                const isMobile = window.innerWidth <= 768;
+                if (isMobile) {
+                    setTimeout(() => {
+                        const chartElement = document.getElementById('capacityHistoryChart');
+                        const chartExists = window.capacityHistoryChart;
+
+                        if (chartElement && chartExists) {
+                            console.log('Theme toggle mobile fallback check');
+
+                            // Ensure mobile styling is applied
+                            chartElement.style.display = 'block';
+                            chartElement.style.width = '100%';
+                            chartElement.style.height = '250px';
+
+                            // Check if chart has data
+                            const hasData = chartExists.data && chartExists.data.datasets && chartExists.data.datasets.length > 0;
+                            const hasVisibleData = hasData && chartExists.data.datasets.some(dataset => dataset.data.length > 0);
+
+                            if (!hasData || !hasVisibleData) {
+                                console.log('Theme toggle: Capacity chart missing data on mobile, recreating');
+                                chartExists.destroy();
+                                window.capacityHistoryChart = null;
+                                generateCapacityHistoryChart();
+                            } else {
+                                // Force update and resize
+                                chartExists.resize();
+                                chartExists.update();
+                            }
+                        }
+                    }, 200);
+                }
             }, 100);
         }
 
