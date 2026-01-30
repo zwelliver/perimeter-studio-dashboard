@@ -4219,13 +4219,6 @@ def generate_html_dashboard(data):
             }}
         }}
 
-        // Initialize capacity history chart on page load
-        document.addEventListener('DOMContentLoaded', function() {{
-            setTimeout(() => {{
-                generateCapacityHistoryChart();
-            }}, 500);
-        }});
-
         // Fallback for mobile browsers
         window.addEventListener('load', function() {{
             setTimeout(() => {{
@@ -4510,6 +4503,7 @@ def generate_html_dashboard(data):
                 generateTimeline();
                 generateRadarChart();
                 generateVelocityChart();
+                generateCapacityHistoryChart();
             }}, 100);
         }});
 

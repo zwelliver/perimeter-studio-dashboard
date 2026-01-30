@@ -2108,7 +2108,7 @@
         <header class="header" role="banner">
             <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
             <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 12:33 PM</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 12:40 PM</p>
 
             <div class="header-controls">
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
@@ -3929,13 +3929,6 @@ Dec 1...
             }
         }
 
-        // Initialize capacity history chart on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                generateCapacityHistoryChart();
-            }, 500);
-        });
-
         // Fallback for mobile browsers
         window.addEventListener('load', function() {
             setTimeout(() => {
@@ -4220,6 +4213,7 @@ Dec 1...
                 generateTimeline();
                 generateRadarChart();
                 generateVelocityChart();
+                generateCapacityHistoryChart();
             }, 100);
         });
 
