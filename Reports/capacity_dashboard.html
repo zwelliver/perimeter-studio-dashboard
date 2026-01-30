@@ -2108,7 +2108,7 @@
         <header class="header" role="banner">
             <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
             <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 02:00 PM</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 02:12 PM</p>
 
             <div class="header-controls">
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
@@ -3826,18 +3826,34 @@ Dec 1...
                     const isMobile = window.innerWidth <= 768;
                     console.log('Is mobile device:', isMobile);
 
-                    if (isMobile) {
-                        console.log('Applying mobile-specific canvas styling');
-                        chartElement.style.display = 'block';
-                        chartElement.style.width = '100%';
-                        chartElement.style.height = '250px';
+                    // ALWAYS apply mobile-specific styling for smaller screens
+                    if (window.innerWidth <= 768) {
+                        console.log('Applying mobile-specific canvas styling for screen width:', window.innerWidth);
 
-                        // Force reflow
+                        // More aggressive mobile styling
+                        chartElement.style.cssText = 'display: block !important; width: 100% !important; height: 250px !important; visibility: visible !important;';
+
+                        // Additional container styling
+                        const container = chartElement.closest('.chart-container');
+                        if (container) {
+                            container.style.cssText = 'display: block !important; width: 100% !important; min-height: 250px !important;';
+                        }
+
+                        // Force multiple reflows
                         chartElement.offsetHeight;
-                        console.log('Mobile canvas size after styling:', chartElement.offsetWidth, chartElement.offsetHeight);
+                        setTimeout(() => { chartElement.offsetHeight; }, 10);
+
+                        console.log('Mobile canvas size after aggressive styling:', chartElement.offsetWidth, chartElement.offsetHeight);
 
                         if (chartElement.offsetWidth === 0 || chartElement.offsetHeight === 0) {
                             console.error('MOBILE ISSUE: Canvas has zero dimensions after styling!');
+                            // Try to fix container visibility issues
+                            const parentCard = chartElement.closest('.dashboard-card');
+                            if (parentCard) {
+                                console.log('Checking parent card visibility');
+                                parentCard.style.display = 'block';
+                                parentCard.style.visibility = 'visible';
+                            }
                         }
                     }
 
@@ -4366,11 +4382,20 @@ Dec 1...
             console.log('Chart element found:', !!chartElement);
             console.log('Chart instance exists:', !!chartExists);
 
-            // Force mobile styling regardless
-            chartElement.style.display = 'block';
-            chartElement.style.width = '100%';
-            chartElement.style.height = '250px';
-            chartElement.style.visibility = 'visible';
+            // Force mobile styling regardless - use aggressive approach
+            chartElement.style.cssText = 'display: block !important; width: 100% !important; height: 250px !important; visibility: visible !important;';
+
+            // Also fix container
+            const container = chartElement.closest('.chart-container');
+            if (container) {
+                container.style.cssText = 'display: block !important; width: 100% !important; min-height: 250px !important;';
+            }
+
+            const parentCard = chartElement.closest('.dashboard-card');
+            if (parentCard) {
+                parentCard.style.display = 'block';
+                parentCard.style.visibility = 'visible';
+            }
 
             if (!chartExists) {
                 console.log('Mobile fallback: No chart instance, creating new one');

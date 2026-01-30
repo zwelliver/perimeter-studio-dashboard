@@ -4026,10 +4026,22 @@ def generate_html_dashboard(data):
     html += f"""
         // Historical Capacity Utilization Chart with per-member datasets
         function generateCapacityHistoryChart() {{
+            console.log('=== generateCapacityHistoryChart called ===');
+            const isMobile = window.innerWidth <= 768;
+            console.log('Device type:', isMobile ? 'Mobile' : 'Desktop');
+
             const chartElement = document.getElementById('capacityHistoryChart');
+            console.log('Chart element found:', !!chartElement);
+
             if (chartElement) {{
+                console.log('Chart container dimensions:', chartElement.offsetWidth, 'x', chartElement.offsetHeight);
+                console.log('Chart container style:', chartElement.style.cssText);
+
                 const historyCtx = chartElement.getContext('2d');
+                console.log('Canvas context obtained:', !!historyCtx);
+
                 const capacityHistoryByMember = {json.dumps(capacity_history_by_member)};
+                console.log('Data received:', Object.keys(capacityHistoryByMember), 'members with data');
 
                 // Build datasets for each team member
                 const datasets = [];
@@ -4092,23 +4104,47 @@ def generate_html_dashboard(data):
                     pointHoverRadius: 0
                 }});
 
-                console.log('Generated datasets:', datasets.length, datasets);
-                console.log('Chart element dimensions:', chartElement.offsetWidth, chartElement.offsetHeight);
+                console.log('Generated datasets:', datasets.length, 'datasets for chart');
+                if (datasets.length > 0) {{
+                    console.log('Dataset details:', datasets.map(d => ({{name: d.label, dataPoints: d.data.length}})));
+                }}
+
+                console.log('Chart element dimensions before mobile styling:', chartElement.offsetWidth, chartElement.offsetHeight);
 
                 if (datasets.length > 0) {{
                     // Mobile-specific: ensure canvas is properly sized
                     const isMobile = window.innerWidth <= 768;
                     console.log('Is mobile device:', isMobile);
 
-                    if (isMobile) {{
-                        console.log('Applying mobile-specific canvas styling');
-                        chartElement.style.display = 'block';
-                        chartElement.style.width = '100%';
-                        chartElement.style.height = '250px';
+                    // ALWAYS apply mobile-specific styling for smaller screens
+                    if (window.innerWidth <= 768) {{
+                        console.log('Applying mobile-specific canvas styling for screen width:', window.innerWidth);
 
-                        // Force reflow
+                        // More aggressive mobile styling
+                        chartElement.style.cssText = 'display: block !important; width: 100% !important; height: 250px !important; visibility: visible !important;';
+
+                        // Additional container styling
+                        const container = chartElement.closest('.chart-container');
+                        if (container) {{
+                            container.style.cssText = 'display: block !important; width: 100% !important; min-height: 250px !important;';
+                        }}
+
+                        // Force multiple reflows
                         chartElement.offsetHeight;
-                        console.log('Mobile canvas size after styling:', chartElement.offsetWidth, chartElement.offsetHeight);
+                        setTimeout(() => {{ chartElement.offsetHeight; }}, 10);
+
+                        console.log('Mobile canvas size after aggressive styling:', chartElement.offsetWidth, chartElement.offsetHeight);
+
+                        if (chartElement.offsetWidth === 0 || chartElement.offsetHeight === 0) {{
+                            console.error('MOBILE ISSUE: Canvas has zero dimensions after styling!');
+                            // Try to fix container visibility issues
+                            const parentCard = chartElement.closest('.dashboard-card');
+                            if (parentCard) {{
+                                console.log('Checking parent card visibility');
+                                parentCard.style.display = 'block';
+                                parentCard.style.visibility = 'visible';
+                            }}
+                        }}
                     }}
 
                     window.capacityHistoryChart = new Chart(historyCtx, {{
@@ -4202,6 +4238,11 @@ def generate_html_dashboard(data):
                             }}
                         }}
                     }});
+
+                    console.log('Chart created successfully:', !!window.capacityHistoryChart);
+                    if (window.capacityHistoryChart) {{
+                        console.log('Chart status - datasets:', window.capacityHistoryChart.data.datasets.length, 'visible:', window.capacityHistoryChart.canvas.style.display !== 'none');
+                    }}
 
                     // Mobile-specific post-creation validation
                     if (isMobile && window.capacityHistoryChart) {{
@@ -4631,11 +4672,20 @@ def generate_html_dashboard(data):
             console.log('Chart element found:', !!chartElement);
             console.log('Chart instance exists:', !!chartExists);
 
-            // Force mobile styling regardless
-            chartElement.style.display = 'block';
-            chartElement.style.width = '100%';
-            chartElement.style.height = '250px';
-            chartElement.style.visibility = 'visible';
+            // Force mobile styling regardless - use aggressive approach
+            chartElement.style.cssText = 'display: block !important; width: 100% !important; height: 250px !important; visibility: visible !important;';
+
+            // Also fix container
+            const container = chartElement.closest('.chart-container');
+            if (container) {{
+                container.style.cssText = 'display: block !important; width: 100% !important; min-height: 250px !important;';
+            }}
+
+            const parentCard = chartElement.closest('.dashboard-card');
+            if (parentCard) {{
+                parentCard.style.display = 'block';
+                parentCard.style.visibility = 'visible';
+            }}
 
             if (!chartExists) {{
                 console.log('Mobile fallback: No chart instance, creating new one');
