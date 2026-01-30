@@ -4095,6 +4095,14 @@ def generate_html_dashboard(data):
                 console.log('Generated datasets:', datasets.length, datasets);
 
                 if (datasets.length > 0) {{
+                    // Mobile-specific: ensure canvas is properly sized
+                    const isMobile = window.innerWidth <= 768;
+                    if (isMobile) {{
+                        chartElement.style.display = 'block';
+                        chartElement.style.width = '100%';
+                        chartElement.style.height = '250px';
+                    }}
+
                     window.capacityHistoryChart = new Chart(historyCtx, {{
                         type: 'line',
                         data: {{
@@ -4190,14 +4198,29 @@ def generate_html_dashboard(data):
             }}
         }}
 
-        // Fallback for mobile browsers
+        // Fallback for mobile browsers - specifically for capacity chart
         window.addEventListener('load', function() {{
             setTimeout(() => {{
-                if (!window.capacityHistoryChart) {{
-                    console.log('Fallback: Regenerating capacity history chart');
-                    generateCapacityHistoryChart();
+                const isMobile = window.innerWidth <= 768;
+                const chartExists = window.capacityHistoryChart;
+                const chartElement = document.getElementById('capacityHistoryChart');
+
+                if (isMobile && chartElement) {{
+                    if (!chartExists) {{
+                        console.log('Mobile fallback: Creating missing capacity history chart');
+                        generateCapacityHistoryChart();
+                    }} else {{
+                        // Chart exists but may not be displaying data on mobile
+                        const hasData = chartExists.data && chartExists.data.datasets && chartExists.data.datasets.length > 0;
+                        if (!hasData) {{
+                            console.log('Mobile fallback: Recreating chart with no data');
+                            chartExists.destroy();
+                            window.capacityHistoryChart = null;
+                            generateCapacityHistoryChart();
+                        }}
+                    }}
                 }}
-            }}, 1000);
+            }}, 1500);
         }});
 
         // ===== NEW CHART VISUALIZATIONS =====
