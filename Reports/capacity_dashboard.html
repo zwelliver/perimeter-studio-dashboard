@@ -487,126 +487,84 @@
                 width: 120px;
             }
 
-            /* Mobile vertical timeline - day by day layout */
-            @media (max-width: 480px) {
+            /* Enhanced horizontal scroll for mobile */
+            @media (max-width: 768px) {
                 .timeline-container {
-                    display: block;
-                    overflow-x: visible;
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                    scroll-snap-type: x proximity;
+                    padding-bottom: 15px;
+                    position: relative;
                 }
 
-                .timeline-header {
-                    display: none; /* Hide desktop header on mobile */
+                /* Add scroll indicator */
+                .timeline-container::after {
+                    content: '← Swipe to see timeline →';
+                    position: sticky;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    bottom: 0;
+                    background: rgba(52, 152, 219, 0.9);
+                    color: white;
+                    padding: 4px 12px;
+                    border-radius: 12px;
+                    font-size: 11px;
+                    font-weight: 500;
+                    z-index: 20;
+                    white-space: nowrap;
+                    pointer-events: none;
+                    opacity: 0.8;
+                    animation: fadeInOut 3s ease-in-out infinite;
+                }
+
+                @keyframes fadeInOut {
+                    0%, 100% { opacity: 0.6; }
+                    50% { opacity: 1; }
                 }
 
                 .timeline-row {
-                    display: none; /* Hide desktop rows on mobile */
+                    min-width: 700px;
                 }
 
-                .timeline-mobile {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 12px;
-                }
-
-                .timeline-day-card {
+                .timeline-project-col,
+                .timeline-project-name {
+                    min-width: 140px;
+                    width: 140px;
+                    position: sticky;
+                    left: 0;
                     background: var(--bg-secondary);
-                    border: 1px solid var(--border-color);
-                    border-radius: 8px;
-                    overflow: hidden;
-                    box-shadow: 0 2px 4px var(--shadow-light);
+                    z-index: 10;
+                    border-right: 2px solid var(--border-color);
+                    box-shadow: 2px 0 4px rgba(0,0,0,0.1);
                 }
 
-                .timeline-day-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 10px 12px;
-                    background: var(--brand-primary);
-                    color: white;
-                }
-
-                .timeline-day-date {
-                    font-weight: 600;
-                    font-size: 14px;
-                }
-
-                .timeline-day-count {
-                    font-size: 11px;
-                    opacity: 0.9;
-                    background: rgba(255,255,255,0.2);
-                    padding: 2px 8px;
-                    border-radius: 10px;
-                }
-
-                .timeline-day-projects {
-                    padding: 8px;
-                }
-
-                .timeline-mobile-project {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 10px 12px;
-                    margin-bottom: 6px;
-                    border-radius: 6px;
-                    border-left: 4px solid;
-                    background: rgba(0,0,0,0.03);
-                }
-
-                .timeline-mobile-project:last-child {
-                    margin-bottom: 0;
-                }
-
-                .timeline-mobile-project.critical {
-                    background: rgba(220, 53, 69, 0.1);
-                    border-left-color: #dc3545;
-                }
-
-                .timeline-mobile-project.warning {
-                    background: rgba(255, 193, 7, 0.1);
-                    border-left-color: #ffc107;
-                }
-
-                .timeline-mobile-project.normal {
-                    background: rgba(52, 152, 219, 0.1);
-                    border-left-color: var(--brand-primary);
-                }
-
-                .timeline-mobile-project-name {
-                    font-size: 13px;
-                    font-weight: 500;
-                    flex: 1;
-                    color: var(--text-primary);
-                    line-height: 1.3;
-                }
-
-                .timeline-mobile-project-badge {
+                .timeline-date {
                     font-size: 10px;
-                    font-weight: 600;
-                    padding: 3px 8px;
-                    border-radius: 4px;
-                    background: rgba(0,0,0,0.05);
-                    color: var(--text-secondary);
-                    white-space: nowrap;
-                    margin-left: 8px;
+                    scroll-snap-align: start;
+                }
+            }
+
+            /* Small mobile optimizations */
+            @media (max-width: 480px) {
+                .timeline-project-col,
+                .timeline-project-name {
+                    font-size: 12px;
+                    min-width: 100px;
+                    width: 100px;
                 }
 
-                .timeline-mobile-project[data-position="start"] .timeline-mobile-project-badge {
-                    background: rgba(40, 167, 69, 0.2);
-                    color: #28a745;
+                .timeline-date {
+                    font-size: 9px;
+                    padding: 0 2px;
                 }
 
-                .timeline-mobile-project[data-position="end"] .timeline-mobile-project-badge {
-                    background: rgba(220, 53, 69, 0.2);
-                    color: #dc3545;
+                .timeline-bar {
+                    height: 28px;
+                    font-size: 9px;
                 }
 
-                .timeline-no-projects {
-                    padding: 16px;
-                    text-align: center;
-                    color: var(--text-muted);
-                    font-size: 13px;
-                    font-style: italic;
+                .timeline-row {
+                    min-width: 600px;
                 }
             }
 
@@ -2135,7 +2093,7 @@
         <header class="header" role="banner">
             <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
             <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 12:10 PM</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 12:15 PM</p>
 
             <div class="header-controls">
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
@@ -4077,22 +4035,6 @@ Dec 1...
                 dates.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
             }
 
-            // Check if mobile view
-            const isMobile = window.innerWidth <= 480;
-            let html = '';
-
-            if (isMobile) {
-                // Mobile vertical timeline - day by day
-                html = generateMobileTimeline(projects, dates, totalDays);
-            } else {
-                // Desktop horizontal timeline
-                html = generateDesktopTimeline(projects, dates, totalDays);
-            }
-
-            timelineContainer.innerHTML = html;
-        }
-
-        function generateDesktopTimeline(projects, dates, totalDays) {
             let html = '<div class="timeline-header">';
             html += '<div class="timeline-project-col">Project</div>';
             html += '<div class="timeline-dates">';
@@ -4111,62 +4053,8 @@ Dec 1...
                 html += '</div></div>';
             });
 
-            return html;
+            timelineContainer.innerHTML = html;
         }
-
-        function generateMobileTimeline(projects, dates, totalDays) {
-            let html = '<div class="timeline-mobile">';
-
-            // Create day-centric view
-            dates.forEach((date, dayIndex) => {
-                // Find projects active on this day
-                const activeProjects = projects.filter(p =>
-                    dayIndex >= p.start && dayIndex < (p.start + p.duration)
-                );
-
-                html += `
-                    <div class="timeline-day-card">
-                        <div class="timeline-day-header">
-                            <span class="timeline-day-date">${date}</span>
-                            <span class="timeline-day-count">${activeProjects.length} active</span>
-                        </div>
-                        <div class="timeline-day-projects">
-                `;
-
-                if (activeProjects.length === 0) {
-                    html += '<div class="timeline-no-projects">No scheduled items</div>';
-                } else {
-                    activeProjects.forEach(project => {
-                        const isStart = dayIndex === project.start;
-                        const isEnd = dayIndex === (project.start + project.duration - 1);
-                        const position = isStart ? 'start' : (isEnd ? 'end' : 'middle');
-
-                        html += `
-                            <div class="timeline-mobile-project ${project.status}" data-position="${position}">
-                                <span class="timeline-mobile-project-name">${project.name}</span>
-                                <span class="timeline-mobile-project-badge">
-                                    ${isStart ? '▶ Start' : isEnd ? '⏹ End' : '▬ Active'}
-                                </span>
-                            </div>
-                        `;
-                    });
-                }
-
-                html += '</div></div>';
-            });
-
-            html += '</div>';
-            return html;
-        }
-
-        // Add window resize listener for responsive timeline
-        let timelineResizeTimeout;
-        window.addEventListener('resize', function() {
-            clearTimeout(timelineResizeTimeout);
-            timelineResizeTimeout = setTimeout(() => {
-                generateProjectTimeline();
-            }, 250);
-        });
 
         // Radar Chart
         function generateRadarChart() {
