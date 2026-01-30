@@ -1462,21 +1462,9 @@ def generate_html_dashboard(data):
             .chart-container {{
                 height: 250px;
                 margin: 10px 0;
-                padding: 10px;
-                position: relative;
-                min-height: 250px;
-                overflow: visible;
             }}
 
-            .chart-container canvas {{
-                width: 100% !important;
-                height: 250px !important;
-                max-width: 100% !important;
-                min-width: 200px !important;
-                display: block !important;
-            }}
-
-            /* Force canvas to render properly on mobile */
+            /* Specific fixes for Historical Capacity chart only */
             #capacityHistoryChart {{
                 display: block !important;
                 width: 100% !important;

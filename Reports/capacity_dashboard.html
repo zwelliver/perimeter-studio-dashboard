@@ -439,21 +439,9 @@
             .chart-container {
                 height: 250px;
                 margin: 10px 0;
-                padding: 10px;
-                position: relative;
-                min-height: 250px;
-                overflow: visible;
             }
 
-            .chart-container canvas {
-                width: 100% !important;
-                height: 250px !important;
-                max-width: 100% !important;
-                min-width: 200px !important;
-                display: block !important;
-            }
-
-            /* Force canvas to render properly on mobile */
+            /* Specific fixes for Historical Capacity chart only */
             #capacityHistoryChart {
                 display: block !important;
                 width: 100% !important;
@@ -2120,7 +2108,7 @@
         <header class="header" role="banner">
             <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
             <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 12:30 PM</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: January 30, 2026 at 12:33 PM</p>
 
             <div class="header-controls">
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
@@ -2462,26 +2450,6 @@
                 <div class="project-card">
                     <div class="project-card-header">
                         <div>
-                            <div class="project-card-date">Fri, Jan 30, 2026</div>
-                            <div style="font-size: 22px; font-weight: 600; color: #dc3545; margin-top: 6px;">DUE TODAY</div>
-                        </div>
-                        <span class="project-card-badge">Post Production</span>
-                    </div>
-                    <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1211995020691865/f" target="_blank" class="project-card-title">
-                            Radical Dependence Teaching Series
-                        </a>
-                    </div>
-                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-                        <a href="https://app.asana.com/0/0/1211995020691865/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
-                            View in Asana →
-                        </a>
-                    </div>
-                </div>
-            
-                <div class="project-card">
-                    <div class="project-card-header">
-                        <div>
                             <div class="project-card-date">Thu, Feb 5, 2026</div>
                             <div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">6 DAYS</div>
                         </div>
@@ -2514,6 +2482,26 @@
                     </div>
                     <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
                         <a href="https://app.asana.com/0/0/1212722489719345/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Thu, Feb 5, 2026</div>
+                            <div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">6 DAYS</div>
+                        </div>
+                        <span class="project-card-badge">Post Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1211995020691865/f" target="_blank" class="project-card-title">
+                            Radical Dependence Teaching Series
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1211995020691865/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
                             View in Asana →
                         </a>
                     </div>
@@ -2640,8 +2628,8 @@
                 <!-- Timeline bars -->
                 <div style="display: flex; gap: 3px; height: 60px; align-items: flex-end;">
     
-                    <div style="flex: 1; background: #fd7e14; height: 52.41935483870969%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 1 (2026-01-30): 40% capacity, 13 tasks">
+                    <div style="flex: 1; background: #fd7e14; height: 67.51612903225806%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 1 (2026-01-30): 52% capacity, 13 tasks">
                     </div>
         
                     <div style="flex: 1; background: #ffc107; height: 39.89861751152075%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
@@ -2664,15 +2652,15 @@
                          title="Week 6 (2026-03-06): 38% capacity, 15 tasks">
                     </div>
         
-                    <div style="flex: 1; background: #fd7e14; height: 56.732718894009224%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                    <div style="flex: 1; background: #ffc107; height: 56.732718894009224%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
                          title="Week 7 (2026-03-13): 44% capacity, 18 tasks">
                     </div>
         
-                    <div style="flex: 1; background: #fd7e14; height: 55.175115207373274%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                    <div style="flex: 1; background: #ffc107; height: 55.175115207373274%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
                          title="Week 8 (2026-03-20): 42% capacity, 19 tasks">
                     </div>
         
-                    <div style="flex: 1; background: #ffc107; height: 33.30875576036866%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                    <div style="flex: 1; background: #28a745; height: 33.30875576036866%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
                          title="Week 9 (2026-03-27): 26% capacity, 12 tasks">
                     </div>
         
@@ -2829,34 +2817,34 @@
                     <div style="font-size: 9px; margin-top: 2px;">52%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-31: 38.4% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-01-31: 51.9% capacity">
                     <div style="font-weight: bold;">01/31</div>
-                    <div style="font-size: 9px; margin-top: 2px;">38%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">52%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-01: 38.4% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-01: 51.9% capacity">
                     <div style="font-weight: bold;">02/01</div>
-                    <div style="font-size: 9px; margin-top: 2px;">38%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">52%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-02: 38.4% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-02: 51.9% capacity">
                     <div style="font-weight: bold;">02/02</div>
-                    <div style="font-size: 9px; margin-top: 2px;">38%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">52%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-03: 38.4% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-03: 51.9% capacity">
                     <div style="font-weight: bold;">02/03</div>
-                    <div style="font-size: 9px; margin-top: 2px;">38%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">52%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-04: 38.4% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-04: 51.9% capacity">
                     <div style="font-weight: bold;">02/04</div>
-                    <div style="font-size: 9px; margin-top: 2px;">38%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">52%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-05: 38.4% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-05: 51.9% capacity">
                     <div style="font-weight: bold;">02/05</div>
-                    <div style="font-size: 9px; margin-top: 2px;">38%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">52%</div>
                 </div>
         
                 <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-06: 31.6% capacity">
@@ -3997,7 +3985,7 @@ Dec 1...
 
             // Real shoots and deadlines data
             const shoots = [{"name": "DD into Parenting - Ep. 1: Parenting in a Digital Age", "datetime": "2026-02-02T18:00:00+00:00", "start_on": null, "due_on": "2026-03-20", "type": "shoot"}, {"name": "DD into Parenting - Ep. 7: Parenting Prodigals/Parenting Adult Children", "datetime": "2026-02-03T17:00:00+00:00", "start_on": null, "due_on": "2026-05-01", "type": "shoot"}, {"name": "LOL French Audio Recording", "datetime": "2026-02-04T19:00:00+00:00", "start_on": null, "due_on": "2026-02-09", "type": "shoot"}, {"name": "Jeff's Do/Done Diagram Video", "datetime": "2026-02-09T19:30:00+00:00", "start_on": null, "due_on": null, "type": "shoot"}, {"name": "DD into Parenting - Ep. 3: Parenting Through Trauma", "datetime": "2026-02-10T17:30:00+00:00", "start_on": null, "due_on": "2026-04-03", "type": "shoot"}, {"name": "DD into Parenting - Ep. 4: Love Languages and Parenting", "datetime": "2026-02-10T19:00:00+00:00", "start_on": null, "due_on": "2026-04-10", "type": "shoot"}, {"name": "Volunteer Commissioning Service", "datetime": "2026-02-11T00:00:00+00:00", "start_on": null, "due_on": "2026-02-19", "type": "shoot"}, {"name": "DD into Parenting - Ep. 5: God's Design for Parenting", "datetime": "2026-02-11T15:00:00+00:00", "start_on": null, "due_on": "2026-04-17", "type": "shoot"}, {"name": "DD into Parenting - Ep. 2: Parenting in an Anxious Age", "datetime": "2026-02-11T16:45:00+00:00", "start_on": null, "due_on": "2026-03-27", "type": "shoot"}, {"name": "DD into Parenting - Ep. 6: Parenting by Grace", "datetime": "2026-02-12T16:00:00+00:00", "start_on": null, "due_on": "2026-04-24", "type": "shoot"}];
-            const deadlines = [{"name": "Radical Dependence Teaching Series", "start_on": null, "due_date": "2026-01-30", "type": "deadline"}, {"name": "WOV - Evan Forester", "start_on": null, "due_date": "2026-02-05", "type": "deadline"}, {"name": "Unlimited Grace - Podcast-January", "start_on": null, "due_date": "2026-02-05", "type": "deadline"}, {"name": "LOL French Audio Recording", "start_on": null, "due_date": "2026-02-09", "type": "deadline"}];
+            const deadlines = [{"name": "WOV - Evan Forester", "start_on": null, "due_date": "2026-02-05", "type": "deadline"}, {"name": "Unlimited Grace - Podcast-January", "start_on": null, "due_date": "2026-02-05", "type": "deadline"}, {"name": "Radical Dependence Teaching Series", "start_on": null, "due_date": "2026-02-05", "type": "deadline"}, {"name": "LOL French Audio Recording", "start_on": null, "due_date": "2026-02-09", "type": "deadline"}];
 
             // Combine and convert to timeline format
             const now = new Date();
