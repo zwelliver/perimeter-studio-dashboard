@@ -4028,14 +4028,8 @@ def generate_html_dashboard(data):
         function generateCapacityHistoryChart() {{
             const chartElement = document.getElementById('capacityHistoryChart');
             if (chartElement) {{
-                console.log('Generating capacity history chart...');
-
-                try {{
-                    const historyCtx = chartElement.getContext('2d');
-                    const capacityHistoryByMember = {json.dumps(capacity_history_by_member)};
-
-                    console.log('Capacity History Data:', capacityHistoryByMember);
-                    console.log('Chart canvas dimensions:', chartElement.offsetWidth, 'x', chartElement.offsetHeight);
+                const historyCtx = chartElement.getContext('2d');
+                const capacityHistoryByMember = {json.dumps(capacity_history_by_member)};
 
                 // Build datasets for each team member
                 const datasets = [];
@@ -4101,23 +4095,6 @@ def generate_html_dashboard(data):
                 console.log('Generated datasets:', datasets.length, datasets);
 
                 if (datasets.length > 0) {{
-                    // Ensure canvas has explicit dimensions for mobile
-                    const canvas = document.getElementById('capacityHistoryChart');
-                    canvas.style.width = '100%';
-                    canvas.style.height = '250px';
-
-                    // Wait for layout to complete, then set dimensions
-                    setTimeout(() => {{
-                        const containerWidth = canvas.parentElement.offsetWidth || 300;
-                        canvas.width = containerWidth;
-                        canvas.height = 250;
-
-                        // Force a redraw if chart exists
-                        if (window.capacityHistoryChart) {{
-                            window.capacityHistoryChart.resize();
-                        }}
-                    }}, 100);
-
                     window.capacityHistoryChart = new Chart(historyCtx, {{
                         type: 'line',
                         data: {{
@@ -4209,13 +4186,7 @@ def generate_html_dashboard(data):
                             }}
                         }}
                     }});
-
-                    console.log('Capacity history chart created successfully');
-                }} catch (error) {{
-                    console.error('Error creating capacity history chart:', error);
                 }}
-            }} else {{
-                console.error('Capacity history chart element not found');
             }}
         }}
 
@@ -4493,7 +4464,12 @@ def generate_html_dashboard(data):
             }});
         }}
 
-        // Initialize new charts
+        // Initialize capacity history chart on page load
+        document.addEventListener('DOMContentLoaded', function() {{
+            generateCapacityHistoryChart();
+        }});
+
+        // Initialize other charts
         document.addEventListener('DOMContentLoaded', () => {{
             setTimeout(() => {{
                 animateProgressRing('ringOnTime', 'ringOnTimeValue', {delivery_metrics['on_time_rate']:.0f});
@@ -4503,7 +4479,6 @@ def generate_html_dashboard(data):
                 generateTimeline();
                 generateRadarChart();
                 generateVelocityChart();
-                generateCapacityHistoryChart();
             }}, 100);
         }});
 
