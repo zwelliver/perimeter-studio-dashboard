@@ -4570,41 +4570,27 @@ def generate_html_dashboard(data):
             localStorage.setItem('theme', newTheme);
 
             // Refresh charts to update text colors
-            const isMobile = window.innerWidth <= 768;
-
             if (typeof window.capacityHistoryChart !== 'undefined') {{
-                if (isMobile) {{
-                    console.log('Mobile detected: Updating chart colors instead of destroying');
-                    // For mobile, just update the colors without destroying
-                    try {{
-                        window.capacityHistoryChart.options.scales.x.ticks.color = getChartTextColor();
-                        window.capacityHistoryChart.options.scales.y.ticks.color = getChartTextColor();
-                        window.capacityHistoryChart.options.scales.x.grid.color = getChartGridColor();
-                        window.capacityHistoryChart.options.scales.y.grid.color = getChartGridColor();
-                        window.capacityHistoryChart.options.plugins.legend.labels.color = getChartTextColor();
-                        window.capacityHistoryChart.update('none');
-                        console.log('Mobile chart colors updated successfully');
-                    }} catch (e) {{
-                        console.log('Error updating mobile chart colors, will recreate:', e);
-                        window.capacityHistoryChart.destroy();
-                        window.capacityHistoryChart = null;
-                    }}
-                }} else {{
-                    console.log('Desktop detected: Destroying chart for recreation');
-                    window.capacityHistoryChart.destroy();
-                    window.capacityHistoryChart = null;
-                }}
+                window.capacityHistoryChart.destroy();
             }}
 
             // Regenerate charts with new theme colors
             setTimeout(() => {{
                 generateRadarChart();
                 generateVelocityChart();
+                generateCapacityHistoryChart();
 
-                // Only regenerate capacity chart if not mobile or if it was destroyed
-                if (!isMobile || !window.capacityHistoryChart) {{
-                    console.log('Regenerating capacity history chart');
-                    generateCapacityHistoryChart();
+                // Immediate mobile check after chart recreation
+                const isMobile = window.innerWidth <= 768;
+                if (isMobile) {{
+                    console.log('Post-theme mobile check for capacity chart');
+                    setTimeout(() => {{
+                        ensureMobileCapacityChart();
+                    }}, 200);
+
+                    setTimeout(() => {{
+                        ensureMobileCapacityChart();
+                    }}, 500);
                 }}
             }}, 100);
 
