@@ -1362,10 +1362,11 @@ def generate_html_dashboard(data):
             .header-controls {{
                 grid-area: controls;
                 display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
+                justify-content: center;
+                align-items: center;
+                flex-direction: row;
                 flex-wrap: wrap;
-                gap: 8px;
+                gap: 12px;
                 z-index: 10;
             }}
 
@@ -1390,8 +1391,10 @@ def generate_html_dashboard(data):
             }}
 
             .export-controls {{
+                display: flex;
+                flex-direction: row;
                 margin-top: 0;
-                gap: 6px;
+                gap: 8px;
             }}
 
             .export-btn {{
