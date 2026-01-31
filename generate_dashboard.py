@@ -3176,6 +3176,7 @@ def generate_html_dashboard(data):
                     <span id="delayed-capacity-label" class="metric-label">Delayed Due to Capacity</span>
                     <span class="metric-value {'positive' if delivery_metrics['projects_delayed_capacity'] == 0 else 'negative'}" aria-describedby="delayed-capacity-label" role="status">{delivery_metrics['projects_delayed_capacity']}</span>
                 </div>
+            </div>
 
             <!-- Team Capacity -->
             <section class="card" role="region" aria-labelledby="team-capacity-title">
@@ -3277,6 +3278,75 @@ def generate_html_dashboard(data):
         html += """
             <div class="success-state">
                 <div style="font-size: 48px;">✅</div>
+                <div style="font-size: 18px; margin-top: 10px;">No tasks currently at risk!</div>
+            </div>
+        """
+
+    html += """
+            </div>
+        </div>
+
+        <!-- Two-column layout for Contracted/Outsourced and At-Risk Tasks -->
+        <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top: 30px; margin-bottom: 30px;">
+            <!-- Contracted/Outsourced Projects -->
+            <div class="card">
+                <h2>Contracted/Outsourced Projects</h2>"""
+
+    # Re-add external projects in the new structure
+    external_projects = data.get('external_projects', [])
+    if external_projects:
+        for project in external_projects:
+            html += f"""
+                <div class="metric">
+                    <span class="metric-label">{project['name']}</span>
+                    <span class="metric-value">{project['active_count']} Active</span>
+                </div>
+"""
+            if project.get('tasks'):
+                for task in project['tasks']:
+                    html += f"""
+                    <div style="margin-left: 15px; font-size: 14px; color: #666; margin-top: 5px;">
+                        • {task['name']} ({task['assignee']}) - Due: {task['due_on']}
+                    </div>
+"""
+
+    else:
+        html += """
+                <div style="color: #666; font-style: italic; margin-top: 10px;">No contracted projects currently active</div>
+        """
+
+    html += """
+            </div>
+
+            <!-- At-Risk Tasks -->
+            <div class="card">
+                <h2>⚠️ At-Risk Tasks</h2>
+    """
+
+    at_risk = data.get('at_risk_tasks', [])
+    if at_risk:
+        html += """
+            <div style="margin-top: 15px;">
+        """
+        for task in at_risk[:10]:  # Show top 10
+            risks_html = "<br>".join([f"• {risk}" for risk in task['risks']])
+            videographer_display = f" | Videographer: {task.get('videographer', 'N/A')}" if task.get('videographer') else ""
+            html += f"""
+                <div class="at-risk-item">
+                    <div class="project-task-name">{task['name']}</div>
+                    <div class="task-detail">
+                        {task['project']} | {task['assignee']}{videographer_display} | Due: {task['due_on']}
+                    </div>
+                    <div class="task-risk">
+                        {risks_html}
+                    </div>
+                </div>
+"""
+        html += """
+            </div>
+        """
+    else:
+        html += """
                 <div style="font-size: 18px; margin-top: 10px;">No tasks currently at risk!</div>
             </div>
         """
