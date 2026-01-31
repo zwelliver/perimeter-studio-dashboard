@@ -3176,7 +3176,6 @@ def generate_html_dashboard(data):
                     <span id="delayed-capacity-label" class="metric-label">Delayed Due to Capacity</span>
                     <span class="metric-value {'positive' if delivery_metrics['projects_delayed_capacity'] == 0 else 'negative'}" aria-describedby="delayed-capacity-label" role="status">{delivery_metrics['projects_delayed_capacity']}</span>
                 </div>
-            </div>
 
             <!-- Team Capacity -->
             <section class="card" role="region" aria-labelledby="team-capacity-title">
@@ -3209,10 +3208,6 @@ def generate_html_dashboard(data):
                 </div>
             </div>
 
-        </div>
-
-        <!-- Two-column layout for Contracted/Outsourced and At-Risk Tasks -->
-        <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top: 30px; margin-bottom: 30px;">
             <!-- Contracted/Outsourced Projects -->
             <div class="card">
                 <h2>Contracted/Outsourced Projects</h2>
