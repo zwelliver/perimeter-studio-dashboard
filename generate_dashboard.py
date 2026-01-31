@@ -3207,8 +3207,10 @@ def generate_html_dashboard(data):
 
     html += """
                 </div>
-            </div>
+        </section>
 
+        <!-- Two-column layout for Contracted/Outsourced and At-Risk Tasks -->
+        <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top: 30px; margin-bottom: 30px;">
             <!-- Contracted/Outsourced Projects -->
             <div class="card">
                 <h2>Contracted/Outsourced Projects</h2>
