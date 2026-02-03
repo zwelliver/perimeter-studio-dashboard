@@ -2108,7 +2108,7 @@
         <header class="header" role="banner">
             <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
             <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: February 03, 2026 at 08:45 AM</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: February 03, 2026 at 08:50 AM</p>
 
             <div class="header-controls">
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
@@ -2129,7 +2129,8 @@
         </header>
 
         <main role="main" aria-labelledby="dashboard-title">
-            <div class="grid" role="region" aria-label="Performance metrics and charts">
+            <!-- Two-column layout for Performance Overview and Contracted/Outsourced Projects -->
+            <div class="grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 30px;" role="region" aria-label="Performance metrics and charts">
             <!-- Performance Overview -->
             <section class="card" role="region" aria-labelledby="performance-title">
                 <h2 id="performance-title">Performance Overview</h2>
@@ -2154,9 +2155,23 @@
                     <span class="metric-value positive" aria-describedby="delayed-capacity-label" role="status">0</span>
                 </div>
             </div>
+            </section>
 
-            <!-- Team Capacity -->
-            <section class="card" role="region" aria-labelledby="team-capacity-title">
+            <!-- Contracted/Outsourced Projects -->
+            <div class="card">
+                <h2>Contracted/Outsourced Projects</h2>
+
+                <div class="metric">
+                    <span class="metric-label">Contracted/Outsourced</span>
+                    <span class="metric-value">0 Active</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Team Capacity (Full Width) -->
+        <div class="grid">
+            <section class="card full-width" role="region" aria-labelledby="team-capacity-title">
                 <h2 id="team-capacity-title">Team Capacity</h2>
                 <div class="team-capacity-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 10px;" role="list" aria-label="Team member capacity overview">
 
@@ -2203,29 +2218,15 @@
                 </div>
         </section>
 
-        <!-- Two-column layout for Contracted/Outsourced and At-Risk Tasks -->
-        <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top: 30px; margin-bottom: 30px;">
-            <!-- Contracted/Outsourced Projects -->
-            <div class="card">
-                <h2>Contracted/Outsourced Projects</h2>
-
-                <div class="metric">
-                    <span class="metric-label">Contracted/Outsourced</span>
-                    <span class="metric-value">0 Active</span>
-                </div>
-
-            </div>
-
-            <!-- At-Risk Tasks -->
-            <div class="card">
-                <h2>⚠️ At-Risk Tasks</h2>
+        <!-- At-Risk Tasks (Full Width) -->
+        <div class="card full-width" style="margin-top: 30px; margin-bottom: 30px;">
+            <h2>⚠️ At-Risk Tasks</h2>
     
             <div class="success-state">
                 <div style="font-size: 48px;">✅</div>
                 <div style="font-size: 18px; margin-top: 10px;">No tasks currently at risk!</div>
             </div>
         
-            </div>
         </div>
 
         <!-- Upcoming Shoots -->

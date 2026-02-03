@@ -3152,7 +3152,8 @@ def generate_html_dashboard(data):
         </header>
 
         <main role="main" aria-labelledby="dashboard-title">
-            <div class="grid" role="region" aria-label="Performance metrics and charts">
+            <!-- Two-column layout for Performance Overview and Contracted/Outsourced Projects -->
+            <div class="grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 30px;" role="region" aria-label="Performance metrics and charts">
             <!-- Performance Overview -->
             <section class="card" role="region" aria-labelledby="performance-title">
                 <h2 id="performance-title">Performance Overview</h2>
@@ -3177,9 +3178,51 @@ def generate_html_dashboard(data):
                     <span class="metric-value {'positive' if delivery_metrics['projects_delayed_capacity'] == 0 else 'negative'}" aria-describedby="delayed-capacity-label" role="status">{delivery_metrics['projects_delayed_capacity']}</span>
                 </div>
             </div>
+            </section>
 
-            <!-- Team Capacity -->
-            <section class="card" role="region" aria-labelledby="team-capacity-title">
+            <!-- Contracted/Outsourced Projects -->
+            <div class="card">
+                <h2>Contracted/Outsourced Projects</h2>
+"""
+
+    # Add external projects in the new structure
+    external_projects = data.get('external_projects', [])
+    if external_projects:
+        for project in external_projects:
+            html += f"""
+                <div class="metric">
+                    <span class="metric-label">{project['name']}</span>
+                    <span class="metric-value">{project['active_count']} Active</span>
+                </div>
+"""
+            if project.get('tasks'):
+                html += """
+                <div class="external-project-item">
+"""
+                for task in project['tasks']:
+                    due_text = f" (Due: {task['due_on']})" if task.get('due_on') else ""
+                    videographer_text = f" | Videographer: {task['videographer']}" if task.get('videographer') else ""
+                    html += f"""
+                    <div class="task-list-item">• {task['name']}{videographer_text}{due_text}</div>
+"""
+                html += """
+                </div>
+"""
+    else:
+        html += """
+            <div class="empty-state">
+                <div style="font-size: 36px; margin-bottom: 10px;">📋</div>
+                <div>No external projects</div>
+            </div>
+"""
+
+    html += """
+            </div>
+        </div>
+
+        <!-- Team Capacity (Full Width) -->
+        <div class="grid">
+            <section class="card full-width" role="region" aria-labelledby="team-capacity-title">
                 <h2 id="team-capacity-title">Team Capacity</h2>
                 <div class="team-capacity-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 10px;" role="list" aria-label="Team member capacity overview">
 """
@@ -3209,49 +3252,9 @@ def generate_html_dashboard(data):
                 </div>
         </section>
 
-        <!-- Two-column layout for Contracted/Outsourced and At-Risk Tasks -->
-        <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top: 30px; margin-bottom: 30px;">
-            <!-- Contracted/Outsourced Projects -->
-            <div class="card">
-                <h2>Contracted/Outsourced Projects</h2>
-"""
-
-    # Re-add external projects in the new structure
-    external_projects = data.get('external_projects', [])
-    if external_projects:
-        for project in external_projects:
-            html += f"""
-                <div class="metric">
-                    <span class="metric-label">{project['name']}</span>
-                    <span class="metric-value">{project['active_count']} Active</span>
-                </div>
-"""
-            if project.get('tasks'):
-                html += """
-                <div class="external-project-item">
-"""
-                for task in project['tasks']:
-                    due_text = f" (Due: {task['due_on']})" if task.get('due_on') else ""
-                    videographer_text = f" | Videographer: {task['videographer']}" if task.get('videographer') else ""
-                    html += f"""
-                    <div class="task-list-item">• {task['name']}{videographer_text}{due_text}</div>
-"""
-                html += """
-                </div>
-"""
-    else:
-        html += """
-                <div class="empty-state">
-                    <div style="font-size: 14px;">No external projects</div>
-                </div>
-"""
-
-    html += """
-            </div>
-
-            <!-- At-Risk Tasks -->
-            <div class="card">
-                <h2>⚠️ At-Risk Tasks</h2>
+        <!-- At-Risk Tasks (Full Width) -->
+        <div class="card full-width" style="margin-top: 30px; margin-bottom: 30px;">
+            <h2>⚠️ At-Risk Tasks</h2>
     """
 
     at_risk = data.get('at_risk_tasks', [])
@@ -3285,7 +3288,6 @@ def generate_html_dashboard(data):
         """
 
     html += """
-            </div>
         </div>
 
         <!-- Upcoming Shoots -->
@@ -4025,6 +4027,13 @@ def generate_html_dashboard(data):
         // Historical Capacity Utilization Chart with per-member datasets
         function generateCapacityHistoryChart() {{
             console.log('=== generateCapacityHistoryChart called ===');
+
+            // Prevent duplicate chart creation
+            if (window.capacityHistoryChart) {{
+                console.log('Chart already exists, skipping creation');
+                return;
+            }}
+
             const chartElement = document.getElementById('capacityHistoryChart');
             console.log('Chart element found:', !!chartElement);
 
@@ -4220,48 +4229,14 @@ def generate_html_dashboard(data):
             }}
         }}
 
-        // Enhanced fallback for mobile browsers - specifically for capacity chart
+        // Simple chart initialization check
         window.addEventListener('load', function() {{
             setTimeout(() => {{
-                const isMobile = window.innerWidth <= 768;
-                const chartExists = window.capacityHistoryChart;
-                const chartElement = document.getElementById('capacityHistoryChart');
-
-                if (isMobile && chartElement) {{
-                    console.log('Mobile fallback check for capacity history chart');
-
-                    if (!chartExists) {{
-                        console.log('Mobile fallback: Creating missing capacity history chart');
-                        generateCapacityHistoryChart();
-                    }} else {{
-                        // Chart exists but may not be displaying data on mobile
-                        const hasData = chartExists.data && chartExists.data.datasets && chartExists.data.datasets.length > 0;
-                        const hasVisibleData = hasData && chartExists.data.datasets.some(dataset => dataset.data.length > 0);
-
-                        if (!hasData || !hasVisibleData) {{
-                            console.log('Mobile fallback: Recreating chart - no data or invisible data');
-                            chartExists.destroy();
-                            window.capacityHistoryChart = null;
-
-                            // Force canvas reset
-                            chartElement.style.display = 'block';
-                            chartElement.style.width = '100%';
-                            chartElement.style.height = '250px';
-                            chartElement.width = chartElement.offsetWidth;
-                            chartElement.height = 250;
-
-                            generateCapacityHistoryChart();
-                        }} else {{
-                            // Force canvas redraw for mobile
-                            chartElement.style.display = 'block';
-                            chartElement.style.width = '100%';
-                            chartElement.style.height = '250px';
-                            chartExists.resize();
-                            chartExists.update();
-                        }}
-                    }}
+                if (!window.capacityHistoryChart) {{
+                    console.log('Chart not found on load, creating...');
+                    generateCapacityHistoryChart();
                 }}
-            }}, 1500);
+            }}, 500);
         }});
 
         // ===== NEW CHART VISUALIZATIONS =====
@@ -4615,75 +4590,12 @@ def generate_html_dashboard(data):
             }}
         }}
 
-        // Mobile capacity chart helper function
+        // Simplified chart helper function
         function ensureMobileCapacityChart() {{
             const chartElement = document.getElementById('capacityHistoryChart');
-            const chartExists = window.capacityHistoryChart;
-
-            if (!chartElement) {{
-                console.log('Mobile fallback: Chart element not found');
-                return;
-            }}
-
-            console.log('Ensuring mobile capacity chart exists and is visible');
-            console.log('Chart element found:', !!chartElement);
-            console.log('Chart instance exists:', !!chartExists);
-
-            // Force mobile styling regardless - use aggressive approach
-            chartElement.style.cssText = 'display: block !important; width: 100% !important; height: 250px !important; visibility: visible !important;';
-
-            // Also fix container
-            const container = chartElement.closest('.chart-container');
-            if (container) {{
-                container.style.cssText = 'display: block !important; width: 100% !important; min-height: 250px !important;';
-            }}
-
-            const parentCard = chartElement.closest('.dashboard-card');
-            if (parentCard) {{
-                parentCard.style.display = 'block';
-                parentCard.style.visibility = 'visible';
-            }}
-
-            if (!chartExists) {{
-                console.log('Mobile fallback: No chart instance, creating new one');
+            if (chartElement && !window.capacityHistoryChart) {{
+                console.log('Creating missing capacity chart');
                 generateCapacityHistoryChart();
-            }} else {{
-                // Check if chart is actually visible and has data
-                const hasData = chartExists.data && chartExists.data.datasets && chartExists.data.datasets.length > 0;
-                const hasVisibleData = hasData && chartExists.data.datasets.some(dataset => dataset.data && dataset.data.length > 0);
-                const isVisible = chartElement.offsetWidth > 0 && chartElement.offsetHeight > 0;
-
-                console.log('Chart has data:', hasData);
-                console.log('Chart has visible data:', hasVisibleData);
-                console.log('Chart is visible:', isVisible);
-
-                if (!hasData || !hasVisibleData || !isVisible) {{
-                    console.log('Mobile fallback: Chart missing data or not visible, recreating');
-                    try {{
-                        chartExists.destroy();
-                    }} catch (e) {{
-                        console.log('Error destroying chart:', e);
-                    }}
-                    window.capacityHistoryChart = null;
-
-                    // Force element reset before recreating
-                    chartElement.style.display = 'none';
-                    setTimeout(() => {{
-                        chartElement.style.display = 'block';
-                        generateCapacityHistoryChart();
-                    }}, 50);
-                }} else {{
-                    console.log('Mobile fallback: Chart exists with data, forcing update');
-                    try {{
-                        chartExists.resize();
-                        chartExists.update('none');
-                    }} catch (e) {{
-                        console.log('Error updating chart, recreating:', e);
-                        chartExists.destroy();
-                        window.capacityHistoryChart = null;
-                        generateCapacityHistoryChart();
-                    }}
-                }}
             }}
         }}
 
