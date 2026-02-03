@@ -4047,10 +4047,15 @@ def generate_html_dashboard(data):
         function generateCapacityHistoryChart() {{
             console.log('=== generateCapacityHistoryChart called ===');
 
-            // Prevent duplicate chart creation
+            // Destroy existing chart if it exists
             if (window.capacityHistoryChart) {{
-                console.log('Chart already exists, skipping creation');
-                return;
+                console.log('Destroying existing chart');
+                try {{
+                    window.capacityHistoryChart.destroy();
+                }} catch (e) {{
+                    console.log('Error destroying chart:', e);
+                }}
+                window.capacityHistoryChart = null;
             }}
 
             const chartElement = document.getElementById('capacityHistoryChart');
@@ -4087,6 +4092,9 @@ def generate_html_dashboard(data):
                         allDates = capacityHistoryByMember[firstMember].map(d => d.date);
                     }}
                 }}
+
+                console.log('About to build datasets...');
+                console.log('All dates found:', allDates.length, 'dates from', allDates[0], 'to', allDates[allDates.length - 1]);
 
                 // Create dataset for each team member
                 const memberOrder = ['Zach Welliver', 'Nick Clark', 'Adriel Abella', 'John Meyer', 'Team Total'];
@@ -4128,13 +4136,17 @@ def generate_html_dashboard(data):
                 }});
 
                 console.log('Generated datasets:', datasets.length, 'datasets for chart');
+                datasets.forEach((ds, i) => console.log('Dataset', i + ':', ds.label, 'with', ds.data.length, 'data points'));
+
                 if (datasets.length > 0) {{
                     console.log('Dataset details:', datasets.map(d => ({{name: d.label, dataPoints: d.data.length}})));
                 }}
 
                 if (datasets.length > 0) {{
+                    console.log('About to create chart with', allDates.length, 'labels and', datasets.length, 'datasets');
 
-                    window.capacityHistoryChart = new Chart(historyCtx, {{
+                    try {{
+                        window.capacityHistoryChart = new Chart(historyCtx, {{
                         type: 'line',
                         data: {{
                             labels: allDates,
@@ -4224,9 +4236,22 @@ def generate_html_dashboard(data):
                                 }}
                             }}
                         }}
-                    }});
+                        }});
 
-                    console.log('Chart created successfully:', !!window.capacityHistoryChart);
+                        console.log('Chart created successfully:', !!window.capacityHistoryChart);
+                    }} catch (error) {{
+                        console.error('Error creating capacity history chart:', error);
+                        console.log('Chart data that caused error:', {{
+                            labels: allDates.slice(0, 5),
+                            datasetCount: datasets.length,
+                            firstDataset: datasets[0] ? {{
+                                label: datasets[0].label,
+                                dataLength: datasets[0].data.length,
+                                firstFewData: datasets[0].data.slice(0, 5)
+                            }} : null
+                        }});
+                        return;
+                    }}
                     if (window.capacityHistoryChart) {{
                         console.log('Chart status - datasets:', window.capacityHistoryChart.data.datasets.length, 'visible:', window.capacityHistoryChart.canvas.style.display !== 'none');
                     }}
