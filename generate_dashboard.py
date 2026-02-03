@@ -2576,6 +2576,26 @@ def generate_html_dashboard(data):
             margin-bottom: 16px;
         }}
 
+        .category-grid {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-direction: row;
+        }}
+
+        .category-grid .card {{
+            flex: 1;
+            min-width: 180px;
+        }}
+
+        /* Explicit desktop rules for category grid */
+        @media (min-width: 769px) {{
+            .category-grid {{
+                flex-direction: row !important;
+            }}
+        }}
+
         .performance-row {{
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -2776,6 +2796,16 @@ def generate_html_dashboard(data):
             .grid {{
                 grid-template-columns: 1fr !important;
                 gap: 15px;
+            }}
+
+            .category-grid {{
+                flex-direction: column;
+                gap: 15px;
+            }}
+
+            .category-grid .card {{
+                flex: none;
+                min-width: auto;
             }}
 
             .performance-row {{
@@ -2987,6 +3017,15 @@ def generate_html_dashboard(data):
                 gap: 25px;
             }}
 
+            .category-grid {{
+                gap: 25px;
+            }}
+
+            .category-grid .card {{
+                flex: 1;
+                min-width: 200px;
+            }}
+
             .card h2 {{
                 font-size: 24px;
             }}
@@ -3025,6 +3064,15 @@ def generate_html_dashboard(data):
             .grid {{
                 grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
                 gap: 30px;
+            }}
+
+            .category-grid {{
+                gap: 30px;
+            }}
+
+            .category-grid .card {{
+                flex: 1;
+                min-width: 190px;
             }}
 
             .card {{
@@ -3085,6 +3133,15 @@ def generate_html_dashboard(data):
             .grid {{
                 grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
                 gap: 40px;
+            }}
+
+            .category-grid {{
+                gap: 40px;
+            }}
+
+            .category-grid .card {{
+                flex: 1;
+                min-width: 200px;
             }}
 
             .card {{
@@ -3767,45 +3824,75 @@ def generate_html_dashboard(data):
         </div>
 
         <!-- Historical Trends Chart -->
-        <div class="grid">
-            <div class="card full-width">
-                <h2>Historical Allocation Trends</h2>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
-                    Daily allocation percentages over time
-                </div>
-                <div class="chart-container">
-                    <canvas id="trendsChart"></canvas>
-                </div>
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>Historical Allocation Trends</h2>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+                Daily allocation percentages over time
+            </div>
+            <div class="chart-container">
+                <canvas id="trendsChart"></canvas>
             </div>
         </div>
 
-        <!-- Category Details -->
-        <div class="grid">
-"""
+        <!-- Category Performance Summary -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>Category Performance Summary</h2>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px;">
+                Allocation performance across all project categories
+            </div>
 
-    # Add category cards
-    for cat in category_data:
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border-color);">
+                            <th style="text-align: left; padding: 12px 16px; font-weight: 600; color: var(--text-primary);">Category</th>
+                            <th style="text-align: right; padding: 12px 16px; font-weight: 600; color: var(--text-primary);">Cumulative Avg</th>
+                            <th style="text-align: right; padding: 12px 16px; font-weight: 600; color: var(--text-primary);">Annual Target</th>
+                            <th style="text-align: right; padding: 12px 16px; font-weight: 600; color: var(--text-primary);">Variance</th>
+                            <th style="text-align: center; padding: 12px 16px; font-weight: 600; color: var(--text-primary);">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>"""
+
+    # Add category rows
+    for i, cat in enumerate(category_data):
         variance_class = 'positive' if abs(cat['variance']) <= 5 else 'warning' if abs(cat['variance']) <= 10 else 'negative'
 
+        # Determine status based on variance magnitude and direction
+        if abs(cat['variance']) <= 5:
+            status_icon = '✓'
+            status_text = 'On Track'
+        elif abs(cat['variance']) <= 10:
+            status_icon = '⚠️'
+            status_text = 'Watch'
+        else:
+            status_icon = '⚠️'
+            if cat['variance'] > 0:
+                status_text = 'Over Allocated'
+            else:
+                status_text = 'Under Allocated'
+
+        # Alternate row colors
+        row_bg = 'rgba(96, 187, 233, 0.05)' if i % 2 == 0 else 'transparent'
+
         html += f"""
-            <div class="card">
-                <h2>{cat['name']}</h2>
-                <div class="metric">
-                    <span class="metric-label">Cumulative Avg</span>
-                    <span class="metric-value">{cat['actual']:.1f}%</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Annual Target</span>
-                    <span class="metric-value">{cat['target']:.1f}%</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Avg Variance</span>
-                    <span class="metric-value {variance_class}">{cat['variance']:+.1f}%</span>
-                </div>
-            </div>
-"""
+                        <tr style="background: {row_bg}; border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 12px 16px; font-weight: 500; color: var(--text-primary);">{cat['name']}</td>
+                            <td style="padding: 12px 16px; text-align: right; font-weight: 500;">{cat['actual']:.1f}%</td>
+                            <td style="padding: 12px 16px; text-align: right; color: var(--text-secondary);">{cat['target']:.1f}%</td>
+                            <td style="padding: 12px 16px; text-align: right; font-weight: 600;" class="{variance_class}">{cat['variance']:+.1f}%</td>
+                            <td style="padding: 12px 16px; text-align: center; font-size: 12px;">
+                                <span style="display: inline-flex; align-items: center; gap: 4px;">
+                                    <span>{status_icon}</span>
+                                    <span>{status_text}</span>
+                                </span>
+                            </td>
+                        </tr>"""
 
     html += """
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
