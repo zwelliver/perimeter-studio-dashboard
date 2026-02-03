@@ -2576,6 +2576,13 @@ def generate_html_dashboard(data):
             margin-bottom: 16px;
         }}
 
+        .performance-row {{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 30px;
+        }}
+
         .card {{
             background: var(--bg-secondary);
             padding: 20px 24px;
@@ -2771,6 +2778,11 @@ def generate_html_dashboard(data):
                 gap: 15px;
             }}
 
+            .performance-row {{
+                grid-template-columns: 1fr !important;
+                gap: 15px;
+            }}
+
             /* Override any inline grid styles */
             .card [style*="grid-template-columns"],
             [style*="grid-template-columns"] {{
@@ -2940,6 +2952,14 @@ def generate_html_dashboard(data):
 
             .chart-container canvas {{
                 max-width: 100% !important;
+            }}
+        }}
+
+        /* Tablet and Desktop - Restore two-column layout */
+        @media (min-width: 769px) {{
+            .performance-row {{
+                grid-template-columns: 1fr 1fr !important;
+                gap: 16px;
             }}
         }}
 
@@ -3153,7 +3173,7 @@ def generate_html_dashboard(data):
 
         <main role="main" aria-labelledby="dashboard-title">
             <!-- Two-column layout for Performance Overview and Contracted/Outsourced Projects -->
-            <div class="grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 30px;" role="region" aria-label="Performance metrics and charts">
+            <div class="performance-row" role="region" aria-label="Performance metrics and charts">
             <!-- Performance Overview -->
             <section class="card" role="region" aria-labelledby="performance-title">
                 <h2 id="performance-title">Performance Overview</h2>
@@ -3177,7 +3197,6 @@ def generate_html_dashboard(data):
                     <span id="delayed-capacity-label" class="metric-label">Delayed Due to Capacity</span>
                     <span class="metric-value {'positive' if delivery_metrics['projects_delayed_capacity'] == 0 else 'negative'}" aria-describedby="delayed-capacity-label" role="status">{delivery_metrics['projects_delayed_capacity']}</span>
                 </div>
-            </div>
             </section>
 
             <!-- Contracted/Outsourced Projects -->
