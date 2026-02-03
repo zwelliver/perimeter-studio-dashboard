@@ -1553,6 +1553,13 @@
             margin-bottom: 16px;
         }
 
+        .performance-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
         .card {
             background: var(--bg-secondary);
             padding: 20px 24px;
@@ -1748,6 +1755,11 @@
                 gap: 15px;
             }
 
+            .performance-row {
+                grid-template-columns: 1fr !important;
+                gap: 15px;
+            }
+
             /* Override any inline grid styles */
             .card [style*="grid-template-columns"],
             [style*="grid-template-columns"] {
@@ -1917,6 +1929,14 @@
 
             .chart-container canvas {
                 max-width: 100% !important;
+            }
+        }
+
+        /* Tablet and Desktop - Restore two-column layout */
+        @media (min-width: 769px) {
+            .performance-row {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 16px;
             }
         }
 
@@ -2108,7 +2128,7 @@
         <header class="header" role="banner">
             <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
             <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: February 03, 2026 at 09:00 AM</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: February 03, 2026 at 09:15 AM</p>
 
             <div class="header-controls">
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
@@ -2130,7 +2150,7 @@
 
         <main role="main" aria-labelledby="dashboard-title">
             <!-- Two-column layout for Performance Overview and Contracted/Outsourced Projects -->
-            <div class="grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 30px;" role="region" aria-label="Performance metrics and charts">
+            <div class="performance-row" role="region" aria-label="Performance metrics and charts">
             <!-- Performance Overview -->
             <section class="card" role="region" aria-labelledby="performance-title">
                 <h2 id="performance-title">Performance Overview</h2>
