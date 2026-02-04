@@ -2185,7 +2185,7 @@
         <header class="header" role="banner">
             <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
             <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: February 04, 2026 at 11:30 AM</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: February 04, 2026 at 11:45 AM</p>
 
             <div class="header-controls">
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
@@ -4614,7 +4614,7 @@ Dec 1...
             const printWindow = window.open('', '_blank');
             const currentContent = document.documentElement.outerHTML;
 
-            // CSS for print
+            // CSS for print - CONDENSED 2-PAGE VERSION
             const printCSS = `
                 <style>
                     @media print {
@@ -4622,47 +4622,177 @@ Dec 1...
                             box-shadow: none !important;
                             animation: none !important;
                             transition: none !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
                         }
 
                         body {
                             background: white !important;
                             color: black !important;
-                            padding: 20px !important;
+                            padding: 8px !important;
+                            font-size: 8px !important;
+                            line-height: 1.1 !important;
                         }
 
+                        /* Hide charts, timelines, and space-consuming sections */
                         .header-controls,
                         .theme-toggle,
-                        .export-btn {
+                        .export-btn,
+                        .chart-container,
+                        canvas,
+                        .timeline-container,
+                        .project-timeline,
+                        .upcoming-shoots,
+                        .upcoming-deadlines,
+                        .forecasted-projects,
+                        .card.full-width {
                             display: none !important;
                         }
 
-                        .card {
-                            break-inside: avoid;
-                            page-break-inside: avoid;
-                            margin-bottom: 30px !important;
-                            background: white !important;
-                            border: 1px solid #ccc !important;
+                        /* Compact header */
+                        .header {
+                            padding: 3px !important;
+                            margin-bottom: 5px !important;
+                            text-align: center !important;
                         }
 
-                        h1, h2 {
-                            color: var(--text-primary) !important;
+                        .header h1 {
+                            font-size: 14px !important;
+                            margin: 0 !important;
+                        }
+
+                        .header .subtitle, .header .timestamp {
+                            font-size: 7px !important;
+                            margin: 0 !important;
+                        }
+
+                        /* Ultra-compact cards */
+                        .card {
+                            margin: 2px !important;
+                            padding: 4px !important;
+                            background: white !important;
+                            border: 1px solid #ddd !important;
+                            font-size: 7px !important;
+                            break-inside: avoid;
+                        }
+
+                        .card h2 {
+                            font-size: 9px !important;
+                            margin: 0 0 3px 0 !important;
+                            color: #000 !important;
+                            text-align: center !important;
+                        }
+
+                        /* Three-column layout for maximum density */
+                        .grid {
+                            display: grid !important;
+                            grid-template-columns: 1fr 1fr 1fr !important;
+                            gap: 3px !important;
+                            margin: 2px 0 !important;
+                        }
+
+                        .performance-row {
+                            display: grid !important;
+                            grid-template-columns: 1fr 1fr !important;
+                            gap: 3px !important;
+                        }
+
+                        /* Ultra-compact metrics */
+                        .metric {
+                            margin: 1px 0 !important;
+                            display: flex !important;
+                            justify-content: space-between !important;
+                            font-size: 6px !important;
+                        }
+
+                        .metric-label {
+                            font-size: 6px !important;
+                            color: #555 !important;
                         }
 
                         .metric-value {
-                            color: var(--text-primary) !important;
+                            font-size: 7px !important;
+                            font-weight: bold !important;
+                            color: #000 !important;
                         }
 
-                        .progress-fill {
-                            background: var(--brand-primary) !important;
+                        /* Tiny progress rings */
+                        .progress-ring {
+                            width: 20px !important;
+                            height: 20px !important;
                         }
 
+                        .progress-ring-text {
+                            font-size: 5px !important;
+                        }
+
+                        /* Compact team capacity */
                         .team-member {
+                            margin: 1px 0 !important;
+                            padding: 2px !important;
                             border: 1px solid #ddd !important;
-                            margin-bottom: 15px !important;
-                            padding: 15px !important;
                         }
 
-                        @page { margin: 1in; }
+                        .team-member-name {
+                            font-size: 6px !important;
+                        }
+
+                        .capacity-bar {
+                            height: 6px !important;
+                            margin: 1px 0 !important;
+                        }
+
+                        /* Super compact category table */
+                        table {
+                            width: 100% !important;
+                            font-size: 5px !important;
+                        }
+
+                        th, td {
+                            padding: 1px 2px !important;
+                            border: 1px solid #ddd !important;
+                            font-size: 5px !important;
+                        }
+
+                        th {
+                            background: #f0f0f0 !important;
+                            font-size: 5px !important;
+                        }
+
+                        /* At-risk tasks - ultra compact */
+                        .at-risk-tasks .project-card {
+                            padding: 2px !important;
+                            margin: 1px 0 !important;
+                            font-size: 5px !important;
+                            border: 1px solid #eee !important;
+                        }
+
+                        .project-card-title {
+                            font-size: 6px !important;
+                            font-weight: bold !important;
+                        }
+
+                        .project-card-date {
+                            font-size: 5px !important;
+                        }
+
+                        /* Force tight page margins and small paper size utilization */
+                        @page {
+                            margin: 0.3in;
+                            size: letter;
+                        }
+
+                        /* Two-column layout for the entire dashboard */
+                        .dashboard-container {
+                            column-count: 2 !important;
+                            column-gap: 10px !important;
+                            column-fill: auto !important;
+                        }
+
+                        /* Force column breaks for better organization */
+                        .performance-overview {
+                            break-before: column;
+                        }
                     }
                 </style>
             `;
