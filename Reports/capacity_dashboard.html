@@ -2185,7 +2185,7 @@
         <header class="header" role="banner">
             <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
             <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: February 04, 2026 at 11:45 AM</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: February 04, 2026 at 12:00 PM</p>
 
             <div class="header-controls">
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
@@ -4629,23 +4629,23 @@ Dec 1...
                         body {
                             background: white !important;
                             color: black !important;
-                            padding: 8px !important;
-                            font-size: 8px !important;
-                            line-height: 1.1 !important;
+                            padding: 12px !important;
+                            font-size: 10px !important;
+                            line-height: 1.2 !important;
                         }
 
-                        /* Hide charts, timelines, and space-consuming sections */
+                        /* Hide only UI controls and charts (keep data sections) */
                         .header-controls,
                         .theme-toggle,
                         .export-btn,
                         .chart-container,
-                        canvas,
+                        canvas {
+                            display: none !important;
+                        }
+
+                        /* Hide specific space-consuming sections but keep data */
                         .timeline-container,
-                        .project-timeline,
-                        .upcoming-shoots,
-                        .upcoming-deadlines,
-                        .forecasted-projects,
-                        .card.full-width {
+                        .project-timeline {
                             display: none !important;
                         }
 
@@ -4666,19 +4666,19 @@ Dec 1...
                             margin: 0 !important;
                         }
 
-                        /* Ultra-compact cards */
+                        /* Compact but readable cards */
                         .card {
-                            margin: 2px !important;
-                            padding: 4px !important;
+                            margin: 4px !important;
+                            padding: 6px !important;
                             background: white !important;
                             border: 1px solid #ddd !important;
-                            font-size: 7px !important;
+                            font-size: 9px !important;
                             break-inside: avoid;
                         }
 
                         .card h2 {
-                            font-size: 9px !important;
-                            margin: 0 0 3px 0 !important;
+                            font-size: 11px !important;
+                            margin: 0 0 4px 0 !important;
                             color: #000 !important;
                             text-align: center !important;
                         }
@@ -4697,21 +4697,21 @@ Dec 1...
                             gap: 3px !important;
                         }
 
-                        /* Ultra-compact metrics */
+                        /* Compact but readable metrics */
                         .metric {
-                            margin: 1px 0 !important;
+                            margin: 2px 0 !important;
                             display: flex !important;
                             justify-content: space-between !important;
-                            font-size: 6px !important;
+                            font-size: 8px !important;
                         }
 
                         .metric-label {
-                            font-size: 6px !important;
+                            font-size: 8px !important;
                             color: #555 !important;
                         }
 
                         .metric-value {
-                            font-size: 7px !important;
+                            font-size: 9px !important;
                             font-weight: bold !important;
                             color: #000 !important;
                         }
@@ -4782,16 +4782,9 @@ Dec 1...
                             size: letter;
                         }
 
-                        /* Two-column layout for the entire dashboard */
+                        /* Compact layout without forced columns */
                         .dashboard-container {
-                            column-count: 2 !important;
-                            column-gap: 10px !important;
-                            column-fill: auto !important;
-                        }
-
-                        /* Force column breaks for better organization */
-                        .performance-overview {
-                            break-before: column;
+                            display: block !important;
                         }
                     }
                 </style>
