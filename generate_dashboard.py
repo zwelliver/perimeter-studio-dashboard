@@ -4155,8 +4155,26 @@ def generate_html_dashboard(data):
             console.log('Chart element found:', !!chartElement);
 
             if (chartElement) {{
-                console.log('Chart container dimensions:', chartElement.offsetWidth, 'x', chartElement.offsetHeight);
+                // Force refresh container dimensions before creating chart
+                chartElement.style.display = 'block';
+                chartElement.style.visibility = 'visible';
+                chartElement.style.opacity = '1';
+
+                // Trigger reflow to ensure dimensions are calculated
+                const width = chartElement.offsetWidth;
+                const height = chartElement.offsetHeight;
+                console.log('Chart container dimensions:', width, 'x', height);
                 console.log('Chart container style:', chartElement.style.cssText);
+
+                // Ensure minimum dimensions for chart visibility
+                if (width < 200) {{
+                    console.log('Container width too small, setting minimum width');
+                    chartElement.style.minWidth = '300px';
+                }}
+                if (height < 150) {{
+                    console.log('Container height too small, setting minimum height');
+                    chartElement.style.minHeight = '200px';
+                }}
 
                 const historyCtx = chartElement.getContext('2d');
                 console.log('Canvas context obtained:', !!historyCtx);
@@ -4248,6 +4266,7 @@ def generate_html_dashboard(data):
                         options: {{
                             responsive: true,
                             maintainAspectRatio: false,
+                            resizeDelay: 0,
                             devicePixelRatio: window.devicePixelRatio || 1,
                             layout: {{
                                 padding: {{
@@ -4375,6 +4394,31 @@ def generate_html_dashboard(data):
                 }}
             }}, 500);
         }});
+
+        // Additional chart validation - check every few seconds to ensure chart stays visible
+        function validateCapacityChart() {{
+            const chartElement = document.getElementById('capacityHistoryChart');
+            if (chartElement && (!window.capacityHistoryChart ||
+                !window.capacityHistoryChart.canvas ||
+                window.capacityHistoryChart.canvas.style.display === 'none')) {{
+                console.log('Historical Capacity chart validation failed - recreating');
+                if (window.capacityHistoryChart) {{
+                    try {{
+                        window.capacityHistoryChart.destroy();
+                    }} catch (e) {{
+                        console.log('Error destroying during validation:', e);
+                    }}
+                    window.capacityHistoryChart = null;
+                }}
+                generateCapacityHistoryChart();
+            }}
+        }}
+
+        // Run validation after DOM changes or potential CSS recalculations
+        setTimeout(() => {{
+            validateCapacityChart();
+            setInterval(validateCapacityChart, 10000); // Check every 10 seconds
+        }}, 2000);
 
         // ===== NEW CHART VISUALIZATIONS =====
 
@@ -5171,16 +5215,51 @@ def generate_html_dashboard(data):
         window.addEventListener('resize', function() {{
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(function() {{
-                // Regenerate charts on orientation change or significant resize
+                console.log('=== Window resize triggered ===');
+                console.log('New window size:', window.innerWidth, 'x', window.innerHeight);
+
+                // Check if Historical Capacity chart exists before destroying
+                const chartElement = document.getElementById('capacityHistoryChart');
+                console.log('Chart element exists:', !!chartElement);
+                console.log('Chart element dimensions:', chartElement ? chartElement.offsetWidth + 'x' + chartElement.offsetHeight : 'N/A');
+
+                // Regenerate charts with improved error handling
                 if (window.capacityHistoryChart) {{
-                    window.capacityHistoryChart.destroy();
+                    console.log('Destroying existing Historical Capacity chart');
+                    try {{
+                        window.capacityHistoryChart.destroy();
+                        window.capacityHistoryChart = null;
+                    }} catch (e) {{
+                        console.error('Error destroying chart:', e);
+                    }}
                 }}
 
-                // Regenerate all charts
-                generateRadarChart();
-                generateVelocityChart();
-                generateCapacityHistoryChart();
-            }}, 250);
+                // Regenerate all charts with staggered timing to avoid conflicts
+                setTimeout(() => {{
+                    try {{
+                        generateRadarChart();
+                    }} catch (e) {{
+                        console.error('Error generating radar chart:', e);
+                    }}
+                }}, 50);
+
+                setTimeout(() => {{
+                    try {{
+                        generateVelocityChart();
+                    }} catch (e) {{
+                        console.error('Error generating velocity chart:', e);
+                    }}
+                }}, 100);
+
+                setTimeout(() => {{
+                    try {{
+                        console.log('Regenerating Historical Capacity chart after resize');
+                        generateCapacityHistoryChart();
+                    }} catch (e) {{
+                        console.error('Error generating capacity history chart:', e);
+                    }}
+                }}, 150);
+            }}, 350);
         }});
 
         // Optimize touch interactions for mobile
