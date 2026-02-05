@@ -1464,6 +1464,11 @@ def generate_html_dashboard(data):
                 margin: 10px 0;
             }}
 
+            .velocity-container {{
+                height: 250px;
+                margin: 10px 0;
+            }}
+
             /* Specific fixes for Historical Capacity chart only */
             #capacityHistoryChart {{
                 display: block !important;
@@ -2441,8 +2446,10 @@ def generate_html_dashboard(data):
         /* ===== VELOCITY TREND CHART ===== */
         .velocity-container {{
             position: relative;
-            height: 300px;
-            margin: 20px 0;
+            height: 280px;
+            margin-top: 12px;
+            max-width: 100%;
+            overflow: hidden;
         }}
 
         /* ===== HEAT MAP CALENDAR STYLES ===== */
@@ -2901,6 +2908,17 @@ def generate_html_dashboard(data):
                 height: auto !important;
             }}
 
+            .velocity-container {{
+                height: 250px;
+                width: 100% !important;
+                max-width: 100% !important;
+            }}
+
+            .velocity-container canvas {{
+                max-width: 100% !important;
+                height: auto !important;
+            }}
+
             .team-member-name {{
                 font-size: 13px;
             }}
@@ -2966,6 +2984,16 @@ def generate_html_dashboard(data):
                 max-width: 100% !important;
             }}
 
+            .velocity-container {{
+                height: 220px;
+                width: 100% !important;
+                max-width: 100% !important;
+            }}
+
+            .velocity-container canvas {{
+                max-width: 100% !important;
+            }}
+
             /* Even more compact heatmap for small screens */
             .heatmap-grid {{
                 grid-template-columns: repeat(4, 1fr) !important;
@@ -2987,6 +3015,16 @@ def generate_html_dashboard(data):
             }}
 
             .chart-container canvas {{
+                max-width: 100% !important;
+            }}
+
+            .velocity-container {{
+                height: 200px;
+                width: 100% !important;
+                max-width: 100% !important;
+            }}
+
+            .velocity-container canvas {{
                 max-width: 100% !important;
             }}
         }}
@@ -3047,6 +3085,10 @@ def generate_html_dashboard(data):
             .chart-container {{
                 height: 400px;
             }}
+
+            .velocity-container {{
+                height: 400px;
+            }}
         }}
 
         @media (min-width: 2560px) {{
@@ -3098,6 +3140,10 @@ def generate_html_dashboard(data):
             }}
 
             .chart-container {{
+                height: 500px;
+            }}
+
+            .velocity-container {{
                 height: 500px;
             }}
 
@@ -3169,6 +3215,10 @@ def generate_html_dashboard(data):
             }}
 
             .chart-container {{
+                height: 600px;
+            }}
+
+            .velocity-container {{
                 height: 600px;
             }}
 
@@ -4647,14 +4697,41 @@ def generate_html_dashboard(data):
 
         // Velocity Chart
         function generateVelocityChart() {{
+            console.log('=== generateVelocityChart called ===');
+
+            // Destroy existing chart if it exists
+            if (window.velocityChart) {{
+                console.log('Destroying existing velocity chart');
+                try {{
+                    window.velocityChart.destroy();
+                }} catch (e) {{
+                    console.log('Error destroying velocity chart:', e);
+                }}
+                window.velocityChart = null;
+            }}
+
             const canvas = document.getElementById('velocityChart');
+            console.log('Velocity chart element found:', !!canvas);
+
             if (!canvas) return;
+
+            // Force refresh container dimensions before creating chart
+            const container = canvas.parentElement;
+            if (container) {{
+                container.style.display = 'block';
+                container.style.visibility = 'visible';
+
+                // Trigger reflow to ensure dimensions are calculated
+                const width = container.offsetWidth;
+                const height = container.offsetHeight;
+                console.log('Velocity container dimensions:', width, 'x', height);
+            }}
 
             // Use actual weekly completion data
             const weeklyData = {weekly_completions_json};
 
             const ctx = canvas.getContext('2d');
-            new Chart(ctx, {{
+            window.velocityChart = new Chart(ctx, {{
                 type: 'line',
                 data: {{
                     labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
@@ -4675,6 +4752,8 @@ def generate_html_dashboard(data):
                 options: {{
                     responsive: true,
                     maintainAspectRatio: false,
+                    resizeDelay: 0,
+                    devicePixelRatio: window.devicePixelRatio || 1,
                     plugins: {{ legend: {{ display: false }} }},
                     scales: {{
                         y: {{ beginAtZero: true, ticks: {{ stepSize: 2, color: getChartTextColor() }}, grid: {{ color: getChartGridColor() }} }},
@@ -4682,6 +4761,8 @@ def generate_html_dashboard(data):
                     }}
                 }}
             }});
+
+            console.log('Velocity chart created successfully:', !!window.velocityChart);
         }}
 
         // Initialize capacity history chart on page load
