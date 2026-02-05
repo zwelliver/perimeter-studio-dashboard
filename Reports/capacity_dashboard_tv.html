@@ -2176,6 +2176,7 @@ Dec 1...
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
+                            resizeDelay: 0,
                             devicePixelRatio: window.devicePixelRatio || 1,
                             layout: {
                                 padding: {
@@ -2556,14 +2557,41 @@ Dec 1...
 
         // Velocity Chart
         function generateVelocityChart() {
+            console.log('=== generateVelocityChart called ===');
+
+            // Destroy existing chart if it exists
+            if (window.velocityChart) {
+                console.log('Destroying existing velocity chart');
+                try {
+                    window.velocityChart.destroy();
+                } catch (e) {
+                    console.log('Error destroying velocity chart:', e);
+                }
+                window.velocityChart = null;
+            }
+
             const canvas = document.getElementById('velocityChart');
+            console.log('Velocity chart element found:', !!canvas);
+
             if (!canvas) return;
+
+            // Force refresh container dimensions before creating chart
+            const container = canvas.parentElement;
+            if (container) {
+                container.style.display = 'block';
+                container.style.visibility = 'visible';
+
+                // Trigger reflow to ensure dimensions are calculated
+                const width = container.offsetWidth;
+                const height = container.offsetHeight;
+                console.log('Velocity container dimensions:', width, 'x', height);
+            }
 
             // Use actual weekly completion data
             const weeklyData = [0, 0, 0, 4, 4, 1, 4, 2];
 
             const ctx = canvas.getContext('2d');
-            new Chart(ctx, {
+            window.velocityChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
@@ -2584,6 +2612,8 @@ Dec 1...
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    resizeDelay: 0,
+                    devicePixelRatio: window.devicePixelRatio || 1,
                     plugins: { legend: { display: false } },
                     scales: {
                         y: { beginAtZero: true, ticks: { stepSize: 2, color: getChartTextColor() }, grid: { color: getChartGridColor() } },
@@ -2591,6 +2621,8 @@ Dec 1...
                     }
                 }
             });
+
+            console.log('Velocity chart created successfully:', !!window.velocityChart);
         }
 
         // Initialize capacity history chart on page load

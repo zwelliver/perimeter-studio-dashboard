@@ -4001,7 +4001,6 @@ def generate_html_dashboard(data):
         if 'Completed Date' in df.columns:
             # Get completions for the last 8 weeks
             today = datetime.now().date()
-
             for week_offset in range(7, -1, -1):  # 7 weeks ago to current week
                 week_start = today - timedelta(weeks=week_offset, days=today.weekday())
                 week_end = week_start + timedelta(days=6)
@@ -4730,6 +4729,12 @@ def generate_html_dashboard(data):
             // Use actual weekly completion data
             const weeklyData = {weekly_completions_json};
 
+            // Calculate appropriate Y-axis maximum with headroom
+            const maxValue = Math.max(...weeklyData);
+            const suggestedMax = Math.max(6, Math.ceil(maxValue * 1.3)); // At least 6, or 30% above max value
+            const stepSize = suggestedMax <= 10 ? 1 : Math.ceil(suggestedMax / 8); // Use step of 1 for small ranges
+
+
             const ctx = canvas.getContext('2d');
             window.velocityChart = new Chart(ctx, {{
                 type: 'line',
@@ -4756,7 +4761,20 @@ def generate_html_dashboard(data):
                     devicePixelRatio: window.devicePixelRatio || 1,
                     plugins: {{ legend: {{ display: false }} }},
                     scales: {{
-                        y: {{ beginAtZero: true, ticks: {{ stepSize: 2, color: getChartTextColor() }}, grid: {{ color: getChartGridColor() }} }},
+                        y: {{
+                            beginAtZero: true,
+                            suggestedMax: suggestedMax,
+                            ticks: {{
+                                stepSize: stepSize,
+                                color: getChartTextColor(),
+                                callback: function(value) {{
+                                    if (Number.isInteger(value)) {{
+                                        return value;
+                                    }}
+                                }}
+                            }},
+                            grid: {{ color: getChartGridColor() }}
+                        }},
                         x: {{ ticks: {{ color: getChartTextColor() }}, grid: {{ color: getChartGridColor() }} }}
                     }}
                 }}
