@@ -99,9 +99,10 @@ def save_mapping(mapping):
 
 
 def extract_talent_name(event):
-    """Extract talent name from event attendees"""
+    """Extract talent name from event attendees or event title as fallback"""
     attendees = event.get('attendees', [])
 
+    # First, try to find talent from attendees
     for attendee in attendees:
         email = attendee.get('email', '').lower()
         display_name = attendee.get('displayName', '')
@@ -117,7 +118,29 @@ def extract_talent_name(event):
             # Extract name from email if no display name
             return email.split('@')[0].replace('.', ' ').title()
 
-    # No external attendee found
+    # Fallback: Try to extract name from event title
+    event_summary = event.get('summary', '').strip()
+    if event_summary:
+        # Look for patterns like "WOV - Name" or "WOV Name" or "Name WOV"
+        import re
+
+        # Pattern 1: "🎬 WOV - Debbie Mason" -> "Debbie Mason"
+        match = re.search(r'WOV\s*-\s*([^-]+?)(?:\s*\(|$)', event_summary, re.IGNORECASE)
+        if match:
+            name = match.group(1).strip()
+            if name and name.lower() not in ['unknown', 'talent', 'filming', 'recording']:
+                return name
+
+        # Pattern 2: "Filming the WOV for Name" -> extract Name if possible
+        match = re.search(r'filming.*(?:wov|interview).*for\s+([A-Za-z\s]+?)(?:\s*\d|$)', event_summary, re.IGNORECASE)
+        if match:
+            name = match.group(1).strip()
+            # Clean up common date patterns
+            name = re.sub(r'\d+/\d+.*$', '', name).strip()
+            if name and len(name.split()) <= 3:  # Reasonable name length
+                return name
+
+    # No external attendee found and couldn't extract from title
     return "Unknown Talent"
 
 

@@ -485,18 +485,31 @@ def fetch_detailed_tasks():
                     videographer = None
 
                     if 'custom_fields' in task:
+                        # Collect all field data, including ALL Task Progress fields
+                        task_progress_values = []
                         for field in task['custom_fields']:
                             if field['gid'] == PERCENT_ALLOCATION_FIELD_GID and field.get('number_value'):
                                 estimated_allocation = field.get('number_value', 0) * 100
                             elif field['gid'] == ACTUAL_ALLOCATION_FIELD_GID and field.get('number_value'):
                                 actual_allocation = field.get('number_value', 0) * 100
-                            elif field['gid'] == TASK_PROGRESS_FIELD_GID:
-                                # Task Progress is an enum field, get the display_value
-                                if field.get('display_value'):
-                                    task_progress = field.get('display_value')
+                            elif field.get('name') == 'Task Progress' and field.get('display_value'):
+                                # Collect ALL Task Progress values (handles multiple fields)
+                                task_progress_values.append(field.get('display_value'))
                             elif field['gid'] == VIDEOGRAPHER_FIELD_GID:
                                 # Videographer is a text field
                                 videographer = field.get('text_value')
+
+                        # Determine best Task Progress value from all available fields
+                        if task_progress_values:
+                            # Priority order: more active states first, then completed states
+                            priority_order = ['In Progress', 'Scheduled', 'Needs Scheduling', 'Filmed', 'Offloaded']
+                            for status in priority_order:
+                                if status in task_progress_values:
+                                    task_progress = status
+                                    break
+                            # If none of the priority statuses found, use the first one
+                            if not task_progress:
+                                task_progress = task_progress_values[0]
 
                     task_info = {
                         'gid': task.get('gid'),
@@ -747,21 +760,6 @@ def identify_at_risk_tasks(tasks, team_capacity):
         task_progress = task.get('task_progress')
         project = task.get('project')
 
-        # Check if task was recently updated (indicates active work)
-        task_modified = task.get('modified_at')
-        recently_updated = False
-        if task_modified:
-            try:
-                if isinstance(task_modified, str):
-                    modified_date = datetime.fromisoformat(task_modified.replace('Z', '+00:00')).date()
-                else:
-                    modified_date = task_modified.date() if hasattr(task_modified, 'date') else task_modified
-
-                # If task was updated in last 3 days, consider it actively being worked on
-                recently_updated = (today - modified_date).days <= 3
-            except:
-                recently_updated = False
-
         # Check if task is overdue
         if task['due_on']:
             try:
@@ -771,29 +769,16 @@ def identify_at_risk_tasks(tasks, team_capacity):
                     risk_factors.append(f"Overdue by {(today - due_date).days} days")
                 elif due_date <= seven_days:
                     # Due within 7 days - check Task Progress based on project type
-                    # IMPORTANT: Only flag as at-risk if task hasn't been properly updated
 
                     if project == 'Production':
                         # Production: at-risk if "Needs Scheduling" and approaching due date
-                        # BUT NOT if it's already "In Progress" or "Complete"
                         if task_progress == 'Needs Scheduling':
                             risk_factors.append(f"Due in {(due_date - today).days} days, needs scheduling")
 
                     elif project == 'Post Production':
-                        # Post Production: at-risk if "Filmed" or "Offloaded" (but NOT "In Progress" or "Complete") and approaching due date
-                        # KEY FIX: Exclude tasks that are "In Progress" or "Complete" - they're actively being worked on
-                        if task_progress in ['Filmed', 'Offloaded'] and task_progress not in ['In Progress', 'Complete']:
+                        # Post Production: at-risk if "Filmed" or "Offloaded" (but NOT "In Progress") and approaching due date
+                        if task_progress in ['Filmed', 'Offloaded']:
                             risk_factors.append(f"Due in {(due_date - today).days} days, not yet in progress")
-
-                    # Additional check: Don't flag tasks that are actively "In Progress" regardless of project type
-                    if task_progress == 'In Progress':
-                        # Remove any risk factors already added - task is actively being worked on
-                        risk_factors = []
-
-                    # Don't flag tasks that were recently updated - indicates active attention
-                    if recently_updated:
-                        # Remove any risk factors - task has recent activity
-                        risk_factors = []
             except:
                 pass
 
@@ -1029,73 +1014,6 @@ def generate_html_dashboard(data):
     <title>Perimeter Studio Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* ===== CSS VARIABLES FOR THEME SYSTEM ===== */
-        :root {{
-            /* Light Theme Colors */
-            --bg-primary: #f8f9fa;
-            --bg-secondary: #ffffff;
-            --bg-tertiary: #e9ecef;
-
-            --text-primary: #09243F;
-            --text-secondary: #6c757d;
-            --text-muted: #adb5bd;
-
-            --brand-primary: #60BBE9;
-            --brand-secondary: #09243F;
-            --brand-accent: #60BBE9;
-
-            --border-color: #dee2e6;
-            --border-accent: #60BBE9;
-
-            --shadow-light: rgba(0, 0, 0, 0.1);
-            --shadow-medium: rgba(0, 0, 0, 0.15);
-
-            /* Status Colors */
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --info-color: #17a2b8;
-
-            /* Chart Colors */
-            --chart-bg: #e9ecef;
-            --chart-progress: var(--brand-primary);
-
-            /* Interactive Elements */
-            --hover-bg: rgba(96, 187, 233, 0.1);
-            --active-bg: rgba(96, 187, 233, 0.2);
-
-            /* Mobile Breakpoints */
-            --mobile-breakpoint: 768px;
-            --tablet-breakpoint: 1024px;
-        }}
-
-        /* Dark Theme */
-        :root[data-theme="dark"] {{
-            --bg-primary: #1a1a1a;
-            --bg-secondary: #2d2d2d;
-            --bg-tertiary: #404040;
-
-            --text-primary: #ffffff;
-            --text-secondary: #b0b0b0;
-            --text-muted: #808080;
-
-            --brand-primary: #60BBE9;
-            --brand-secondary: #4a9cd9;
-            --brand-accent: #7ac3ed;
-
-            --border-color: #404040;
-            --border-accent: #60BBE9;
-
-            --shadow-light: rgba(255, 255, 255, 0.1);
-            --shadow-medium: rgba(255, 255, 255, 0.15);
-
-            --chart-bg: #404040;
-            --chart-progress: var(--brand-primary);
-
-            --hover-bg: rgba(96, 187, 233, 0.2);
-            --active-bg: rgba(96, 187, 233, 0.3);
-        }}
-
         * {{
             margin: 0;
             padding: 0;
@@ -1104,12 +1022,11 @@ def generate_html_dashboard(data):
 
         body {{
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            background: #f8f9fa;
+            color: #09243F;
             padding: 20px;
             min-height: 100vh;
             overflow-x: hidden;
-            transition: background-color 0.3s ease, color 0.3s ease;
         }}
 
         .dashboard-container {{
@@ -1119,958 +1036,12 @@ def generate_html_dashboard(data):
         }}
 
         .header {{
-            background: var(--bg-secondary);
+            background: white;
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px var(--shadow-light);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
-            border-left: 4px solid var(--border-accent);
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-        }}
-
-        /* Theme Toggle Button */
-        .theme-toggle {{
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 25px;
-            padding: 8px 16px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-primary);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }}
-
-        .theme-toggle:hover {{
-            background: var(--hover-bg);
-            border-color: var(--brand-primary);
-        }}
-
-        .theme-toggle:active {{
-            background: var(--active-bg);
-        }}
-
-        .theme-icon {{
-            font-size: 16px;
-            line-height: 1;
-        }}
-
-        /* Header controls layout */
-        .header-controls {{
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            flex-direction: column;
-            margin-top: 15px;
-        }}
-
-        @media (min-width: 640px) {{
-            .header-controls {{
-                flex-direction: row;
-                align-items: center;
-            }}
-        }}
-
-        .export-controls {{
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }}
-
-        .export-btn {{
-            background: var(--brand-primary);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 8px 16px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-        }}
-
-        .export-btn:hover {{
-            background: var(--brand-secondary);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px var(--shadow-medium);
-        }}
-
-        .export-btn:active {{
-            transform: translateY(0);
-        }}
-
-        .export-btn:focus {{
-            outline: 2px solid var(--brand-accent);
-            outline-offset: 2px;
-        }}
-
-        /* ===== ACCESSIBILITY IMPROVEMENTS ===== */
-        /* Focus management for keyboard navigation */
-        .theme-toggle:focus {{
-            outline: 2px solid var(--brand-primary);
-            outline-offset: 2px;
-        }}
-
-        /* High contrast mode support */
-        @media (prefers-contrast: high) {{
-            :root {{
-                --shadow-light: rgba(0, 0, 0, 0.3);
-                --shadow-medium: rgba(0, 0, 0, 0.4);
-            }}
-
-            .header {{
-                border-left-width: 6px;
-            }}
-        }}
-
-        /* Reduced motion support */
-        @media (prefers-reduced-motion: reduce) {{
-            * {{
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-                scroll-behavior: auto !important;
-            }}
-        }}
-
-        /* Screen reader only text */
-        .sr-only {{
-            position: absolute !important;
-            width: 1px !important;
-            height: 1px !important;
-            padding: 0 !important;
-            margin: -1px !important;
-            overflow: hidden !important;
-            clip: rect(0, 0, 0, 0) !important;
-            white-space: nowrap !important;
-            border: 0 !important;
-        }}
-
-        /* Focus indicators for interactive elements */
-        .card:focus-within {{
-            box-shadow: 0 0 0 2px var(--brand-primary);
-        }}
-
-        .progress-ring:focus {{
-            outline: 2px solid var(--brand-primary);
-            outline-offset: 2px;
-        }}
-
-        /* Improved color contrast for text */
-        .metric-value {{
-            font-weight: 700;
-            color: var(--text-primary);
-        }}
-
-        .metric-label {{
-            color: var(--text-secondary);
-            font-weight: 500;
-        }}
-
-        /* ===== MOBILE RESPONSIVE DESIGN ===== */
-        /* Tablet breakpoint */
-        @media (max-width: 1024px) {{
-            .dashboard-container {{
-                max-width: 98%;
-                margin: 0 auto;
-            }}
-
-            .header {{
-                padding: 20px;
-            }}
-
-            .header h1 {{
-                font-size: 28px;
-            }}
-
-            .theme-toggle {{
-                padding: 10px 16px;
-                font-size: 13px;
-                /* Ensure minimum touch target of 44x44px for accessibility */
-                min-height: 44px;
-            }}
-
-            .grid {{
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }}
-
-            .card {{
-                padding: 20px;
-            }}
-
-            .card h2 {{
-                font-size: 20px;
-                margin-bottom: 15px;
-            }}
-
-            .progress-rings-container {{
-                gap: 15px;
-            }}
-
-            .team-member {{
-                margin-bottom: 15px;
-            }}
-        }}
-
-        /* Mobile breakpoint */
-        @media (max-width: 768px) {{
-            body {{
-                padding: 10px;
-            }}
-
-            .header {{
-                padding: 15px;
-            }}
-
-            .header h1 {{
-                font-size: 24px;
-                margin-bottom: 8px;
-            }}
-
-            .subtitle {{
-                font-size: 14px;
-                margin-bottom: 10px;
-            }}
-
-            .timestamp {{
-                font-size: 12px;
-            }}
-
-            .header {{
-                display: grid;
-                grid-template-areas:
-                    "title"
-                    "subtitle"
-                    "timestamp"
-                    "controls";
-                grid-template-rows: auto auto auto auto;
-                gap: 15px;
-                position: relative;
-                padding: 20px 15px; /* Normal padding */
-            }}
-
-            .header-controls {{
-                grid-area: controls;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                flex-direction: row;
-                flex-wrap: wrap;
-                gap: 12px;
-                z-index: 10;
-            }}
-
-            .header h1 {{
-                grid-area: title;
-                font-size: 24px;
-                margin: 0;
-            }}
-
-            .header .subtitle {{
-                grid-area: subtitle;
-                margin: 0;
-            }}
-
-            .header .timestamp {{
-                grid-area: timestamp;
-                margin: 0;
-            }}
-
-            .theme-toggle {{
-                flex: none;
-            }}
-
-            .export-controls {{
-                display: flex;
-                flex-direction: row;
-                margin-top: 0;
-                gap: 8px;
-            }}
-
-            .export-btn {{
-                font-size: 12px;
-                padding: 8px 14px;
-                /* Ensure minimum touch target of 44x44px for accessibility */
-                min-height: 44px;
-                min-width: 44px;
-                border-radius: 22px;
-            }}
-
-            .card {{
-                padding: 15px;
-            }}
-
-            .card h2 {{
-                font-size: 18px;
-                margin-bottom: 12px;
-            }}
-
-            .metric {{
-                margin-bottom: 15px;
-                flex-direction: column;
-                align-items: flex-start;
-                text-align: left;
-            }}
-
-            .metric-label {{
-                font-size: 14px;
-                margin-bottom: 5px;
-            }}
-
-            .metric-value {{
-                font-size: 24px;
-            }}
-
-            /* Mobile-friendly team capacity */
-            .team-member {{
-                margin-bottom: 20px;
-                padding: 15px;
-                background: var(--bg-tertiary);
-                border-radius: 8px;
-            }}
-
-            .team-member-name {{
-                font-size: 16px;
-                margin-bottom: 8px;
-            }}
-
-            .team-member-capacity {{
-                font-size: 14px;
-                margin-bottom: 10px;
-            }}
-
-            .progress-bar {{
-                height: 25px;
-            }}
-
-            .progress-fill {{
-                font-size: 14px;
-                line-height: 25px;
-            }}
-
-            /* Mobile charts */
-            .chart-container {{
-                height: 250px;
-                margin: 10px 0;
-            }}
-
-            /* Specific fixes for Historical Capacity chart only */
-            #capacityHistoryChart {{
-                display: block !important;
-                width: 100% !important;
-                height: 250px !important;
-                min-width: 200px !important;
-                visibility: visible !important;
-            }}
-
-            .progress-rings-container {{
-                flex-direction: column;
-                align-items: center;
-                gap: 20px;
-            }}
-
-            .progress-ring {{
-                margin-bottom: 15px;
-            }}
-
-            .gauge-container {{
-                width: 150px;
-                height: 150px;
-            }}
-
-            /* Mobile timeline adjustments */
-            .timeline-container {{
-                overflow-x: auto;
-                padding-bottom: 10px;
-            }}
-
-            .timeline-row {{
-                min-width: 600px;
-            }}
-
-            .timeline-project-col,
-            .timeline-project-name {{
-                min-width: 120px;
-                width: 120px;
-            }}
-
-            /* Enhanced horizontal scroll for mobile */
-            @media (max-width: 768px) {{
-                .timeline-container {{
-                    overflow-x: auto;
-                    -webkit-overflow-scrolling: touch;
-                    scroll-snap-type: x proximity;
-                    padding-bottom: 15px;
-                    position: relative;
-                }}
-
-                /* Hide the vertical line on mobile */
-                .timeline-container::before {{
-                    display: none;
-                }}
-
-                /* Add scroll indicator */
-                .timeline-container::after {{
-                    content: '← Swipe to see timeline →';
-                    position: sticky;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    bottom: 0;
-                    background: rgba(52, 152, 219, 0.9);
-                    color: white;
-                    padding: 4px 12px;
-                    border-radius: 12px;
-                    font-size: 11px;
-                    font-weight: 500;
-                    z-index: 20;
-                    white-space: nowrap;
-                    pointer-events: none;
-                    opacity: 0.8;
-                    animation: fadeInOut 3s ease-in-out infinite;
-                }}
-
-                @keyframes fadeInOut {{
-                    0%, 100% {{ opacity: 0.6; }}
-                    50% {{ opacity: 1; }}
-                }}
-
-                .timeline-header,
-                .timeline-row {{
-                    min-width: 700px;
-                    display: flex;
-                    align-items: center;
-                }}
-
-                .timeline-project-col,
-                .timeline-project-name {{
-                    min-width: 140px;
-                    width: 140px;
-                    position: sticky;
-                    left: 0;
-                    background: var(--bg-secondary);
-                    z-index: 10;
-                    border-right: 2px solid var(--border-color);
-                    box-shadow: 2px 0 4px rgba(0,0,0,0.1);
-                    flex-shrink: 0;
-                }}
-
-                .timeline-dates,
-                .timeline-bars {{
-                    flex: 1;
-                    min-width: 560px;
-                }}
-
-                .timeline-date {{
-                    font-size: 10px;
-                    scroll-snap-align: start;
-                }}
-            }}
-
-            /* Small mobile optimizations */
-            @media (max-width: 480px) {{
-                .timeline-project-col,
-                .timeline-project-name {{
-                    font-size: 12px;
-                    min-width: 100px;
-                    width: 100px;
-                }}
-
-                .timeline-date {{
-                    font-size: 9px;
-                    padding: 0 2px;
-                }}
-
-                .timeline-bar {{
-                    height: 28px;
-                    font-size: 9px;
-                }}
-
-                .timeline-header,
-                .timeline-row {{
-                    min-width: 600px;
-                }}
-
-                .timeline-dates,
-                .timeline-bars {{
-                    min-width: 500px;
-                }}
-            }}
-
-            /* Mobile table styles */
-            table {{
-                font-size: 14px;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }}
-
-            th, td {{
-                padding: 8px 6px;
-                white-space: nowrap;
-            }}
-
-            /* Add visual scroll indicator for tables */
-            .card:has(table)::after {{
-                content: '← Scroll →';
-                position: absolute;
-                bottom: 10px;
-                right: 10px;
-                font-size: 11px;
-                color: var(--text-muted);
-                opacity: 0.6;
-                pointer-events: none;
-            }}
-
-            .at-risk-item {{
-                padding: 12px;
-                margin-bottom: 12px;
-            }}
-
-            .at-risk-item h4 {{
-                font-size: 16px;
-            }}
-
-            .at-risk-item p {{
-                font-size: 14px;
-                line-height: 1.4;
-            }}
-        }}
-
-        /* Small mobile breakpoint */
-        @media (max-width: 480px) {{
-            body {{
-                padding: 8px;
-            }}
-
-            .header {{
-                padding: 12px;
-                padding-top: 80px;
-            }}
-
-            .header h1 {{
-                font-size: 20px;
-            }}
-
-            .theme-toggle {{
-                padding: 4px 8px;
-                font-size: 12px;
-            }}
-
-            .card {{
-                padding: 12px;
-            }}
-
-            .card h2 {{
-                font-size: 16px;
-            }}
-
-            .metric-value {{
-                font-size: 20px;
-            }}
-
-            .team-member {{
-                padding: 12px;
-            }}
-
-            .progress-ring {{
-                width: 100px;
-                height: 100px;
-            }}
-
-            .progress-ring-value {{
-                font-size: 16px;
-            }}
-
-            .progress-ring-label {{
-                font-size: 9px;
-            }}
-
-            .gauge-container {{
-                width: 120px;
-                height: 120px;
-            }}
-
-            .gauge-value {{
-                font-size: 32px;
-            }}
-
-            .chart-container {{
-                height: 200px;
-            }}
-
-            /* Stack team capacity in single column */
-            .team-capacity-grid {{
-                grid-template-columns: 1fr !important;
-            }}
-        }}
-
-        /* ===== INTERACTIVE FEATURES ===== */
-        /* Tooltip styles */
-        .tooltip {{
-            position: relative;
-            cursor: help;
-        }}
-
-        .tooltip::before {{
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 125%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--bg-secondary);
-            color: var(--text-primary);
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: normal;
-            white-space: nowrap;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-            box-shadow: 0 2px 8px var(--shadow-medium);
-            z-index: 1000;
-            border: 1px solid var(--border-color);
-            max-width: 250px;
-            white-space: normal;
-        }}
-
-        .tooltip::after {{
-            content: '';
-            position: absolute;
-            bottom: 116%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 5px solid transparent;
-            border-top-color: var(--bg-secondary);
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }}
-
-        .tooltip:hover::before,
-        .tooltip:hover::after {{
-            opacity: 1;
-            visibility: visible;
-        }}
-
-        /* Interactive card hover effects */
-        .card:hover {{
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px var(--shadow-medium);
-        }}
-
-        .team-member:hover {{
-            background: var(--hover-bg);
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
-        }}
-
-        /* Sortable table styles */
-        .sortable {{
-            cursor: pointer;
-            user-select: none;
-            position: relative;
-        }}
-
-        .sortable:hover {{
-            background: var(--hover-bg);
-        }}
-
-        .sortable::after {{
-            content: '↕️';
-            position: absolute;
-            right: 8px;
-            opacity: 0.5;
-            font-size: 12px;
-        }}
-
-        .sortable.asc::after {{
-            content: '↑';
-            opacity: 1;
-        }}
-
-        .sortable.desc::after {{
-            content: '↓';
-            opacity: 1;
-        }}
-
-        /* Filter controls */
-        .filter-controls {{
-            margin: 15px 0;
-            padding: 15px;
-            background: var(--bg-tertiary);
-            border-radius: 8px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }}
-
-        .filter-control {{
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }}
-
-        .filter-control label {{
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-primary);
-        }}
-
-        .filter-control select,
-        .filter-control input {{
-            padding: 6px 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            font-size: 14px;
-        }}
-
-        .filter-control select:focus,
-        .filter-control input:focus {{
-            outline: 2px solid var(--brand-primary);
-            outline-offset: -2px;
-        }}
-
-        /* Quick stats hover effects */
-        .metric:hover .metric-value {{
-            color: var(--brand-primary);
-            transition: color 0.3s ease;
-        }}
-
-        /* Interactive progress bars */
-        .progress-bar:hover .progress-fill {{
-            box-shadow: 0 0 10px rgba(96, 187, 233, 0.4);
-            transition: box-shadow 0.3s ease;
-        }}
-
-        /* Mobile filter adjustments */
-        @media (max-width: 768px) {{
-            .filter-controls {{
-                flex-direction: column;
-                align-items: stretch;
-            }}
-
-            .filter-control {{
-                justify-content: space-between;
-            }}
-
-            .filter-control select,
-            .filter-control input {{
-                min-width: 120px;
-            }}
-        }}
-
-        /* ===== PROJECT CARDS (Shoots, Deadlines, Forecast) ===== */
-        .project-card {{
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 18px;
-            background: var(--bg-secondary);
-            margin-bottom: 16px;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }}
-
-        .project-card-header {{
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 12px;
-        }}
-
-        .project-card-date {{
-            font-size: 16px;
-            font-weight: bold;
-            color: var(--text-primary);
-        }}
-
-        .project-card-time {{
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--brand-primary);
-            margin-top: 4px;
-        }}
-
-        .project-card-badge {{
-            display: inline-block;
-            padding: 6px 12px;
-            background: var(--brand-secondary);
-            color: white;
-            font-size: 14px;
-            border-radius: 6px;
-            white-space: nowrap;
-        }}
-
-        .project-card-title {{
-            color: var(--text-primary);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 16px;
-            line-height: 1.4;
-            display: block;
-            margin-bottom: 8px;
-        }}
-
-        .project-card-title:hover {{
-            color: var(--brand-primary);
-        }}
-
-        .project-card-details {{
-            color: var(--text-secondary);
-            font-size: 14px;
-            line-height: 1.4;
-            margin-bottom: 8px;
-        }}
-
-        .project-card-meta {{
-            color: var(--text-muted);
-            font-size: 12px;
-        }}
-
-        /* Mobile project card optimizations */
-        @media (max-width: 768px) {{
-            .project-card {{
-                padding: 14px;
-                margin-bottom: 14px;
-            }}
-
-            .project-card-header {{
-                flex-direction: column;
-                gap: 8px;
-            }}
-
-            .project-card-date {{
-                font-size: 15px;
-            }}
-
-            .project-card-time {{
-                font-size: 18px;
-            }}
-
-            .project-card-badge {{
-                padding: 5px 10px;
-                font-size: 13px;
-                align-self: flex-start;
-            }}
-
-            .project-card-title {{
-                font-size: 15px;
-                line-height: 1.5;
-                /* Ensure touch targets are at least 44x44px */
-                min-height: 44px;
-                display: flex;
-                align-items: center;
-            }}
-        }}
-
-        @media (max-width: 480px) {{
-            .project-card {{
-                padding: 12px;
-                margin-bottom: 12px;
-            }}
-
-            .project-card-date {{
-                font-size: 14px;
-            }}
-
-            .project-card-time {{
-                font-size: 16px;
-            }}
-
-            .project-card-title {{
-                font-size: 14px;
-            }}
-
-            .project-card-details {{
-                font-size: 13px;
-            }}
-        }}
-
-        /* Task list and detail styles */
-        .task-list-item {{
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin: 4px 0;
-        }}
-
-        .empty-state {{
-            text-align: center;
-            padding: 20px;
-            color: var(--text-secondary);
-        }}
-
-        .success-state {{
-            text-align: center;
-            padding: 20px;
-            color: var(--success-color);
-        }}
-
-        .task-name {{
-            font-weight: bold;
-            color: var(--brand-secondary);
-        }}
-
-        .task-detail {{
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 5px;
-        }}
-
-        .task-risk {{
-            font-size: 13px;
-            color: var(--danger-color);
-            margin-top: 8px;
-        }}
-
-        .project-link {{
-            color: var(--brand-primary);
-            text-decoration: none;
-            font-size: 14px;
-        }}
-
-        .project-link:hover {{
-            text-decoration: underline;
-        }}
-
-        .section-description {{
-            color: var(--text-secondary);
-            margin-top: 8px;
-            font-size: 14px;
-        }}
-
-        /* At-risk and external project sections */
-        .at-risk-item {{
-            border-left: 4px solid var(--danger-color);
-            padding: 10px;
-            margin-bottom: 10px;
-            background: var(--bg-tertiary);
-            border-radius: 4px;
-        }}
-
-        .external-project-item {{
-            margin-top: 10px;
-            padding-left: 10px;
-            border-left: 2px solid var(--brand-primary);
-        }}
-
-        .project-task-name {{
-            font-weight: bold;
-            color: var(--text-primary);
-        }}
-
-        .full-width {{
-            grid-column: 1 / -1;
+            border-left: 4px solid #60BBE9;
         }}
 
         /* ===== GAUGE CHART STYLES ===== */
@@ -2087,7 +1058,7 @@ def generate_html_dashboard(data):
 
         .gauge-background {{
             fill: none;
-            stroke: var(--chart-bg);
+            stroke: #e9ecef;
             stroke-width: 20;
         }}
 
@@ -2109,12 +1080,12 @@ def generate_html_dashboard(data):
         .gauge-value {{
             font-size: 48px;
             font-weight: 700;
-            color: var(--brand-primary);
+            color: #60BBE9;
         }}
 
         .gauge-label {{
             font-size: 12px;
-            color: var(--text-secondary);
+            color: #6c757d;
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-top: 5px;
@@ -2132,8 +1103,8 @@ def generate_html_dashboard(data):
 
         .progress-ring {{
             position: relative;
-            width: 160px;
-            height: 160px;
+            width: 140px;
+            height: 140px;
             text-align: center;
         }}
 
@@ -2143,12 +1114,12 @@ def generate_html_dashboard(data):
 
         .progress-ring-circle {{
             fill: none;
-            stroke-width: 10;
+            stroke-width: 12;
             stroke-linecap: round;
         }}
 
         .progress-ring-bg {{
-            stroke: var(--chart-bg);
+            stroke: #e9ecef;
         }}
 
         .progress-ring-progress {{
@@ -2161,30 +1132,24 @@ def generate_html_dashboard(data):
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            width: 100px;
-            height: 60px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            width: 120px;
         }}
 
         .progress-ring-value {{
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 700;
-            color: var(--text-primary);
+            color: #09243F;
             display: block;
             line-height: 1;
         }}
 
         .progress-ring-label {{
-            font-size: 9px;
-            color: var(--text-secondary);
+            font-size: 10px;
+            color: #6c757d;
             display: block;
-            margin-top: 3px;
-            line-height: 1.2;
+            margin-top: 5px;
+            line-height: 1.3;
             max-width: 100%;
-            text-align: center;
         }}
 
         /* ===== TIMELINE GANTT STYLES ===== */
@@ -2203,7 +1168,7 @@ def generate_html_dashboard(data):
             top: 0;
             bottom: 0;
             width: 2px;
-            background: var(--brand-secondary);
+            background: #09243F;
             z-index: 10;
         }}
 
@@ -2218,13 +1183,13 @@ def generate_html_dashboard(data):
             display: flex;
             margin-bottom: 10px;
             padding-bottom: 8px;
-            border-bottom: 2px solid var(--border-color);
+            border-bottom: 2px solid #dee2e6;
         }}
 
         .timeline-project-col {{
             width: 25%;
             font-weight: 600;
-            color: var(--text-primary);
+            color: #09243F;
             font-size: 14px;
             padding-right: 12px;
             margin-right: 12px;
@@ -2240,7 +1205,7 @@ def generate_html_dashboard(data):
             flex: 1;
             text-align: center;
             font-size: 11px;
-            color: var(--text-secondary);
+            color: #6c757d;
             font-weight: 500;
         }}
 
@@ -2263,7 +1228,7 @@ def generate_html_dashboard(data):
         .timeline-project-name {{
             width: 25%;
             font-size: 13px;
-            color: var(--text-primary);
+            color: #09243F;
             padding-right: 12px;
             font-weight: 500;
             margin-right: 12px;
@@ -2291,7 +1256,7 @@ def generate_html_dashboard(data):
             position: absolute;
             height: 24px;
             border-radius: 4px;
-            background: var(--brand-primary);
+            background: #60BBE9;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -2309,7 +1274,7 @@ def generate_html_dashboard(data):
         }}
 
         .timeline-bar.normal {{
-            background: var(--brand-primary);
+            background: #60BBE9;
         }}
 
         .timeline-bar.info {{
@@ -2319,42 +1284,19 @@ def generate_html_dashboard(data):
         /* ===== RADAR/SPIDER CHART STYLES ===== */
         .radar-container {{
             position: relative;
-            width: 100%;
-            max-width: 600px;
+            width: 600px;
             height: 600px;
             margin: 20px auto;
         }}
 
-        @media (max-width: 768px) {{
-            .radar-container {{
-                height: 400px;
-                max-width: 100%;
-            }}
-
-            .radar-container svg {{
-                max-width: 100%;
-                height: auto;
-            }}
-        }}
-
-        @media (max-width: 480px) {{
-            .radar-container {{
-                height: 300px;
-            }}
-
-            .radar-label {{
-                font-size: 10px !important;
-            }}
-        }}
-
         .radar-grid {{
             fill: none;
-            stroke: var(--border-color);
+            stroke: #dee2e6;
             stroke-width: 1;
         }}
 
         .radar-axis {{
-            stroke: var(--text-secondary);
+            stroke: #adb5bd;
             stroke-width: 1;
         }}
 
@@ -2372,7 +1314,7 @@ def generate_html_dashboard(data):
         }}
 
         .radar-label {{
-            fill: var(--text-primary);
+            fill: #09243F;
             font-size: 12px;
             font-weight: 600;
             text-anchor: middle;
@@ -2381,36 +1323,9 @@ def generate_html_dashboard(data):
         /* ===== SUNBURST CHART STYLES ===== */
         .sunburst-container {{
             position: relative;
-            width: 100%;
-            max-width: 400px;
+            width: 400px;
             height: 400px;
             margin: 20px auto;
-        }}
-
-        @media (max-width: 768px) {{
-            .sunburst-container {{
-                height: 300px;
-                max-width: 100%;
-            }}
-
-            .sunburst-container svg {{
-                max-width: 100%;
-                height: auto;
-            }}
-        }}
-
-        @media (max-width: 480px) {{
-            .sunburst-container {{
-                height: 250px;
-            }}
-
-            .sunburst-text {{
-                font-size: 9px !important;
-            }}
-
-            .sunburst-center-text {{
-                font-size: 18px !important;
-            }}
         }}
 
         .sunburst-slice {{
@@ -2451,66 +1366,18 @@ def generate_html_dashboard(data):
             grid-template-columns: auto repeat(10, 1fr);
             gap: 4px;
             margin: 20px 0;
-            overflow-x: auto;
-        }}
-
-        @media (max-width: 1024px) {{
-            .heatmap-calendar {{
-                grid-template-columns: auto repeat(7, 1fr);
-            }}
-        }}
-
-        @media (max-width: 768px) {{
-            .heatmap-calendar {{
-                grid-template-columns: auto repeat(5, 1fr);
-                gap: 3px;
-                font-size: 12px;
-            }}
-
-            .heatmap-day-label {{
-                font-size: 10px;
-                padding: 6px 8px;
-            }}
-
-            .heatmap-date {{
-                font-size: 9px;
-            }}
-
-            .heatmap-cell {{
-                font-size: 9px;
-            }}
-        }}
-
-        @media (max-width: 480px) {{
-            .heatmap-calendar {{
-                grid-template-columns: auto repeat(3, 1fr);
-                gap: 2px;
-            }}
-
-            .heatmap-day-label {{
-                font-size: 9px;
-                padding: 4px 6px;
-            }}
-
-            .heatmap-date {{
-                font-size: 8px;
-            }}
-
-            .heatmap-cell {{
-                font-size: 8px;
-            }}
         }}
 
         .heatmap-day-label {{
             font-size: 11px;
-            color: var(--text-secondary);
+            color: #6c757d;
             padding: 8px 12px;
             text-align: right;
         }}
 
         .heatmap-date {{
             font-size: 10px;
-            color: var(--text-secondary);
+            color: #6c757d;
             text-align: center;
             margin-bottom: 4px;
         }}
@@ -2558,20 +1425,20 @@ def generate_html_dashboard(data):
         }}
 
         .header h1 {{
-            color: var(--text-primary);
+            color: #09243F;
             font-size: 28px;
             margin-bottom: 8px;
             font-weight: 600;
         }}
 
         .header .subtitle {{
-            color: var(--text-secondary);
+            color: #6c757d;
             font-size: 13px;
             margin-bottom: 5px;
         }}
 
         .header .timestamp {{
-            color: var(--brand-primary);
+            color: #60BBE9;
             font-size: 12px;
         }}
 
@@ -2582,42 +1449,15 @@ def generate_html_dashboard(data):
             margin-bottom: 16px;
         }}
 
-        .category-grid {{
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 16px;
-            flex-direction: row;
-        }}
-
-        .category-grid .card {{
-            flex: 1;
-            min-width: 180px;
-        }}
-
-        /* Explicit desktop rules for category grid */
-        @media (min-width: 769px) {{
-            .category-grid {{
-                flex-direction: row !important;
-            }}
-        }}
-
-        .performance-row {{
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 30px;
-        }}
-
         .card {{
-            background: var(--bg-secondary);
+            background: white;
             padding: 20px 24px;
             border-radius: 4px;
-            box-shadow: 0 1px 3px var(--shadow-light);
-            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
             max-width: 100%;
             overflow: hidden;
-            transition: box-shadow 0.2s, background-color 0.3s ease;
+            transition: box-shadow 0.2s;
         }}
 
         .card:hover {{
@@ -2625,11 +1465,11 @@ def generate_html_dashboard(data):
         }}
 
         .card h2 {{
-            color: var(--text-primary);
+            color: #09243F;
             font-size: 16px;
             margin-bottom: 18px;
             font-weight: 600;
-            border-bottom: 2px solid var(--brand-primary);
+            border-bottom: 2px solid #60BBE9;
             padding-bottom: 8px;
         }}
 
@@ -2647,13 +1487,13 @@ def generate_html_dashboard(data):
 
         .metric-label {{
             font-size: 13px;
-            color: var(--text-secondary);
+            color: #6c757d;
         }}
 
         .metric-value {{
             font-size: 22px;
             font-weight: 600;
-            color: var(--brand-primary);
+            color: #60BBE9;
         }}
 
         .metric-value.positive {{
@@ -2661,7 +1501,7 @@ def generate_html_dashboard(data):
         }}
 
         .metric-value.negative {{
-            color: var(--danger-color);
+            color: #dc3545;
         }}
 
         .metric-value.warning {{
@@ -2671,7 +1511,7 @@ def generate_html_dashboard(data):
         .progress-bar {{
             width: 100%;
             height: 24px;
-            background: var(--chart-bg);
+            background: #e9ecef;
             border-radius: 4px;
             overflow: hidden;
             margin-top: 8px;
@@ -2679,7 +1519,7 @@ def generate_html_dashboard(data):
 
         .progress-fill {{
             height: 100%;
-            background: var(--brand-primary);
+            background: #60BBE9;
             transition: width 0.3s ease;
             display: flex;
             align-items: center;
@@ -2690,24 +1530,24 @@ def generate_html_dashboard(data):
         }}
 
         .progress-fill.over-capacity {{
-            background: var(--danger-color);
+            background: #dc3545;
         }}
 
         .alert {{
-            background: rgba(255, 193, 7, 0.1);
-            border-left: 4px solid var(--warning-color);
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
             padding: 12px;
             border-radius: 4px;
             margin-bottom: 10px;
             font-size: 13px;
-            border: 1px solid var(--warning-color);
-            color: var(--text-primary);
+            border: 1px solid #ffc107;
+            color: #856404;
         }}
 
         .alert.danger {{
             background: #f8d7da;
-            border-left-color: var(--danger-color);
-            border-color: var(--danger-color);
+            border-left-color: #dc3545;
+            border-color: #dc3545;
             color: #721c24;
         }}
 
@@ -2733,13 +1573,13 @@ def generate_html_dashboard(data):
         .team-member-name {{
             font-size: 13px;
             font-weight: 600;
-            color: var(--text-primary);
+            color: #09243F;
             margin-bottom: 4px;
         }}
 
         .team-member-capacity {{
             font-size: 12px;
-            color: var(--text-secondary);
+            color: #6c757d;
             margin-bottom: 4px;
         }}
 
@@ -2804,21 +1644,6 @@ def generate_html_dashboard(data):
                 gap: 15px;
             }}
 
-            .category-grid {{
-                flex-direction: column;
-                gap: 15px;
-            }}
-
-            .category-grid .card {{
-                flex: none;
-                min-width: auto;
-            }}
-
-            .performance-row {{
-                grid-template-columns: 1fr !important;
-                gap: 15px;
-            }}
-
             /* Override any inline grid styles */
             .card [style*="grid-template-columns"],
             [style*="grid-template-columns"] {{
@@ -2843,24 +1668,6 @@ def generate_html_dashboard(data):
                 width: 100% !important;
                 display: block;
                 overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                /* Add scrollbar hint */
-                box-shadow: inset 0 -1px 0 var(--border-color);
-            }}
-
-            /* Mobile table wrapper for better scrolling */
-            .card table {{
-                min-width: 300px;
-            }}
-
-            /* Make table headers sticky on mobile for better UX */
-            @supports (position: sticky) {{
-                table thead {{
-                    position: sticky;
-                    top: 0;
-                    background: var(--bg-secondary);
-                    z-index: 10;
-                }}
             }}
 
             img {{
@@ -2991,14 +1798,6 @@ def generate_html_dashboard(data):
             }}
         }}
 
-        /* Tablet and Desktop - Restore two-column layout */
-        @media (min-width: 769px) {{
-            .performance-row {{
-                grid-template-columns: 1fr 1fr !important;
-                gap: 16px;
-            }}
-        }}
-
         /* Large Screen Optimizations */
         @media (min-width: 1920px) {{
             body {{
@@ -3021,15 +1820,6 @@ def generate_html_dashboard(data):
             .grid {{
                 grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
                 gap: 25px;
-            }}
-
-            .category-grid {{
-                gap: 25px;
-            }}
-
-            .category-grid .card {{
-                flex: 1;
-                min-width: 200px;
             }}
 
             .card h2 {{
@@ -3070,15 +1860,6 @@ def generate_html_dashboard(data):
             .grid {{
                 grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
                 gap: 30px;
-            }}
-
-            .category-grid {{
-                gap: 30px;
-            }}
-
-            .category-grid .card {{
-                flex: 1;
-                min-width: 190px;
             }}
 
             .card {{
@@ -3139,15 +1920,6 @@ def generate_html_dashboard(data):
             .grid {{
                 grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
                 gap: 40px;
-            }}
-
-            .category-grid {{
-                gap: 40px;
-            }}
-
-            .category-grid .card {{
-                flex: 1;
-                min-width: 200px;
             }}
 
             .card {{
@@ -3211,63 +1983,71 @@ def generate_html_dashboard(data):
 </head>
 <body>
     <div class="dashboard-container">
-        <header class="header" role="banner">
-            <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
-            <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: {data['timestamp']}</p>
+        <div class="header">
+            <h1>Perimeter Studio Dashboard</h1>
+            <div class="subtitle">Video Production Capacity Tracking & Performance Metrics</div>
+            <div class="timestamp">Last Updated: {data['timestamp']}</div>
+        </div>
 
-            <div class="header-controls">
-                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
-                    <span class="theme-icon" id="themeIcon">🌙</span>
-                    <span id="themeText">Dark Mode</span>
-                </button>
-
-                <div class="export-controls">
-                    <button class="export-btn" onclick="exportToPDF()" aria-label="Export dashboard as PDF" title="Export as PDF">
-                        📄 PDF
-                    </button>
-                    <button class="export-btn" onclick="exportToCSV()" aria-label="Export data as CSV" title="Export as CSV">
-                        📊 CSV
-                    </button>
+        <div class="grid">
+            <!-- Performance Overview -->
+            <div class="card">
+                <h2>Performance Overview</h2>
+                <div class="metric">
+                    <span class="metric-label">Active Tasks</span>
+                    <span class="metric-value">{total_tasks}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Projects Completed (30d)</span>
+                    <span class="metric-value">{delivery_metrics['total_completed']}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Projects Completed This Year</span>
+                    <span class="metric-value">{delivery_metrics['completed_this_year']}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Avg Days Variance</span>
+                    <span class="metric-value {'positive' if delivery_metrics['avg_days_variance'] <= 0 else 'warning' if delivery_metrics['avg_days_variance'] <= 3 else 'negative'}">{delivery_metrics['avg_days_variance']:+.1f}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Delayed Due to Capacity</span>
+                    <span class="metric-value {'positive' if delivery_metrics['projects_delayed_capacity'] == 0 else 'negative'}">{delivery_metrics['projects_delayed_capacity']}</span>
                 </div>
             </div>
-            <span id="theme-description" class="sr-only">Switch between dark and light themes for better visibility</span>
-        </header>
 
-        <main role="main" aria-labelledby="dashboard-title">
-            <!-- Two-column layout for Performance Overview and Contracted/Outsourced Projects -->
-            <div class="performance-row" role="region" aria-label="Performance metrics and charts">
-            <!-- Performance Overview -->
-            <section class="card" role="region" aria-labelledby="performance-title">
-                <h2 id="performance-title">Performance Overview</h2>
-                <div class="metric" role="group" aria-labelledby="active-tasks-label">
-                    <span id="active-tasks-label" class="metric-label">Active Tasks</span>
-                    <span class="metric-value" aria-describedby="active-tasks-label">{total_tasks}</span>
-                </div>
-                <div class="metric" role="group" aria-labelledby="completed-30d-label">
-                    <span id="completed-30d-label" class="metric-label">Projects Completed (30d)</span>
-                    <span class="metric-value" aria-describedby="completed-30d-label">{delivery_metrics['total_completed']}</span>
-                </div>
-                <div class="metric" role="group" aria-labelledby="completed-year-label">
-                    <span id="completed-year-label" class="metric-label">Projects Completed This Year</span>
-                    <span class="metric-value" aria-describedby="completed-year-label">{delivery_metrics['completed_this_year']}</span>
-                </div>
-                <div class="metric" role="group" aria-labelledby="avg-variance-label">
-                    <span id="avg-variance-label" class="metric-label">Avg Days Variance</span>
-                    <span class="metric-value {'positive' if delivery_metrics['avg_days_variance'] <= 0 else 'warning' if delivery_metrics['avg_days_variance'] <= 3 else 'negative'}" aria-describedby="avg-variance-label" role="status" aria-label="Average project variance in days">{delivery_metrics['avg_days_variance']:+.1f}</span>
-                </div>
-                <div class="metric" role="group" aria-labelledby="delayed-capacity-label">
-                    <span id="delayed-capacity-label" class="metric-label">Delayed Due to Capacity</span>
-                    <span class="metric-value {'positive' if delivery_metrics['projects_delayed_capacity'] == 0 else 'negative'}" aria-describedby="delayed-capacity-label" role="status">{delivery_metrics['projects_delayed_capacity']}</span>
-                </div>
-            </section>
+            <!-- Team Capacity -->
+            <div class="card">
+                <h2>Team Capacity</h2>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 10px;">
+"""
 
-            <!-- Contracted/Outsourced Projects -->
+    # Add team members
+    for member in team_capacity:
+        utilization = (member['current'] / member['max'] * 100) if member['max'] > 0 else 0
+        over_capacity = member['current'] > member['max']
+
+        html += f"""
+                    <div class="team-member">
+                        <div class="team-member-name">{member['name']}</div>
+                        <div class="team-member-capacity">{member['current']:.0f}% / {member['max']}% capacity</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill {'over-capacity' if over_capacity else ''}" style="width: {min(utilization, 100)}%">
+                                {utilization:.0f}%
+                            </div>
+                        </div>
+                    </div>
+"""
+
+    html += """
+                </div>
+            </div>
+
+            <!-- External Projects (Contracted/Outsourced) -->
             <div class="card">
                 <h2>Contracted/Outsourced Projects</h2>
 """
 
-    # Add external projects in the new structure
+    # Add external projects
     external_projects = data.get('external_projects', [])
     if external_projects:
         for project in external_projects:
@@ -3279,63 +2059,30 @@ def generate_html_dashboard(data):
 """
             if project.get('tasks'):
                 html += """
-                <div class="external-project-item">
+                <div style="margin-top: 10px; padding-left: 10px; border-left: 2px solid """ + BRAND_BLUE + """;">
 """
                 for task in project['tasks']:
                     due_text = f" (Due: {task['due_on']})" if task.get('due_on') else ""
                     videographer_text = f" | Videographer: {task['videographer']}" if task.get('videographer') else ""
                     html += f"""
-                    <div class="task-list-item">• {task['name']}{videographer_text}{due_text}</div>
+                    <div style="font-size: 12px; color: #6c757d; margin: 4px 0;">• {task['name']}{videographer_text}{due_text}</div>
 """
                 html += """
                 </div>
 """
     else:
         html += """
-            <div class="empty-state">
-                <div style="font-size: 36px; margin-bottom: 10px;">📋</div>
-                <div>No external projects</div>
-            </div>
+                <div style="text-align: center; padding: 20px; color: #6c757d;">
+                    <div style="font-size: 14px;">No external projects</div>
+                </div>
 """
 
     html += """
             </div>
         </div>
 
-        <!-- Team Capacity (Full Width) -->
-        <div class="grid">
-            <section class="card full-width" role="region" aria-labelledby="team-capacity-title">
-                <h2 id="team-capacity-title">Team Capacity</h2>
-                <div class="team-capacity-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 10px;" role="list" aria-label="Team member capacity overview">
-"""
-
-    # Add team members
-    for member in team_capacity:
-        utilization = (member['current'] / member['max'] * 100) if member['max'] > 0 else 0
-        over_capacity = member['current'] > member['max']
-
-        tooltip_text = f"Current: {member['current']:.1f}% • Target: {member['max']}% • Utilization: {utilization:.1f}%"
-        if over_capacity:
-            tooltip_text += f" • OVER CAPACITY by {utilization - 100:.1f}%"
-
-        html += f"""
-                    <div class="team-member tooltip" role="listitem" tabindex="0" aria-labelledby="member-{member['name'].replace(' ', '-').lower()}-name" data-tooltip="{tooltip_text}">
-                        <div id="member-{member['name'].replace(' ', '-').lower()}-name" class="team-member-name">{member['name']}</div>
-                        <div class="team-member-capacity" aria-label="Current capacity utilization">{member['current']:.0f}% / {member['max']}% capacity</div>
-                        <div class="progress-bar" role="progressbar" aria-valuenow="{utilization:.0f}" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: {utilization:.0f}%">
-                            <div class="progress-fill {'over-capacity' if over_capacity else ''}" style="width: {min(utilization, 100)}%" aria-hidden="true">
-                                {utilization:.0f}%
-                            </div>
-                        </div>
-                    </div>
-"""
-
-    html += """
-                </div>
-        </section>
-
-        <!-- At-Risk Tasks (Full Width) -->
-        <div class="card full-width" style="margin-top: 30px; margin-bottom: 30px;">
+        <!-- At-Risk Tasks -->
+        <div class="card full-width" style="margin-bottom: 30px;">
             <h2>⚠️ At-Risk Tasks</h2>
     """
 
@@ -3348,12 +2095,12 @@ def generate_html_dashboard(data):
             risks_html = "<br>".join([f"• {risk}" for risk in task['risks']])
             videographer_display = f" | Videographer: {task.get('videographer', 'N/A')}" if task.get('videographer') else ""
             html += f"""
-                <div class="at-risk-item">
-                    <div class="project-task-name">{task['name']}</div>
-                    <div class="task-detail">
+                <div style="border-left: 4px solid #dc3545; padding: 10px; margin-bottom: 10px; background: {BRAND_OFF_WHITE};">
+                    <div style="font-weight: bold; color: {BRAND_NAVY};">{task['name']}</div>
+                    <div style="font-size: 12px; color: #6c757d; margin-top: 5px;">
                         {task['project']} | {task['assignee']}{videographer_display} | Due: {task['due_on']}
                     </div>
-                    <div class="task-risk">
+                    <div style="font-size: 13px; color: #dc3545; margin-top: 8px;">
                         {risks_html}
                     </div>
                 </div>
@@ -3363,7 +2110,7 @@ def generate_html_dashboard(data):
         """
     else:
         html += """
-            <div class="success-state">
+            <div style="text-align: center; padding: 20px; color: #28a745;">
                 <div style="font-size: 48px;">✅</div>
                 <div style="font-size: 18px; margin-top: 10px;">No tasks currently at risk!</div>
             </div>
@@ -3407,16 +2154,16 @@ def generate_html_dashboard(data):
             task_url = f"https://app.asana.com/0/0/{shoot['gid']}/f"
 
             html += f"""
-                <div class="project-card">
-                    <div class="project-card-header">
+                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <div>
-                            <div class="project-card-date">{date_str}</div>
-                            <div class="project-card-time">{time_str}</div>
+                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">{date_str}</div>
+                            <div style="font-size: 20px; font-weight: 600; color: {BRAND_BLUE}; margin-top: 4px;">{time_str}</div>
                         </div>
-                        <span class="project-card-badge">{shoot['project']}</span>
+                        <span style="display: inline-block; padding: 6px 12px; background: {BRAND_NAVY}; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">{shoot['project']}</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="{task_url}" target="_blank" class="project-card-title">
+                        <a href="{task_url}" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
                             {shoot['name']}
                         </a>
                     </div>
@@ -3432,7 +2179,7 @@ def generate_html_dashboard(data):
         """
     else:
         html += """
-            <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+            <div style="text-align: center; padding: 30px; color: #6c757d;">
                 <div style="font-size: 48px; margin-bottom: 10px;">📅</div>
                 <div style="font-size: 16px;">No upcoming shoots scheduled</div>
             </div>
@@ -3444,7 +2191,7 @@ def generate_html_dashboard(data):
         <!-- Upcoming Project Deadlines -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>⏰ Upcoming Project Deadlines</h2>
-            <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Projects due within the next 10 days</p>
+            <p style="color: #6c757d; margin-top: 8px; font-size: 14px;">Projects due within the next 10 days</p>
     """
 
     upcoming_deadlines = data.get('upcoming_deadlines', [])
@@ -3476,16 +2223,16 @@ def generate_html_dashboard(data):
                 urgency_text = f'{days_until} DAYS'
 
             html += f"""
-                <div class="project-card">
-                    <div class="project-card-header">
+                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <div>
-                            <div class="project-card-date">{date_str}</div>
+                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">{date_str}</div>
                             <div style="font-size: 22px; font-weight: 600; color: {urgency_color}; margin-top: 6px;">{urgency_text}</div>
                         </div>
-                        <span class="project-card-badge">{deadline['project']}</span>
+                        <span style="display: inline-block; padding: 6px 12px; background: {BRAND_NAVY}; color: white; font-size: 14px; border-radius: 6px; white-space: nowrap;">{deadline['project']}</span>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="{task_url}" target="_blank" class="project-card-title">
+                        <a href="{task_url}" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 500; font-size: 16px; line-height: 1.4; display: block;">
                             {deadline['name']}
                         </a>
                     </div>
@@ -3501,7 +2248,7 @@ def generate_html_dashboard(data):
         """
     else:
         html += f"""
-            <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+            <div style="text-align: center; padding: 30px; color: #6c757d;">
                 <div style="font-size: 48px; margin-bottom: 10px;">✅</div>
                 <div style="font-size: 16px;">No upcoming deadlines in the next 10 days</div>
             </div>
@@ -3553,7 +2300,7 @@ def generate_html_dashboard(data):
         <!-- Timeline Gantt -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>Project Timeline</h2>
-            <p style="color: var(--text-secondary); margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Next 10 days</p>
+            <p style="color: #6c757d; margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Next 10 days</p>
             <div class="timeline-container" id="projectTimeline">
                 <!-- Timeline will be generated by JavaScript -->
             </div>
@@ -3562,7 +2309,7 @@ def generate_html_dashboard(data):
         <!-- Radar/Spider Chart -->
         <div class="card full-width" style="margin-bottom: 30px; overflow: visible;">
             <h2>Workload Balance</h2>
-            <p style="color: var(--text-secondary); margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Actual vs Target distribution across categories</p>
+            <p style="color: #6c757d; margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Actual vs Target distribution across categories</p>
             <div class="radar-container" id="radarChart">
                 <!-- Radar will be generated by JavaScript -->
             </div>
@@ -3571,7 +2318,7 @@ def generate_html_dashboard(data):
         <!-- Velocity Trend Chart -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>Team Velocity Trend</h2>
-            <p style="color: var(--text-secondary); margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Projects completed per week over the last 8 weeks</p>
+            <p style="color: #6c757d; margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Projects completed per week over the last 8 weeks</p>
             <div class="velocity-container">
                 <canvas id="velocityChart"></canvas>
             </div>
@@ -3580,7 +2327,7 @@ def generate_html_dashboard(data):
         <!-- 6-Month Capacity Timeline -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>📆 6-Month Capacity Timeline</h2>
-            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 15px;">
+            <div style="font-size: 12px; color: #6c757d; margin-bottom: 15px;">
                 Weekly team capacity projection showing workload distribution over the next 26 weeks
             </div>
     """
@@ -3591,7 +2338,7 @@ def generate_html_dashboard(data):
     html += """
             <div style="margin-top: 15px;">
                 <!-- Timeline header with month labels -->
-                <div style="display: flex; margin-bottom: 10px; font-size: 12px; font-weight: bold; color: var(--text-secondary);">
+                <div style="display: flex; margin-bottom: 10px; font-size: 12px; font-weight: bold; color: #6c757d;">
     """
 
     # Group weeks by month for header labels
@@ -3655,7 +2402,7 @@ def generate_html_dashboard(data):
                 </div>
 
                 <!-- Week number labels (show every 4th week) -->
-                <div style="display: flex; gap: 3px; margin-top: 5px; font-size: 9px; color: var(--text-secondary);">
+                <div style="display: flex; gap: 3px; margin-top: 5px; font-size: 9px; color: #6c757d;">
     """
 
     for i, week in enumerate(timeline):
@@ -3674,13 +2421,13 @@ def generate_html_dashboard(data):
                 </div>
 
                 <!-- Legend -->
-                <div style="margin-top: 15px; font-size: 11px; color: var(--text-secondary); display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <div style="margin-top: 15px; font-size: 11px; color: #6c757d; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                     <div><span style="display: inline-block; width: 12px; height: 12px; background: #28a745; border-radius: 2px;"></span> Low</div>
                     <div><span style="display: inline-block; width: 12px; height: 12px; background: #ffc107; border-radius: 2px;"></span> Medium</div>
                     <div><span style="display: inline-block; width: 12px; height: 12px; background: #fd7e14; border-radius: 2px;"></span> High</div>
                     <div><span style="display: inline-block; width: 12px; height: 12px; background: #dc3545; border-radius: 2px;"></span> Very High</div>
                 </div>
-                <div style="margin-top: 5px; font-size: 10px; color: var(--text-secondary); text-align: center; font-style: italic;">
+                <div style="margin-top: 5px; font-size: 10px; color: #6c757d; text-align: center; font-style: italic;">
                     Colors scale adaptively based on peak workload over the 6-month period
                 </div>
             </div>
@@ -3689,7 +2436,7 @@ def generate_html_dashboard(data):
         <!-- Daily Workload Distribution Heatmap -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>📊 Daily Workload Distribution - Next 30 Days</h2>
-            <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 15px;">
+            <div style="font-size: 13px; color: #6c757d; margin-bottom: 15px;">
                 <strong>How busy will each day be?</strong> Shows the team's expected workload intensity per day (work distributed across task timelines)
             </div>
             <div class="heatmap-grid">
@@ -3730,14 +2477,14 @@ def generate_html_dashboard(data):
 
     html += f"""
             </div>
-            <div style="margin-top: 15px; font-size: 11px; color: var(--text-secondary); display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+            <div style="margin-top: 15px; font-size: 11px; color: #6c757d; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #20c997; border-radius: 2px;"></span> Very Low</div>
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #28a745; border-radius: 2px;"></span> Low</div>
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #ffc107; border-radius: 2px;"></span> Medium</div>
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #fd7e14; border-radius: 2px;"></span> High</div>
                 <div><span style="display: inline-block; width: 12px; height: 12px; background: #dc3545; border-radius: 2px;"></span> Very High</div>
             </div>
-            <div style="margin-top: 10px; font-size: 11px; color: var(--text-secondary); text-align: center;">
+            <div style="margin-top: 10px; font-size: 11px; color: #6c757d; text-align: center;">
                 <em>Colors scale adaptively based on peak workload over the 30-day period</em>
             </div>
         </div>
@@ -3745,7 +2492,7 @@ def generate_html_dashboard(data):
         <!-- Historical Capacity Utilization -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>📈 Historical Capacity Utilization</h2>
-            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+            <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
                 Team utilization percentage over the last 30 days (click legend items to filter)
             </div>
             <div class="chart-container">
@@ -3756,7 +2503,7 @@ def generate_html_dashboard(data):
         <!-- Forecasted Projects -->
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>🔮 Forecasted Projects</h2>
-            <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Upcoming projects in the forecast pipeline</p>
+            <p style="color: #6c757d; margin-top: 8px; font-size: 14px;">Upcoming projects in the forecast pipeline</p>
     """
 
     forecasted_projects = data.get('forecasted_projects', [])
@@ -3787,14 +2534,14 @@ def generate_html_dashboard(data):
                 notes = notes[:150] + '...'
 
             html += f"""
-                <div class="project-card">
-                    <div class="project-card-header">
+                <div style="border: 2px solid #dee2e6; border-radius: 12px; padding: 18px; background: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
                         <div style="flex: 1;">
-                            <div class="project-card-date">{date_range_str}</div>
+                            <div style="font-size: 16px; font-weight: bold; color: #09243F;">{date_range_str}</div>
                         </div>
                     </div>
                     <div style="margin-bottom: 12px;">
-                        <a href="{task_url}" target="_blank" class="project-card-title" style="font-weight: 600;">
+                        <a href="{task_url}" target="_blank" style="color: #09243F; text-decoration: none; font-weight: 600; font-size: 16px; line-height: 1.4; display: block;">
                             {project['name']}
                         </a>
                     </div>
@@ -3802,7 +2549,7 @@ def generate_html_dashboard(data):
 
             if notes:
                 html += f"""
-                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+                    <div style="margin-bottom: 12px; color: #6c757d; font-size: 14px; line-height: 1.5;">
                         {notes}
                     </div>
                 """
@@ -3820,7 +2567,7 @@ def generate_html_dashboard(data):
         """
     else:
         html += f"""
-            <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+            <div style="text-align: center; padding: 30px; color: #6c757d;">
                 <div style="font-size: 48px; margin-bottom: 10px;">📋</div>
                 <div style="font-size: 16px;">No forecasted projects at this time</div>
             </div>
@@ -3830,75 +2577,45 @@ def generate_html_dashboard(data):
         </div>
 
         <!-- Historical Trends Chart -->
-        <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>Historical Allocation Trends</h2>
-            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
-                Daily allocation percentages over time
-            </div>
-            <div class="chart-container">
-                <canvas id="trendsChart"></canvas>
+        <div class="grid">
+            <div class="card full-width">
+                <h2>Historical Allocation Trends</h2>
+                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">
+                    Daily allocation percentages over time
+                </div>
+                <div class="chart-container">
+                    <canvas id="trendsChart"></canvas>
+                </div>
             </div>
         </div>
 
-        <!-- Category Performance Summary -->
-        <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>Category Performance Summary</h2>
-            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px;">
-                Allocation performance across all project categories
-            </div>
+        <!-- Category Details -->
+        <div class="grid">
+"""
 
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-                    <thead>
-                        <tr style="border-bottom: 2px solid var(--border-color);">
-                            <th style="text-align: left; padding: 12px 16px; font-weight: 600; color: var(--text-primary);">Category</th>
-                            <th style="text-align: right; padding: 12px 16px; font-weight: 600; color: var(--text-primary);">Cumulative Avg</th>
-                            <th style="text-align: right; padding: 12px 16px; font-weight: 600; color: var(--text-primary);">Annual Target</th>
-                            <th style="text-align: right; padding: 12px 16px; font-weight: 600; color: var(--text-primary);">Variance</th>
-                            <th style="text-align: center; padding: 12px 16px; font-weight: 600; color: var(--text-primary);">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>"""
-
-    # Add category rows
-    for i, cat in enumerate(category_data):
+    # Add category cards
+    for cat in category_data:
         variance_class = 'positive' if abs(cat['variance']) <= 5 else 'warning' if abs(cat['variance']) <= 10 else 'negative'
 
-        # Determine status based on variance magnitude and direction
-        if abs(cat['variance']) <= 5:
-            status_icon = '✓'
-            status_text = 'On Track'
-        elif abs(cat['variance']) <= 10:
-            status_icon = '⚠️'
-            status_text = 'Watch'
-        else:
-            status_icon = '⚠️'
-            if cat['variance'] > 0:
-                status_text = 'Over Allocated'
-            else:
-                status_text = 'Under Allocated'
-
-        # Alternate row colors
-        row_bg = 'rgba(96, 187, 233, 0.05)' if i % 2 == 0 else 'transparent'
-
         html += f"""
-                        <tr style="background: {row_bg}; border-bottom: 1px solid var(--border-color);">
-                            <td style="padding: 12px 16px; font-weight: 500; color: var(--text-primary);">{cat['name']}</td>
-                            <td style="padding: 12px 16px; text-align: right; font-weight: 500;">{cat['actual']:.1f}%</td>
-                            <td style="padding: 12px 16px; text-align: right; color: var(--text-secondary);">{cat['target']:.1f}%</td>
-                            <td style="padding: 12px 16px; text-align: right; font-weight: 600;" class="{variance_class}">{cat['variance']:+.1f}%</td>
-                            <td style="padding: 12px 16px; text-align: center; font-size: 12px;">
-                                <span style="display: inline-flex; align-items: center; gap: 4px;">
-                                    <span>{status_icon}</span>
-                                    <span>{status_text}</span>
-                                </span>
-                            </td>
-                        </tr>"""
+            <div class="card">
+                <h2>{cat['name']}</h2>
+                <div class="metric">
+                    <span class="metric-label">Cumulative Avg</span>
+                    <span class="metric-value">{cat['actual']:.1f}%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Annual Target</span>
+                    <span class="metric-value">{cat['target']:.1f}%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Avg Variance</span>
+                    <span class="metric-value {variance_class}">{cat['variance']:+.1f}%</span>
+                </div>
+            </div>
+"""
 
     html += """
-                    </tbody>
-                </table>
-            </div>
         </div>
     </div>
 
@@ -4036,17 +2753,6 @@ def generate_html_dashboard(data):
             })
 
         html += f"""
-        // Function to get theme-aware colors
-        function getChartTextColor() {{
-            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
-            return isDarkMode ? '#ffffff' : '#333333';
-        }}
-
-        function getChartGridColor() {{
-            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
-            return isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-        }}
-
         const trendsCtx = document.getElementById('trendsChart').getContext('2d');
         new Chart(trendsCtx, {{
             type: 'line',
@@ -4065,62 +2771,23 @@ def generate_html_dashboard(data):
                     y: {{
                         beginAtZero: true,
                         ticks: {{
-                            color: getChartTextColor(),
-                            font: {{
-                                size: window.innerWidth < 768 ? 10 : 12
-                            }},
                             callback: function(value) {{
                                 return value + '%';
-                            }},
-                            maxTicksLimit: window.innerWidth < 768 ? 6 : 10
-                        }},
-                        grid: {{
-                            color: getChartGridColor(),
-                            display: window.innerWidth >= 480
+                            }}
                         }}
                     }},
                     x: {{
                         ticks: {{
-                            color: getChartTextColor(),
-                            font: {{
-                                size: window.innerWidth < 768 ? 9 : 11
-                            }},
-                            maxRotation: window.innerWidth < 768 ? 90 : 45,
-                            minRotation: window.innerWidth < 768 ? 90 : 45,
-                            autoSkip: true,
-                            autoSkipPadding: window.innerWidth < 768 ? 20 : 10,
-                            maxTicksLimit: window.innerWidth < 480 ? 10 : (window.innerWidth < 768 ? 15 : 20)
-                        }},
-                        grid: {{
-                            color: getChartGridColor(),
-                            display: false
+                            maxRotation: 45,
+                            minRotation: 45
                         }}
                     }}
                 }},
                 plugins: {{
                     legend: {{
-                        position: window.innerWidth < 768 ? 'bottom' : 'top',
-                        labels: {{
-                            color: getChartTextColor(),
-                            font: {{
-                                size: window.innerWidth < 768 ? 10 : 12
-                            }},
-                            padding: window.innerWidth < 768 ? 8 : 10,
-                            boxWidth: window.innerWidth < 768 ? 12 : 15,
-                            boxHeight: window.innerWidth < 768 ? 12 : 15
-                        }}
+                        position: 'top'
                     }},
                     tooltip: {{
-                        enabled: true,
-                        mode: 'index',
-                        intersect: false,
-                        titleFont: {{
-                            size: window.innerWidth < 768 ? 11 : 13
-                        }},
-                        bodyFont: {{
-                            size: window.innerWidth < 768 ? 10 : 12
-                        }},
-                        padding: window.innerWidth < 768 ? 8 : 12,
                         callbacks: {{
                             label: function(context) {{
                                 return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
@@ -4137,32 +2804,10 @@ def generate_html_dashboard(data):
 
     html += f"""
         // Historical Capacity Utilization Chart with per-member datasets
-        function generateCapacityHistoryChart() {{
-            console.log('=== generateCapacityHistoryChart called ===');
-
-            // Destroy existing chart if it exists
-            if (window.capacityHistoryChart) {{
-                console.log('Destroying existing chart');
-                try {{
-                    window.capacityHistoryChart.destroy();
-                }} catch (e) {{
-                    console.log('Error destroying chart:', e);
-                }}
-                window.capacityHistoryChart = null;
-            }}
-
-            const chartElement = document.getElementById('capacityHistoryChart');
-            console.log('Chart element found:', !!chartElement);
-
-            if (chartElement) {{
-                console.log('Chart container dimensions:', chartElement.offsetWidth, 'x', chartElement.offsetHeight);
-                console.log('Chart container style:', chartElement.style.cssText);
-
-                const historyCtx = chartElement.getContext('2d');
-                console.log('Canvas context obtained:', !!historyCtx);
-
+        document.addEventListener('DOMContentLoaded', function() {{
+            if (document.getElementById('capacityHistoryChart')) {{
+                const historyCtx = document.getElementById('capacityHistoryChart').getContext('2d');
                 const capacityHistoryByMember = {json.dumps(capacity_history_by_member)};
-                console.log('Data received:', Object.keys(capacityHistoryByMember), 'members with data');
 
                 // Build datasets for each team member
                 const datasets = [];
@@ -4185,9 +2830,6 @@ def generate_html_dashboard(data):
                         allDates = capacityHistoryByMember[firstMember].map(d => d.date);
                     }}
                 }}
-
-                console.log('About to build datasets...');
-                console.log('All dates found:', allDates.length, 'dates from', allDates[0], 'to', allDates[allDates.length - 1]);
 
                 // Create dataset for each team member
                 const memberOrder = ['Zach Welliver', 'Nick Clark', 'Adriel Abella', 'John Meyer', 'Team Total'];
@@ -4228,18 +2870,8 @@ def generate_html_dashboard(data):
                     pointHoverRadius: 0
                 }});
 
-                console.log('Generated datasets:', datasets.length, 'datasets for chart');
-                datasets.forEach((ds, i) => console.log('Dataset', i + ':', ds.label, 'with', ds.data.length, 'data points'));
-
                 if (datasets.length > 0) {{
-                    console.log('Dataset details:', datasets.map(d => ({{name: d.label, dataPoints: d.data.length}})));
-                }}
-
-                if (datasets.length > 0) {{
-                    console.log('About to create chart with', allDates.length, 'labels and', datasets.length, 'datasets');
-
-                    try {{
-                        window.capacityHistoryChart = new Chart(historyCtx, {{
+                    window.capacityHistoryChart = new Chart(historyCtx, {{
                         type: 'line',
                         data: {{
                             labels: allDates,
@@ -4248,11 +2880,9 @@ def generate_html_dashboard(data):
                         options: {{
                             responsive: true,
                             maintainAspectRatio: false,
-                            devicePixelRatio: window.devicePixelRatio || 1,
                             layout: {{
                                 padding: {{
-                                    top: window.innerWidth < 768 ? 10 : 20,
-                                    bottom: window.innerWidth < 768 ? 10 : 0
+                                    top: 20
                                 }}
                             }},
                             interaction: {{
@@ -4264,63 +2894,26 @@ def generate_html_dashboard(data):
                                     beginAtZero: true,
                                     suggestedMax: 100,
                                     ticks: {{
-                                        color: getChartTextColor(),
-                                        font: {{
-                                            size: window.innerWidth < 768 ? 10 : 12
-                                        }},
                                         callback: function(value) {{
                                             return value + '%';
-                                        }},
-                                        maxTicksLimit: window.innerWidth < 768 ? 6 : 10
-                                    }},
-                                    grid: {{
-                                        color: getChartGridColor(),
-                                        display: window.innerWidth >= 480
+                                        }}
                                     }}
                                 }},
                                 x: {{
                                     ticks: {{
-                                        color: getChartTextColor(),
-                                        font: {{
-                                            size: window.innerWidth < 768 ? 9 : 11
-                                        }},
-                                        maxRotation: window.innerWidth < 768 ? 90 : 45,
-                                        minRotation: window.innerWidth < 768 ? 90 : 45,
-                                        autoSkip: true,
-                                        autoSkipPadding: window.innerWidth < 768 ? 20 : 10,
-                                        maxTicksLimit: window.innerWidth < 480 ? 8 : (window.innerWidth < 768 ? 12 : 20)
-                                    }},
-                                    grid: {{
-                                        color: getChartGridColor(),
-                                        display: false
+                                        maxRotation: 45,
+                                        minRotation: 45
                                     }}
                                 }}
                             }},
                             plugins: {{
                                 legend: {{
-                                    position: window.innerWidth < 768 ? 'bottom' : 'top',
+                                    position: 'top',
                                     labels: {{
-                                        color: getChartTextColor(),
-                                        usePointStyle: true,
-                                        font: {{
-                                            size: window.innerWidth < 768 ? 10 : 12
-                                        }},
-                                        padding: window.innerWidth < 768 ? 6 : 10,
-                                        boxWidth: window.innerWidth < 768 ? 10 : 12,
-                                        boxHeight: window.innerWidth < 768 ? 10 : 12
+                                        usePointStyle: true
                                     }}
                                 }},
                                 tooltip: {{
-                                    enabled: true,
-                                    mode: 'index',
-                                    intersect: false,
-                                    titleFont: {{
-                                        size: window.innerWidth < 768 ? 11 : 13
-                                    }},
-                                    bodyFont: {{
-                                        size: window.innerWidth < 768 ? 10 : 12
-                                    }},
-                                    padding: window.innerWidth < 768 ? 8 : 12,
                                     callbacks: {{
                                         label: function(context) {{
                                             return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
@@ -4329,51 +2922,9 @@ def generate_html_dashboard(data):
                                 }}
                             }}
                         }}
-                        }});
-
-                        console.log('Chart created successfully:', !!window.capacityHistoryChart);
-                    }} catch (error) {{
-                        console.error('Error creating capacity history chart:', error);
-                        console.log('Chart data that caused error:', {{
-                            labels: allDates.slice(0, 5),
-                            datasetCount: datasets.length,
-                            firstDataset: datasets[0] ? {{
-                                label: datasets[0].label,
-                                dataLength: datasets[0].data.length,
-                                firstFewData: datasets[0].data.slice(0, 5)
-                            }} : null
-                        }});
-                        return;
-                    }}
-                    if (window.capacityHistoryChart) {{
-                        console.log('Chart status - datasets:', window.capacityHistoryChart.data.datasets.length, 'visible:', window.capacityHistoryChart.canvas.style.display !== 'none');
-                    }}
-
-                    // Mobile-specific post-creation validation
-                    if (isMobile && window.capacityHistoryChart) {{
-                        setTimeout(() => {{
-                            console.log('Post-creation mobile validation for capacity chart');
-                            const chart = window.capacityHistoryChart;
-                            if (chart && (!chart.data || !chart.data.datasets || chart.data.datasets.length === 0)) {{
-                                console.log('Mobile chart missing data after creation - forcing update');
-                                chart.update('none');
-                            }}
-                        }}, 200);
-                    }}
-                }} else {{
-                    console.log('No datasets generated for capacity history chart');
+                    }});
                 }}
             }}
-        }}
-
-        // Simple chart initialization check
-        window.addEventListener('load', function() {{
-            setTimeout(() => {{
-                if (!window.capacityHistoryChart) {{
-                    console.log('Chart not found on load, creating...');
-                    generateCapacityHistoryChart();
-                }}
-            }}, 500);
         }});
 
         // ===== NEW CHART VISUALIZATIONS =====
@@ -4633,19 +3184,14 @@ def generate_html_dashboard(data):
                     maintainAspectRatio: false,
                     plugins: {{ legend: {{ display: false }} }},
                     scales: {{
-                        y: {{ beginAtZero: true, ticks: {{ stepSize: 2, color: getChartTextColor() }}, grid: {{ color: getChartGridColor() }} }},
-                        x: {{ ticks: {{ color: getChartTextColor() }}, grid: {{ color: getChartGridColor() }} }}
+                        y: {{ beginAtZero: true, ticks: {{ stepSize: 2, color: '#a8c5da' }}, grid: {{ color: 'rgba(96, 187, 233, 0.1)' }} }},
+                        x: {{ ticks: {{ color: '#a8c5da' }}, grid: {{ color: 'rgba(96, 187, 233, 0.1)' }} }}
                     }}
                 }}
             }});
         }}
 
-        // Initialize capacity history chart on page load
-        document.addEventListener('DOMContentLoaded', function() {{
-            generateCapacityHistoryChart();
-        }});
-
-        // Initialize other charts
+        // Initialize new charts
         document.addEventListener('DOMContentLoaded', () => {{
             setTimeout(() => {{
                 animateProgressRing('ringOnTime', 'ringOnTimeValue', {delivery_metrics['on_time_rate']:.0f});
@@ -4657,555 +3203,11 @@ def generate_html_dashboard(data):
                 generateVelocityChart();
             }}, 100);
         }});
-
-        // Theme Toggle Functionality
-        function toggleTheme() {{
-            const root = document.documentElement;
-            const currentTheme = root.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-            root.setAttribute('data-theme', newTheme);
-
-            // Update toggle button
-            const themeIcon = document.getElementById('themeIcon');
-            const themeText = document.getElementById('themeText');
-
-            if (newTheme === 'dark') {{
-                themeIcon.textContent = '☀️';
-                themeText.textContent = 'Light Mode';
-            }} else {{
-                themeIcon.textContent = '🌙';
-                themeText.textContent = 'Dark Mode';
-            }}
-
-            // Store preference in localStorage
-            localStorage.setItem('theme', newTheme);
-
-            // Refresh charts to update text colors
-            if (typeof window.capacityHistoryChart !== 'undefined') {{
-                window.capacityHistoryChart.destroy();
-            }}
-
-            // Regenerate charts with new theme colors
-            setTimeout(() => {{
-                generateRadarChart();
-                generateVelocityChart();
-                generateCapacityHistoryChart();
-
-                // Immediate and aggressive mobile recovery
-                if (window.innerWidth <= 768) {{
-                    console.log('Immediate mobile capacity chart check');
-                    // Multiple immediate checks
-                    setTimeout(() => ensureMobileCapacityChart(), 50);
-                    setTimeout(() => ensureMobileCapacityChart(), 150);
-                    setTimeout(() => ensureMobileCapacityChart(), 300);
-                    setTimeout(() => ensureMobileCapacityChart(), 600);
-                    setTimeout(() => ensureMobileCapacityChart(), 1000);
-                }}
-            }}, 100);
-
-            // Enhanced mobile-specific fallback after theme change
-            const isMobile = window.innerWidth <= 768;
-            if (isMobile) {{
-                console.log('Mobile device detected during theme toggle');
-
-                // Multiple fallback attempts with increasing delays
-                setTimeout(() => {{
-                    console.log('Mobile theme fallback attempt 1 (300ms)');
-                    ensureMobileCapacityChart();
-                }}, 300);
-
-                setTimeout(() => {{
-                    console.log('Mobile theme fallback attempt 2 (600ms)');
-                    ensureMobileCapacityChart();
-                }}, 600);
-
-                setTimeout(() => {{
-                    console.log('Mobile theme fallback attempt 3 (1000ms)');
-                    ensureMobileCapacityChart();
-                }}, 1000);
-            }}
-        }}
-
-        // Simplified chart helper function
-        function ensureMobileCapacityChart() {{
-            const chartElement = document.getElementById('capacityHistoryChart');
-            if (chartElement && !window.capacityHistoryChart) {{
-                console.log('Creating missing capacity chart');
-                generateCapacityHistoryChart();
-            }}
-        }}
-
-        // Initialize theme from localStorage
-        function initializeTheme() {{
-            const storedTheme = localStorage.getItem('theme') || 'light';
-            const root = document.documentElement;
-
-            root.setAttribute('data-theme', storedTheme);
-
-            // Update toggle button to match
-            const themeIcon = document.getElementById('themeIcon');
-            const themeText = document.getElementById('themeText');
-
-            if (storedTheme === 'dark') {{
-                themeIcon.textContent = '☀️';
-                themeText.textContent = 'Light Mode';
-            }} else {{
-                themeIcon.textContent = '🌙';
-                themeText.textContent = 'Dark Mode';
-            }}
-        }}
-
-        // Initialize theme on page load
-        document.addEventListener('DOMContentLoaded', initializeTheme);
-
-        // Keyboard Navigation Support
-        function setupKeyboardNavigation() {{
-            // Add keyboard support for team members
-            document.querySelectorAll('.team-member[tabindex="0"]').forEach(member => {{
-                member.addEventListener('keydown', function(e) {{
-                    if (e.key === 'Enter' || e.key === ' ') {{
-                        e.preventDefault();
-                        // Future: Could expand team member details or navigate to detailed view
-                        member.focus();
-                        member.style.outline = '2px solid var(--brand-primary)';
-                        setTimeout(() => {{
-                            member.style.outline = '';
-                        }}, 1000);
-                    }}
-                }});
-            }});
-
-            // Skip links for better navigation
-            const skipLink = document.createElement('a');
-            skipLink.href = '#dashboard-title';
-            skipLink.textContent = 'Skip to main content';
-            skipLink.className = 'sr-only';
-            skipLink.style.position = 'absolute';
-            skipLink.style.top = '10px';
-            skipLink.style.left = '10px';
-            skipLink.style.zIndex = '9999';
-            skipLink.addEventListener('focus', function() {{
-                this.classList.remove('sr-only');
-                this.style.background = 'var(--brand-primary)';
-                this.style.color = 'white';
-                this.style.padding = '8px 12px';
-                this.style.textDecoration = 'none';
-                this.style.borderRadius = '4px';
-            }});
-            skipLink.addEventListener('blur', function() {{
-                this.classList.add('sr-only');
-            }});
-
-            document.body.insertBefore(skipLink, document.body.firstChild);
-        }}
-
-        // Initialize keyboard navigation
-        document.addEventListener('DOMContentLoaded', setupKeyboardNavigation);
-
-        // Interactive Features
-        function setupInteractiveFeatures() {{
-            // Add enhanced tooltips for metrics
-            document.querySelectorAll('.metric-value').forEach(metric => {{
-                const label = metric.parentElement.querySelector('.metric-label')?.textContent || 'Metric';
-                const value = metric.textContent;
-
-                if (!metric.hasAttribute('data-tooltip')) {{
-                    metric.classList.add('tooltip');
-                    metric.setAttribute('data-tooltip', `${{label}}: ${{value}}`);
-                }}
-            }});
-
-            // Add click handlers for team members
-            document.querySelectorAll('.team-member').forEach(member => {{
-                member.addEventListener('click', function() {{
-                    // Highlight selected member
-                    document.querySelectorAll('.team-member').forEach(m => m.classList.remove('selected'));
-                    this.classList.add('selected');
-
-                    // Add selection styling
-                    this.style.outline = '2px solid var(--brand-primary)';
-                    this.style.outlineOffset = '2px';
-
-                    // Future: Could expand to show detailed task breakdown
-                }});
-            }});
-
-            // Add chart interaction (basic hover effects)
-            document.querySelectorAll('.progress-ring').forEach(ring => {{
-                ring.addEventListener('mouseenter', function() {{
-                    this.style.transform = 'scale(1.05)';
-                    this.style.transition = 'transform 0.3s ease';
-                }});
-
-                ring.addEventListener('mouseleave', function() {{
-                    this.style.transform = 'scale(1)';
-                }});
-            }});
-
-            // Add smooth scroll to sections
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {{
-                anchor.addEventListener('click', function (e) {{
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {{
-                        target.scrollIntoView({{
-                            behavior: 'smooth',
-                            block: 'start'
-                        }});
-                    }}
-                }});
-            }});
-
-            // Add card focus effects
-            document.querySelectorAll('.card').forEach(card => {{
-                card.addEventListener('mouseenter', function() {{
-                    this.style.transition = 'all 0.3s ease';
-                }});
-            }});
-        }}
-
-        // Table sorting functionality (if tables exist)
-        function setupTableSorting() {{
-            document.querySelectorAll('.sortable').forEach(header => {{
-                header.addEventListener('click', function() {{
-                    const table = this.closest('table');
-                    const tbody = table.querySelector('tbody');
-                    const rows = Array.from(tbody.querySelectorAll('tr'));
-                    const columnIndex = Array.from(this.parentNode.children).indexOf(this);
-
-                    // Toggle sort direction
-                    const isAsc = this.classList.contains('asc');
-
-                    // Reset all headers
-                    table.querySelectorAll('.sortable').forEach(h => {{
-                        h.classList.remove('asc', 'desc');
-                    }});
-
-                    // Set current header
-                    this.classList.add(isAsc ? 'desc' : 'asc');
-
-                    // Sort rows
-                    rows.sort((a, b) => {{
-                        const aText = a.cells[columnIndex].textContent.trim();
-                        const bText = b.cells[columnIndex].textContent.trim();
-
-                        // Try numeric sort first
-                        const aNum = parseFloat(aText);
-                        const bNum = parseFloat(bText);
-
-                        if (!isNaN(aNum) && !isNaN(bNum)) {{
-                            return isAsc ? bNum - aNum : aNum - bNum;
-                        }} else {{
-                            return isAsc ? bText.localeCompare(aText) : aText.localeCompare(bText);
-                        }}
-                    }});
-
-                    // Reorder table
-                    rows.forEach(row => tbody.appendChild(row));
-                }});
-            }});
-        }}
-
-        // Export Functions
-        function exportToPDF() {{
-            // Create a new window with print-friendly styles
-            const printWindow = window.open('', '_blank');
-            const currentContent = document.documentElement.outerHTML;
-
-            // CSS for print - CLEAN DATA-ONLY VERSION
-            const printCSS = `
-                <style>
-                    @media print {{
-                        * {{
-                            box-shadow: none !important;
-                            animation: none !important;
-                            transition: none !important;
-                        }}
-
-                        body {{
-                            background: white !important;
-                            color: black !important;
-                            padding: 15px !important;
-                            font-family: Arial, sans-serif !important;
-                            font-size: 11px !important;
-                            line-height: 1.3 !important;
-                        }}
-
-                        /* Hide all visual elements - keep only data */
-                        .header-controls,
-                        .theme-toggle,
-                        .export-btn,
-                        .chart-container,
-                        canvas,
-                        .timeline-container,
-                        .project-timeline,
-                        .progress-ring,
-                        .capacity-bar,
-                        .progress-fill {{
-                            display: none !important;
-                        }}
-
-                        /* Clean header */
-                        .header {{
-                            padding: 0 !important;
-                            margin-bottom: 15px !important;
-                            text-align: center !important;
-                            border-bottom: 2px solid #333 !important;
-                            padding-bottom: 10px !important;
-                        }}
-
-                        .header h1 {{
-                            font-size: 18px !important;
-                            margin: 0 !important;
-                            font-weight: bold !important;
-                        }}
-
-                        .header .subtitle {{
-                            font-size: 10px !important;
-                            margin: 2px 0 !important;
-                            color: #666 !important;
-                        }}
-
-                        .header .timestamp {{
-                            font-size: 9px !important;
-                            margin: 2px 0 !important;
-                            color: #888 !important;
-                        }}
-
-                        /* Clean, organized sections */
-                        .card {{
-                            margin: 8px 0 !important;
-                            padding: 10px !important;
-                            background: white !important;
-                            border: 1px solid #ccc !important;
-                            break-inside: avoid !important;
-                            page-break-inside: avoid !important;
-                        }}
-
-                        .card h2 {{
-                            font-size: 14px !important;
-                            margin: 0 0 8px 0 !important;
-                            color: #333 !important;
-                            font-weight: bold !important;
-                            border-bottom: 1px solid #eee !important;
-                            padding-bottom: 4px !important;
-                        }}
-
-                        /* Two-column layout for main sections */
-                        .performance-row {{
-                            display: grid !important;
-                            grid-template-columns: 1fr 1fr !important;
-                            gap: 15px !important;
-                            margin-bottom: 15px !important;
-                        }}
-
-                        /* Clean metrics display */
-                        .metric {{
-                            margin: 4px 0 !important;
-                            display: flex !important;
-                            justify-content: space-between !important;
-                            padding: 2px 0 !important;
-                            border-bottom: 1px dotted #ddd !important;
-                        }}
-
-                        .metric-label {{
-                            font-size: 10px !important;
-                            color: #555 !important;
-                        }}
-
-                        .metric-value {{
-                            font-size: 11px !important;
-                            font-weight: bold !important;
-                            color: #000 !important;
-                        }}
-
-                        /* Team capacity as clean list */
-                        .team-member {{
-                            margin: 6px 0 !important;
-                            padding: 6px !important;
-                            border: 1px solid #ddd !important;
-                            background: #f9f9f9 !important;
-                        }}
-
-                        .team-member-name {{
-                            font-size: 10px !important;
-                            font-weight: bold !important;
-                            margin-bottom: 3px !important;
-                        }}
-
-                        /* Category table - clean and readable */
-                        table {{
-                            width: 100% !important;
-                            border-collapse: collapse !important;
-                            margin: 8px 0 !important;
-                            font-size: 9px !important;
-                        }}
-
-                        th, td {{
-                            padding: 4px 6px !important;
-                            border: 1px solid #ccc !important;
-                            text-align: left !important;
-                        }}
-
-                        th {{
-                            background: #f0f0f0 !important;
-                            font-weight: bold !important;
-                            font-size: 9px !important;
-                        }}
-
-                        /* At-risk tasks - clean list */
-                        .project-card {{
-                            margin: 6px 0 !important;
-                            padding: 6px !important;
-                            border: 1px solid #ddd !important;
-                            background: #fafafa !important;
-                            break-inside: avoid !important;
-                        }}
-
-                        .project-card-title {{
-                            font-size: 10px !important;
-                            font-weight: bold !important;
-                            margin-bottom: 3px !important;
-                        }}
-
-                        .project-card-date {{
-                            font-size: 9px !important;
-                            color: #666 !important;
-                        }}
-
-                        /* Page settings */
-                        @page {{
-                            margin: 0.75in;
-                            size: letter;
-                        }}
-
-                        /* Simple single-column layout */
-                        .dashboard-container {{
-                            display: block !important;
-                        }}
-
-                        /* Hide grid layouts that cause issues */
-                        .grid {{
-                            display: block !important;
-                        }}
-
-                        .grid .card {{
-                            margin-bottom: 10px !important;
-                        }}
-                    }}
-                </style>
-            `;
-
-            printWindow.document.write(currentContent.replace('</head>', printCSS + '</head>'));
-            printWindow.document.close();
-
-            setTimeout(() => {{
-                printWindow.print();
-                printWindow.close();
-            }}, 500);
-        }}
-
-        function exportToCSV() {{
-            const data = [];
-
-            // Add header
-            data.push(['Dashboard Export', 'Generated: ' + new Date().toLocaleString()]);
-            data.push([]); // Empty row
-
-            // Extract team capacity data
-            data.push(['Team Member', 'Current Allocation', 'Max Capacity', 'Utilization %']);
-
-            document.querySelectorAll('.team-member').forEach(member => {{
-                const name = member.querySelector('.team-member-name')?.textContent || 'Unknown';
-                const capacity = member.querySelector('.team-member-capacity')?.textContent || '';
-                const tooltip = member.getAttribute('data-tooltip') || '';
-
-                // Parse capacity text (e.g., "75% / 100% capacity")
-                const capacityMatch = capacity.match(/(\\d+(?:\\.\\d+)?)%\\s*\\/\\s*(\\d+(?:\\.\\d+)?)%/);
-                if (capacityMatch) {{
-                    const current = capacityMatch[1];
-                    const max = capacityMatch[2];
-                    const utilization = ((parseFloat(current) / parseFloat(max)) * 100).toFixed(1);
-
-                    data.push([name, current + '%', max + '%', utilization + '%']);
-                }}
-            }});
-
-            data.push([]); // Empty row
-
-            // Extract metrics
-            data.push(['Performance Metrics', 'Value']);
-            document.querySelectorAll('.metric').forEach(metric => {{
-                const label = metric.querySelector('.metric-label')?.textContent || '';
-                const value = metric.querySelector('.metric-value')?.textContent || '';
-                if (label && value) {{
-                    data.push([label.trim(), value.trim()]);
-                }}
-            }});
-
-            // Convert to CSV
-            const csvContent = data.map(row =>
-                row.map(field => `"${{field.toString().replace(/"/g, '""')}}"`)
-                   .join(',')
-            ).join('\\n');
-
-            // Download file
-            const blob = new Blob([csvContent], {{ type: 'text/csv;charset=utf-8;' }});
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `perimeter-studio-dashboard-${{new Date().toISOString().split('T')[0]}}.csv`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }}
-
-        // Initialize interactive features
-        document.addEventListener('DOMContentLoaded', function() {{
-            setupInteractiveFeatures();
-            setupTableSorting();
-        }});
-
-        // Handle window resize for responsive charts
-        let resizeTimeout;
-        window.addEventListener('resize', function() {{
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(function() {{
-                // Regenerate charts on orientation change or significant resize
-                if (window.capacityHistoryChart) {{
-                    window.capacityHistoryChart.destroy();
-                }}
-
-                // Regenerate all charts
-                generateRadarChart();
-                generateVelocityChart();
-                generateCapacityHistoryChart();
-            }}, 250);
-        }});
-
-        // Optimize touch interactions for mobile
-        if ('ontouchstart' in window) {{
-            document.body.classList.add('touch-device');
-
-            // Improve chart tooltips for touch devices
-            const style = document.createElement('style');
-            style.textContent = `
-                .touch-device .chart-container {{
-                    -webkit-tap-highlight-color: transparent;
-                }}
-                .touch-device canvas {{
-                    touch-action: pan-y;
-                }}
-            `;
-            document.head.appendChild(style);
-        }}
 """
 
     html += """
     </script>
 
-        </main>
-    </div>
 </body>
 </html>
 """

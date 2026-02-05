@@ -1,0 +1,44 @@
+# ============================================
+# Perimeter Studio Automation Cron Jobs
+# ============================================
+#
+# To install these cron jobs:
+# 1. Run: crontab -e
+# 2. Copy and paste the entries below
+# 3. Save and exit
+#
+# Make sure to update the path if your StudioProcesses
+# folder is in a different location!
+# ============================================
+
+# IMPORTANT: Update this path to match your installation
+STUDIO_SCRIPTS=/home/your-user/Scripts/StudioProcesses
+
+# ============================================
+# EXISTING AUTOMATIONS (keep these if already set up)
+# ============================================
+
+# Video Scorer - Runs every 15 minutes
+# */15 * * * * cd $STUDIO_SCRIPTS && ./venv/bin/python3 video_scorer.py >> logs/video_scorer.log 2>&1
+
+# Film Calendar Sync - Runs every 15 minutes
+# */15 * * * * cd $STUDIO_SCRIPTS && ./run_film_calendar_sync.sh >> logs/calendar_sync.log 2>&1
+
+# Forecast Pipeline Check - Runs daily at 8am
+# 0 8 * * * cd $STUDIO_SCRIPTS && ./run_forecast_check.sh >> logs/forecast_check.log 2>&1
+
+# ============================================
+# NEW AUTOMATIONS
+# ============================================
+
+# Forecast Status Automation - Runs every 30 minutes
+# Auto-moves tasks when Forecast Status = "Ready for Preproduction"
+*/30 * * * * cd $STUDIO_SCRIPTS && ./run_forecast_status_automation.sh >> logs/forecast_status.log 2>&1
+
+# Post-Completion Feedback - Runs every 15 minutes
+# Posts completion summaries on completed Post Production tasks
+*/15 * * * * cd $STUDIO_SCRIPTS && ./run_post_completion_feedback.sh >> logs/feedback.log 2>&1
+
+# ============================================
+# END OF CRON JOBS
+# ============================================

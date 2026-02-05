@@ -24,7 +24,7 @@ SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 
 # Team configuration
 TEAM_CAPACITY = {
-    "Zach Welliver": {"gid": "1205076276256605", "capacity": 50},
+    "Zach Welliver": {"gid": "1205076276256605", "capacity": 80},
     "Nick Clark": {"gid": "1202206953008470", "capacity": 100},
     "Adriel Abella": {"gid": "1208249805795150", "capacity": 100},
     "John Meyer": {"gid": "1211292436943049", "capacity": 30}
@@ -203,7 +203,7 @@ def generate_html_report(usage):
         </div>
 
         <div style="margin-top: 20px; padding: 15px; background-color: #e9ecef; border-radius: 5px; font-size: 12px; color: #666;">
-            <p style="margin: 0;"><strong>Capacity Limits:</strong> Zach: 50% | Nick: 100% | Adriel: 100% | John: 30%</p>
+            <p style="margin: 0;"><strong>Capacity Limits:</strong> Zach: 80% | Nick: 100% | Adriel: 100% | John: 30%</p>
             <p style="margin: 5px 0 0 0;"><em>Automated report from Video Production Capacity System</em></p>
         </div>
     </body>

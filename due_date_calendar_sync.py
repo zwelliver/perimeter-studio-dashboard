@@ -10,7 +10,7 @@ Two-Way Sync: Asana Due Dates ←→ Google Calendar
 import os
 import pickle
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
 import requests
 
@@ -100,21 +100,25 @@ def fetch_tasks_with_due_dates():
                     if task.get('completed'):
                         continue
 
-                    # Extract due date (can be due_on or due_at)
+                    # Extract due date and time (prefer due_at over due_on for time info)
                     due_date = None
-                    if task.get('due_on'):
-                        # due_on is a date string (YYYY-MM-DD)
+                    due_datetime = None
+                    if task.get('due_at'):
+                        # due_at is a datetime, extract both date and time
+                        due_datetime_obj = datetime.fromisoformat(task['due_at'].replace('Z', '+00:00'))
+                        due_date = due_datetime_obj.strftime('%Y-%m-%d')
+                        due_datetime = task['due_at']  # Keep original datetime string
+                    elif task.get('due_on'):
+                        # due_on is a date string (YYYY-MM-DD) - no time specified
                         due_date = task['due_on']
-                    elif task.get('due_at'):
-                        # due_at is a datetime, extract just the date
-                        due_datetime = datetime.fromisoformat(task['due_at'].replace('Z', '+00:00'))
-                        due_date = due_datetime.strftime('%Y-%m-%d')
+                        due_datetime = None  # No time, will use default
 
                     if due_date:
                         tasks_with_dates.append({
                             'gid': task['gid'],
                             'name': task['name'],
                             'due_date': due_date,
+                            'due_datetime': due_datetime,  # New field for time info
                             'project': project_name,
                             'modified_at': task.get('modified_at')
                         })
@@ -171,10 +175,19 @@ def create_or_update_event(service, task, mapping):
     event_id = event_info.get('event_id') if isinstance(event_info, dict) else event_info
 
     due_date = task['due_date']  # YYYY-MM-DD format
+    due_datetime = task.get('due_datetime')  # Original datetime from Asana if available
 
-    # Timed event at 4:00 PM EST (21:00 UTC)
-    start_datetime = f"{due_date}T21:00:00.000Z"
-    end_datetime = f"{due_date}T22:00:00.000Z"
+    # Use actual due time if specified, otherwise default to 4:00 PM EST
+    if due_datetime:
+        # Parse the Asana due_datetime and convert to proper format
+        due_dt_obj = datetime.fromisoformat(due_datetime.replace('Z', '+00:00'))
+        start_datetime = due_dt_obj.isoformat().replace('+00:00', 'Z')
+        end_dt_obj = due_dt_obj + timedelta(hours=1)  # 1 hour duration
+        end_datetime = end_dt_obj.isoformat().replace('+00:00', 'Z')
+    else:
+        # Default timed event at 4:00 PM EST (21:00 UTC)
+        start_datetime = f"{due_date}T21:00:00.000Z"
+        end_datetime = f"{due_date}T22:00:00.000Z"
 
     event = {
         'summary': f"✅ DUE: {task['name']}",
@@ -199,17 +212,48 @@ def create_or_update_event(service, task, mapping):
 
     try:
         if event_id:
-            print(f"    Updating: {task['name']}")
-            updated_event = service.events().update(
-                calendarId=CALENDAR_ID,
-                eventId=event_id,
-                body=event
-            ).execute()
-            return {
-                'event_id': updated_event['id'],
-                'updated_at': updated_event.get('updated'),
-                'due_date': due_date
-            }
+            # Check if the event needs updating by comparing start times
+            try:
+                existing_event = service.events().get(
+                    calendarId=CALENDAR_ID,
+                    eventId=event_id
+                ).execute()
+
+                existing_start = existing_event['start']['dateTime']
+                new_start = event['start']['dateTime']
+
+                # Only update if the start time is different
+                if existing_start != new_start:
+                    print(f"    Updating: {task['name']} (time changed: {existing_start} → {new_start})")
+                    updated_event = service.events().update(
+                        calendarId=CALENDAR_ID,
+                        eventId=event_id,
+                        body=event
+                    ).execute()
+                    return {
+                        'event_id': updated_event['id'],
+                        'updated_at': updated_event.get('updated'),
+                        'due_date': due_date
+                    }
+                else:
+                    # No update needed
+                    return {
+                        'event_id': event_id,
+                        'updated_at': existing_event.get('updated'),
+                        'due_date': due_date
+                    }
+            except HttpError:
+                # Event doesn't exist, create it
+                print(f"    Creating: {task['name']} (event not found)")
+                created_event = service.events().insert(
+                    calendarId=CALENDAR_ID,
+                    body=event
+                ).execute()
+                return {
+                    'event_id': created_event['id'],
+                    'updated_at': created_event.get('updated'),
+                    'due_date': due_date
+                }
         else:
             print(f"    Creating: {task['name']}")
             created_event = service.events().insert(

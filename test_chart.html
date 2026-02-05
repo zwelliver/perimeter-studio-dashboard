@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px auto;
+        }
+        canvas {
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Historical Capacity Chart</h1>
+    <div class="chart-container">
+        <canvas id="testChart"></canvas>
+    </div>
+
+    <script>
+        // Sample data from the dashboard
+        const capacityHistoryByMember = {
+            "Zach Welliver": [
+                {"date": "2026-01-28", "utilization_percent": 265.0},
+                {"date": "2026-01-29", "utilization_percent": 258.8},
+                {"date": "2026-01-30", "utilization_percent": 252.5},
+                {"date": "2026-01-31", "utilization_percent": 252.5},
+                {"date": "2026-02-01", "utilization_percent": 252.5}
+            ],
+            "Nick Clark": [
+                {"date": "2026-01-28", "utilization_percent": 64.0},
+                {"date": "2026-01-29", "utilization_percent": 64.0},
+                {"date": "2026-01-30", "utilization_percent": 63.0},
+                {"date": "2026-01-31", "utilization_percent": 63.0},
+                {"date": "2026-02-01", "utilization_percent": 63.0}
+            ]
+        };
+
+        console.log('Starting chart creation...');
+
+        // Create simple chart
+        const ctx = document.getElementById('testChart').getContext('2d');
+
+        // Build datasets
+        const datasets = [];
+        const memberColors = {
+            'Zach Welliver': '#9B59B6',
+            'Nick Clark': '#36A2EB'
+        };
+
+        // Get all unique dates
+        const allDates = [...new Set(
+            Object.values(capacityHistoryByMember)
+                .flat()
+                .map(entry => entry.date)
+        )].sort();
+
+        console.log('All dates:', allDates);
+
+        Object.keys(capacityHistoryByMember).forEach(member => {
+            const memberData = capacityHistoryByMember[member];
+            console.log('Processing member:', member, 'with', memberData.length, 'data points');
+
+            const dataset = {
+                label: member,
+                data: allDates.map(date => {
+                    const entry = memberData.find(d => d.date === date);
+                    return entry ? entry.utilization_percent : null;
+                }),
+                borderColor: memberColors[member] || '#999999',
+                backgroundColor: memberColors[member] || '#999999',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.1
+            };
+
+            datasets.push(dataset);
+            console.log('Dataset created for', member, 'with data:', dataset.data);
+        });
+
+        console.log('Creating chart with', datasets.length, 'datasets');
+
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: allDates,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Historical Capacity Utilization Test'
+                    }
+                }
+            }
+        });
+
+        console.log('Chart created:', !!chart);
+    </script>
+</body>
+</html>
