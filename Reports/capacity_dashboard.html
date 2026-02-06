@@ -2278,7 +2278,7 @@
         <header class="header" role="banner">
             <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
             <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: February 06, 2026 at 12:15 PM</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: February 06, 2026 at 12:30 PM</p>
 
             <div class="header-controls">
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
@@ -2306,7 +2306,7 @@
                 <h2 id="performance-title">Performance Overview</h2>
                 <div class="metric" role="group" aria-labelledby="active-tasks-label">
                     <span id="active-tasks-label" class="metric-label">Active Tasks</span>
-                    <span class="metric-value" aria-describedby="active-tasks-label">44</span>
+                    <span class="metric-value" aria-describedby="active-tasks-label">45</span>
                 </div>
                 <div class="metric" role="group" aria-labelledby="completed-30d-label">
                     <span id="completed-30d-label" class="metric-label">Projects Completed (30d)</span>
@@ -2403,8 +2403,18 @@
         <div class="card full-width" style="margin-top: 30px; margin-bottom: 30px;">
             <h2>At-Risk Tasks</h2>
     
-            <div class="success-state">
-                <div style="font-size: 18px;">No tasks currently at risk</div>
+            <div style="margin-top: 15px;">
+        
+                <div class="at-risk-item">
+                    <div class="project-task-name">Request Holy Week website video</div>
+                    <div class="task-detail">
+                        Preproduction | Debbie Mason | Due: 2026-02-03
+                    </div>
+                    <div class="task-risk">
+                        • Overdue by 3 days
+                    </div>
+                </div>
+            
             </div>
         
         </div>
@@ -4500,7 +4510,7 @@ Dec 1...
             setTimeout(() => {
                 animateProgressRing('ringOnTime', 'ringOnTimeValue', 100);
                 animateProgressRing('ringUtilization', 'ringUtilizationValue', 79);
-                animateProgressRing('ringProjects', 'ringProjectsValue', 44, true);
+                animateProgressRing('ringProjects', 'ringProjectsValue', 45, true);
 
                 generateTimeline();
                 generateRadarChart();
