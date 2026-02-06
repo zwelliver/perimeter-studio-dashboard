@@ -23,7 +23,7 @@ View the latest capacity dashboard: [capacity_dashboard.html](Reports/capacity_d
 
 ### Team Capacity
 Real-time capacity utilization for each team member:
-- **Zach Welliver** - 50% max capacity (Preproduction)
+- **Zach Welliver** - 100% max capacity (Preproduction)
 - **Nick Clark** - 100% max capacity (Production)
 - **Adriel Abella** - 100% max capacity (Post Production)
 - **John Meyer** - 30% max capacity (All phases)
