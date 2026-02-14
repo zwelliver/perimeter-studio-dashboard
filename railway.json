@@ -1,0 +1,12 @@
+{
+  "deploy": {
+    "buildCommand": "pip install -r requirements.txt && cd frontend && npm ci && npm run build",
+    "startCommand": "python3 main_complete.py"
+  },
+  "volumes": [
+    {
+      "name": "reports",
+      "mountPath": "/app/Reports"
+    }
+  ]
+}

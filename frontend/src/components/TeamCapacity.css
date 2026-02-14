@@ -1,0 +1,94 @@
+.team-capacity {
+  grid-column: 1 / -1;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.team-member {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(96, 187, 233, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.3s;
+}
+
+.team-member:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(96, 187, 233, 0.2);
+}
+
+.team-member.overloaded {
+  border-color: var(--color-danger);
+  background: rgba(220, 53, 69, 0.05);
+}
+
+.team-member.high {
+  border-color: var(--color-warning);
+  background: rgba(255, 193, 7, 0.05);
+}
+
+.member-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.member-name {
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: 1.1rem;
+}
+
+.member-utilization {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--color-accent);
+}
+
+.team-member.overloaded .member-utilization {
+  color: var(--color-danger);
+}
+
+.team-member.high .member-utilization {
+  color: var(--color-warning);
+}
+
+.capacity-bar-bg {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  height: 12px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.capacity-bar {
+  height: 100%;
+  background: var(--color-success);
+  transition: width 1s ease;
+  border-radius: 10px;
+}
+
+.capacity-bar.high {
+  background: linear-gradient(90deg, var(--color-success), var(--color-warning));
+}
+
+.capacity-bar.overloaded {
+  background: linear-gradient(90deg, var(--color-warning), var(--color-danger));
+}
+
+.capacity-numbers {
+  font-size: 0.9rem;
+  color: var(--color-text-dim);
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+}

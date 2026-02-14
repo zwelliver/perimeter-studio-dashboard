@@ -561,7 +561,7 @@ async def at_risk():
         raise HTTPException(status_code=500, detail=str(e))
 
 # Serve frontend (when built)
-frontend_dist = "studio-command-center/frontend/dist"
+frontend_dist = "frontend/dist"
 if os.path.exists(frontend_dist):
     logger.info(f"Mounting frontend from: {frontend_dist}")
     app.mount("/static", StaticFiles(directory=f"{frontend_dist}/assets"), name="static")
@@ -578,6 +578,12 @@ if os.path.exists(frontend_dist):
             return FileResponse(index_path)
         else:
             return {"error": "Frontend not available"}
+else:
+    logger.warning(f"Frontend dist directory not found at: {frontend_dist}")
+    logger.info("Available directories:")
+    for item in os.listdir("."):
+        if os.path.isdir(item):
+            logger.info(f"  - {item}")
 
 if __name__ == "__main__":
     import uvicorn
