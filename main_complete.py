@@ -495,25 +495,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# API Routes
-@app.get("/")
-async def root():
-    return {
-        "message": "Studio Dashboard API",
-        "status": "online",
-        "environment": settings.environment,
-        "version": "2.0.0"
-    }
-
-@app.get("/health")
-async def health():
-    return {
-        "status": "healthy",
-        "environment": settings.environment,
-        "asana_configured": bool(settings.asana_pat),
-        "cache_age": (datetime.now() - dashboard_cache.get('last_updated', datetime.now())).total_seconds() if dashboard_cache.get('last_updated') else 0
-    }
-
+# API Routes - Define all API routes first
 @app.get("/api/health")
 async def api_health():
     return {"status": "ok", "message": "API working"}
@@ -560,17 +542,37 @@ async def at_risk():
         logger.error(f"Error in at-risk endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/health")
+async def health():
+    return {
+        "status": "healthy",
+        "environment": settings.environment,
+        "asana_configured": bool(settings.asana_pat),
+        "cache_age": (datetime.now() - dashboard_cache.get('last_updated', datetime.now())).total_seconds() if dashboard_cache.get('last_updated') else 0
+    }
+
 # Serve frontend (when built)
 frontend_dist = "frontend/dist"
 if os.path.exists(frontend_dist):
     logger.info(f"Mounting frontend from: {frontend_dist}")
     app.mount("/static", StaticFiles(directory=f"{frontend_dist}/assets"), name="static")
 
+    # Root route serves the frontend
+    @app.get("/")
+    async def serve_root():
+        """Serve React SPA at root"""
+        index_path = f"{frontend_dist}/index.html"
+        if os.path.exists(index_path):
+            return FileResponse(index_path)
+        else:
+            return {"error": "Frontend not available"}
+
+    # Catch-all route for SPA routing (must be last)
     @app.get("/{full_path:path}")
     async def serve_spa(full_path: str):
-        """Serve React SPA"""
-        # Don't intercept API routes
-        if full_path.startswith("api/") or full_path.startswith("health"):
+        """Serve React SPA for all other routes"""
+        # Don't intercept API routes or health
+        if full_path.startswith("api/") or full_path == "health":
             raise HTTPException(status_code=404, detail="Not found")
 
         index_path = f"{frontend_dist}/index.html"
@@ -584,6 +586,16 @@ else:
     for item in os.listdir("."):
         if os.path.isdir(item):
             logger.info(f"  - {item}")
+
+    # Fallback API-only root when frontend not available
+    @app.get("/")
+    async def root():
+        return {
+            "message": "Studio Dashboard API",
+            "status": "online",
+            "environment": settings.environment,
+            "version": "2.0.0"
+        }
 
 if __name__ == "__main__":
     import uvicorn
