@@ -617,6 +617,95 @@ templates_dir = "templates"
 logger.info(f"Looking for templates at: {os.path.abspath(templates_dir)}")
 logger.info(f"Templates directory exists: {os.path.exists(templates_dir)}")
 
+# Debug endpoints MUST come before catch-all routes
+@app.get("/debug/template")
+async def debug_template(request: Request):
+    """Debug template rendering"""
+    try:
+        raw_data = get_cached_data()
+
+        # Show the exact context we're passing to templates
+        data_with_timestamp = raw_data.copy() if raw_data else {}
+        data_with_timestamp["timestamp"] = datetime.now().strftime('%B %d, %Y at %I:%M %p')
+
+        context = {
+            "data": data_with_timestamp,
+            "total_tasks": raw_data.get("metrics", {}).get("total_tasks", 0) if raw_data else 0,
+            "team_capacity": raw_data.get("team_capacity", []) if raw_data else [],
+            "upcoming_shoots": raw_data.get("upcoming_shoots", []) if raw_data else [],
+            "upcoming_deadlines": raw_data.get("upcoming_deadlines", []) if raw_data else [],
+            "at_risk_tasks": raw_data.get("at_risk_tasks", []) if raw_data else [],
+        }
+
+        return {
+            "templates_available": os.listdir(templates_dir) if os.path.exists(templates_dir) else [],
+            "raw_data_keys": list(raw_data.keys()) if raw_data else [],
+            "context_keys": list(context.keys()),
+            "upcoming_deadlines_sample": context["upcoming_deadlines"][0] if context["upcoming_deadlines"] else None,
+            "upcoming_shoots_sample": context["upcoming_shoots"][0] if context["upcoming_shoots"] else None,
+            "data_timestamp_type": type(context["data"]["timestamp"]).__name__,
+            "is_mock_data": "Q1 Content Planning" in str(context.get("at_risk_tasks", [])),
+            "template_dir": os.path.abspath(templates_dir) if os.path.exists(templates_dir) else "NOT_FOUND"
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+# Debug endpoint to test Asana API
+@app.get("/debug/asana")
+async def debug_asana():
+    """Debug Asana API connectivity"""
+    if not settings.asana_pat:
+        return {"error": "ASANA_PAT not configured"}
+
+    headers = get_asana_headers()
+    try:
+        # Test basic API access
+        workspaces_response = requests.get(
+            'https://app.asana.com/api/1.0/workspaces',
+            headers=headers,
+            timeout=10
+        )
+
+        result = {
+            "asana_pat_configured": bool(settings.asana_pat),
+            "asana_pat_length": len(settings.asana_pat) if settings.asana_pat else 0,
+            "workspaces_status": workspaces_response.status_code,
+        }
+
+        if workspaces_response.status_code == 200:
+            workspaces = workspaces_response.json().get('data', [])
+            result["workspaces"] = [{"name": w["name"], "gid": w["gid"]} for w in workspaces]
+
+            if workspaces:
+                workspace_gid = workspaces[0]['gid']
+
+                # Test tasks search
+                tasks_response = requests.get(
+                    f'https://app.asana.com/api/1.0/workspaces/{workspace_gid}/tasks/search',
+                    headers=headers,
+                    params={
+                        'completed': False,
+                        'limit': 5,
+                        'opt_fields': 'name,due_on,assignee.name,projects.name'
+                    },
+                    timeout=10
+                )
+
+                result["tasks_status"] = tasks_response.status_code
+                if tasks_response.status_code == 200:
+                    tasks = tasks_response.json().get('data', [])
+                    result["sample_tasks"] = tasks[:3]  # Show first 3 tasks
+                    result["total_tasks_found"] = len(tasks)
+                else:
+                    result["tasks_error"] = tasks_response.text[:500]  # Limit error text
+
+        else:
+            result["workspaces_error"] = workspaces_response.text[:500]  # Limit error text
+
+        return result
+    except Exception as e:
+        return {"error": str(e), "error_type": type(e).__name__}
+
 if os.path.exists(templates_dir):
     logger.info(f"Found templates directory with files: {os.listdir(templates_dir)}")
 
@@ -654,91 +743,6 @@ if os.path.exists(templates_dir):
             import traceback
             logger.error(f"Full traceback: {traceback.format_exc()}")
             return HTMLResponse(content=f"<h1>Error loading dashboard: {e}</h1><pre>Error type: {type(e).__name__}</pre>", status_code=500)
-
-    # Debug endpoint to check exact data structure
-    @app.get("/debug/template")
-    async def debug_template(request: Request):
-        """Debug template rendering"""
-        try:
-            raw_data = get_cached_data()
-
-            # Show the exact context we're passing to templates
-            data_with_timestamp = raw_data.copy() if raw_data else {}
-            data_with_timestamp["timestamp"] = datetime.now().strftime('%B %d, %Y at %I:%M %p')
-
-            context = {
-                "data": data_with_timestamp,
-                "total_tasks": raw_data.get("metrics", {}).get("total_tasks", 0) if raw_data else 0,
-                "team_capacity": raw_data.get("team_capacity", []) if raw_data else [],
-                "upcoming_shoots": raw_data.get("upcoming_shoots", []) if raw_data else [],
-                "upcoming_deadlines": raw_data.get("upcoming_deadlines", []) if raw_data else [],
-                "at_risk_tasks": raw_data.get("at_risk_tasks", []) if raw_data else [],
-            }
-
-            return {
-                "templates_available": os.listdir(templates_dir),
-                "raw_data_keys": list(raw_data.keys()) if raw_data else [],
-                "context_keys": list(context.keys()),
-                "upcoming_deadlines_sample": context["upcoming_deadlines"][0] if context["upcoming_deadlines"] else None,
-                "upcoming_shoots_sample": context["upcoming_shoots"][0] if context["upcoming_shoots"] else None,
-                "data_timestamp_type": type(context["data"]["timestamp"]).__name__,
-                "template_dir": os.path.abspath(templates_dir)
-            }
-        except Exception as e:
-            return {"error": str(e)}
-
-    # Debug endpoint to test Asana API
-    @app.get("/debug/asana")
-    async def debug_asana():
-        """Debug Asana API connectivity"""
-        if not settings.asana_pat:
-            return {"error": "ASANA_PAT not configured"}
-
-        headers = get_asana_headers()
-        try:
-            # Test basic API access
-            workspaces_response = requests.get(
-                'https://app.asana.com/api/1.0/workspaces',
-                headers=headers
-            )
-
-            result = {
-                "asana_pat_configured": bool(settings.asana_pat),
-                "workspaces_status": workspaces_response.status_code,
-            }
-
-            if workspaces_response.status_code == 200:
-                workspaces = workspaces_response.json().get('data', [])
-                result["workspaces"] = [{"name": w["name"], "gid": w["gid"]} for w in workspaces]
-
-                if workspaces:
-                    workspace_gid = workspaces[0]['gid']
-
-                    # Test tasks search
-                    tasks_response = requests.get(
-                        f'https://app.asana.com/api/1.0/workspaces/{workspace_gid}/tasks/search',
-                        headers=headers,
-                        params={
-                            'completed': False,
-                            'limit': 5,
-                            'opt_fields': 'name,due_on,assignee.name,projects.name'
-                        }
-                    )
-
-                    result["tasks_status"] = tasks_response.status_code
-                    if tasks_response.status_code == 200:
-                        tasks = tasks_response.json().get('data', [])
-                        result["sample_tasks"] = tasks[:3]  # Show first 3 tasks
-                        result["total_tasks_found"] = len(tasks)
-                    else:
-                        result["tasks_error"] = tasks_response.text
-
-            else:
-                result["workspaces_error"] = workspaces_response.text
-
-            return result
-        except Exception as e:
-            return {"error": str(e), "error_type": type(e).__name__}
 
 else:
     logger.warning(f"Templates directory not found at: {templates_dir}")
