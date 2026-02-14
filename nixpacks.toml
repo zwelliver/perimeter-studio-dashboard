@@ -1,0 +1,26 @@
+# Nixpacks configuration for Python + Node.js
+[variables]
+NIXPACKS_PYTHON_VERSION = "3.11"
+NIXPACKS_NODE_VERSION = "18"
+PYTHONPATH = "/app"
+
+[phases.setup]
+nixPkgs = ["python311", "nodejs_18", "npm"]
+
+[phases.install]
+cmds = [
+    "python -m pip install --upgrade pip",
+    "pip install -r requirements.txt"
+]
+
+[phases.build]
+cmds = [
+    "cd studio-command-center/frontend",
+    "npm ci",
+    "npm run build",
+    "cd ../..",
+    "ls -la studio-command-center/frontend/dist"
+]
+
+[start]
+cmd = "python3 main.py"
