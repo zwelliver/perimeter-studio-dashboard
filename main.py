@@ -11,7 +11,7 @@ import logging
 from contextlib import asynccontextmanager
 
 from app.config import settings
-from app.routers import reports
+from app.routers import dashboard, health
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -43,12 +43,10 @@ app = FastAPI(
 )
 
 # Include API routes
-app.include_router(reports.router, prefix="/api", tags=["reports"])
+app.include_router(dashboard.router, prefix="/api", tags=["dashboard"])
+app.include_router(health.router, prefix="/api", tags=["health"])
 
-# Health check endpoint
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy", "environment": settings.environment}
+# Health endpoints are in health router
 
 # Serve static files (frontend build)
 if os.path.exists("studio-command-center/frontend/dist"):
