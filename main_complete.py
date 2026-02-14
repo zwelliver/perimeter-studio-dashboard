@@ -560,7 +560,14 @@ logger.info(f"Frontend dist exists: {os.path.exists(frontend_dist)}")
 if os.path.exists(frontend_dist):
     logger.info(f"Mounting frontend from: {frontend_dist}")
     logger.info(f"Frontend files: {os.listdir(frontend_dist)}")
-    app.mount("/static", StaticFiles(directory=f"{frontend_dist}/assets"), name="static")
+
+    # Mount assets at /assets instead of /static to match Vite's build output
+    assets_dir = f"{frontend_dist}/assets"
+    if os.path.exists(assets_dir):
+        logger.info(f"Mounting assets from: {assets_dir}")
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+    else:
+        logger.error(f"Assets directory not found: {assets_dir}")
 
     # Root route serves the frontend
     @app.get("/")
@@ -568,8 +575,10 @@ if os.path.exists(frontend_dist):
         """Serve React SPA at root"""
         index_path = f"{frontend_dist}/index.html"
         if os.path.exists(index_path):
+            logger.info(f"Serving index.html from: {index_path}")
             return FileResponse(index_path)
         else:
+            logger.error(f"index.html not found at: {index_path}")
             return {"error": "Frontend not available"}
 
     # Catch-all route for SPA routing (must be last)
@@ -582,8 +591,10 @@ if os.path.exists(frontend_dist):
 
         index_path = f"{frontend_dist}/index.html"
         if os.path.exists(index_path):
+            logger.info(f"SPA routing: serving index.html for path: {full_path}")
             return FileResponse(index_path)
         else:
+            logger.error(f"SPA routing: index.html not found at: {index_path}")
             return {"error": "Frontend not available"}
 else:
     logger.warning(f"Frontend dist directory not found at: {frontend_dist}")
