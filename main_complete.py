@@ -553,8 +553,13 @@ async def health():
 
 # Serve frontend (when built)
 frontend_dist = "frontend/dist"
+logger.info(f"Current working directory: {os.getcwd()}")
+logger.info(f"Looking for frontend at: {os.path.abspath(frontend_dist)}")
+logger.info(f"Frontend dist exists: {os.path.exists(frontend_dist)}")
+
 if os.path.exists(frontend_dist):
     logger.info(f"Mounting frontend from: {frontend_dist}")
+    logger.info(f"Frontend files: {os.listdir(frontend_dist)}")
     app.mount("/static", StaticFiles(directory=f"{frontend_dist}/assets"), name="static")
 
     # Root route serves the frontend
