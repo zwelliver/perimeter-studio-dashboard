@@ -93,21 +93,50 @@ def fetch_asana_data():
 def get_dashboard_metrics(headers):
     """Get basic dashboard metrics from Asana"""
     try:
-        # Get workspace tasks - simplified for now
-        response = requests.get(
-            'https://app.asana.com/api/1.0/tasks',
-            headers=headers,
-            params={'completed_since': 'now', 'limit': 100}
+        # First get the workspace
+        workspaces_response = requests.get(
+            'https://app.asana.com/api/1.0/workspaces',
+            headers=headers
         )
 
-        if response.status_code == 200:
-            tasks = response.json().get('data', [])
-            return {
-                "total_tasks": len(tasks),
-                "at_risk_count": len([t for t in tasks if is_task_at_risk(t)]),
-                "upcoming_shoots": 2,  # Will be calculated from actual data
-                "upcoming_deadlines": len([t for t in tasks if has_upcoming_deadline(t)])
-            }
+        if workspaces_response.status_code == 200:
+            workspaces = workspaces_response.json().get('data', [])
+            if not workspaces:
+                logger.warning("No workspaces found")
+                raise Exception("No workspaces available")
+
+            workspace_gid = workspaces[0]['gid']  # Use first workspace
+            logger.info(f"Using workspace: {workspaces[0]['name']} ({workspace_gid})")
+
+            # Get tasks from workspace
+            response = requests.get(
+                f'https://app.asana.com/api/1.0/workspaces/{workspace_gid}/tasks/search',
+                headers=headers,
+                params={
+                    'completed': False,
+                    'limit': 100,
+                    'opt_fields': 'name,due_on,assignee.name,projects.name,completed'
+                }
+            )
+
+            if response.status_code == 200:
+                tasks = response.json().get('data', [])
+                logger.info(f"Found {len(tasks)} active tasks")
+
+                at_risk_tasks = [t for t in tasks if is_task_at_risk(t)]
+                upcoming_deadline_tasks = [t for t in tasks if has_upcoming_deadline(t)]
+
+                return {
+                    "total_tasks": len(tasks),
+                    "at_risk_count": len(at_risk_tasks),
+                    "upcoming_shoots": 2,  # Will be calculated from actual data
+                    "upcoming_deadlines": len(upcoming_deadline_tasks)
+                }
+            else:
+                logger.error(f"Tasks search failed: {response.status_code} - {response.text}")
+        else:
+            logger.error(f"Workspaces request failed: {workspaces_response.status_code}")
+
     except Exception as e:
         logger.error(f"Error fetching metrics: {e}")
 
@@ -657,6 +686,59 @@ if os.path.exists(templates_dir):
             }
         except Exception as e:
             return {"error": str(e)}
+
+    # Debug endpoint to test Asana API
+    @app.get("/debug/asana")
+    async def debug_asana():
+        """Debug Asana API connectivity"""
+        if not settings.asana_pat:
+            return {"error": "ASANA_PAT not configured"}
+
+        headers = get_asana_headers()
+        try:
+            # Test basic API access
+            workspaces_response = requests.get(
+                'https://app.asana.com/api/1.0/workspaces',
+                headers=headers
+            )
+
+            result = {
+                "asana_pat_configured": bool(settings.asana_pat),
+                "workspaces_status": workspaces_response.status_code,
+            }
+
+            if workspaces_response.status_code == 200:
+                workspaces = workspaces_response.json().get('data', [])
+                result["workspaces"] = [{"name": w["name"], "gid": w["gid"]} for w in workspaces]
+
+                if workspaces:
+                    workspace_gid = workspaces[0]['gid']
+
+                    # Test tasks search
+                    tasks_response = requests.get(
+                        f'https://app.asana.com/api/1.0/workspaces/{workspace_gid}/tasks/search',
+                        headers=headers,
+                        params={
+                            'completed': False,
+                            'limit': 5,
+                            'opt_fields': 'name,due_on,assignee.name,projects.name'
+                        }
+                    )
+
+                    result["tasks_status"] = tasks_response.status_code
+                    if tasks_response.status_code == 200:
+                        tasks = tasks_response.json().get('data', [])
+                        result["sample_tasks"] = tasks[:3]  # Show first 3 tasks
+                        result["total_tasks_found"] = len(tasks)
+                    else:
+                        result["tasks_error"] = tasks_response.text
+
+            else:
+                result["workspaces_error"] = workspaces_response.text
+
+            return result
+        except Exception as e:
+            return {"error": str(e), "error_type": type(e).__name__}
 
 else:
     logger.warning(f"Templates directory not found at: {templates_dir}")
