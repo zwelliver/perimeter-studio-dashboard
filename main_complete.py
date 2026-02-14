@@ -200,21 +200,26 @@ def get_at_risk_tasks(headers):
 def get_upcoming_shoots(headers):
     """Get upcoming shoots from Asana API"""
     # This would need specific project/task filtering for shoots
-    # Return mock data for now
+    # Return mock data for now - with datetime objects
+    from datetime import datetime, timedelta
     return [
         {
             "name": "Sunday Service - Feb 16",
+            "start_date": datetime.now() + timedelta(days=2),  # datetime object for template
             "datetime": "2026-02-16T10:30:00Z",
             "project": "Production",
             "gid": "12345",
-            "days_until": 2
+            "days_until": 2,
+            "assignee": "Production Team"
         },
         {
             "name": "Wednesday Night - Feb 19",
+            "start_date": datetime.now() + timedelta(days=5),  # datetime object for template
             "datetime": "2026-02-19T19:00:00Z",
             "project": "Production",
             "gid": "12346",
-            "days_until": 5
+            "days_until": 5,
+            "assignee": "Production Team"
         }
     ]
 
@@ -241,13 +246,13 @@ def get_upcoming_deadlines(headers):
                 due_on = task.get('due_on')
                 if due_on:
                     try:
-                        due_date = parser.parse(due_on).date()
-                        days_until = (due_date - now.date()).days
+                        due_date = parser.parse(due_on)
+                        days_until = (due_date.date() - now.date()).days
 
                         if 0 <= days_until <= 30:  # Next 30 days
                             upcoming.append({
                                 "name": task.get('name', 'Unnamed Task'),
-                                "due_date": due_on,
+                                "due_date": due_date,  # Keep as datetime object
                                 "days_until": days_until,
                                 "project": task.get('projects', [{}])[0].get('name', 'Unknown Project'),
                                 "gid": task.get('gid')
@@ -259,11 +264,12 @@ def get_upcoming_deadlines(headers):
     except Exception as e:
         logger.error(f"Error fetching upcoming deadlines: {e}")
 
-    # Return mock data if API fails
+    # Return mock data if API fails - with datetime objects
+    from datetime import datetime, timedelta
     return [
         {
             "name": "Easter Graphics Package",
-            "due_date": "2026-02-28",
+            "due_date": datetime.now() + timedelta(days=14),  # datetime object
             "days_until": 14,
             "project": "Post Production",
             "gid": "12347"
@@ -588,19 +594,22 @@ if os.path.exists(templates_dir):
             logger.info("Serving dashboard template with structured data")
 
             # Structure data to match what templates expect (same as generate_dashboard.py)
+            # Create a data object with timestamp for header template
+            data_with_timestamp = raw_data.copy() if raw_data else {}
+            data_with_timestamp["timestamp"] = datetime.now().strftime('%B %d, %Y at %I:%M %p')
+
             context = {
                 "request": request,
-                "data": raw_data,
-                "total_tasks": raw_data.get("metrics", {}).get("total_tasks", 0),
-                "team_capacity": raw_data.get("team_capacity", []),
-                "upcoming_shoots": raw_data.get("upcoming_shoots", []),
-                "upcoming_deadlines": raw_data.get("upcoming_deadlines", []),
-                "at_risk_tasks": raw_data.get("at_risk_tasks", []),
-                "delivery_metrics": calculate_delivery_metrics(raw_data),
+                "data": data_with_timestamp,  # Templates expect data.timestamp
+                "total_tasks": raw_data.get("metrics", {}).get("total_tasks", 0) if raw_data else 0,
+                "team_capacity": raw_data.get("team_capacity", []) if raw_data else [],
+                "upcoming_shoots": raw_data.get("upcoming_shoots", []) if raw_data else [],
+                "upcoming_deadlines": raw_data.get("upcoming_deadlines", []) if raw_data else [],
+                "at_risk_tasks": raw_data.get("at_risk_tasks", []) if raw_data else [],
+                "delivery_metrics": calculate_delivery_metrics(raw_data) if raw_data else {"completed_this_year": 0, "on_time_rate": 0},
                 "variance_data": None,  # We don't have this data yet
                 "capacity_history": {},  # We don't have this data yet
                 "external_projects": [],  # We don't have this data yet
-                "timestamp": raw_data.get("timestamp", datetime.now().isoformat())
             }
 
             return templates.TemplateResponse("dashboard.html", context)
