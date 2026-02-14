@@ -1,1 +1,1 @@
-web: python3 main_simple.py
+web: python3 main_complete.py

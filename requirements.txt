@@ -1,7 +1,23 @@
-# Minimal FastAPI dependencies for Railway deployment
+# Studio Dashboard dependencies - Python 3.13 compatible
 fastapi==0.115.0
 uvicorn[standard]==0.30.0
 pydantic-settings==2.5.0
 python-dotenv==1.0.0
+
+# HTTP clients for Asana API
 requests==2.31.0
 httpx==0.28.0
+
+# Background job scheduling
+apscheduler==3.10.4
+
+# Data processing (Python 3.13 compatible)
+pandas==2.2.0  # Updated version that supports Python 3.13
+python-dateutil==2.8.2
+
+# File handling
+python-multipart==0.0.17
+jinja2==3.1.4
+
+# CSV/Excel support
+openpyxl==3.1.2
