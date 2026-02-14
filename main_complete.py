@@ -375,7 +375,9 @@ def save_dashboard_data(data):
         logger.error(f"Error saving dashboard data: {e}")
 
 def generate_mock_data():
-    """Generate mock data that matches the frontend structure"""
+    """Generate mock data that matches the frontend structure with proper datetime objects"""
+    from datetime import datetime, timedelta
+
     return {
         "timestamp": datetime.now().isoformat(),
         "cache_age": 0,
@@ -413,14 +415,14 @@ def generate_mock_data():
                 "name": "Q1 Content Planning",
                 "project": "Preproduction",
                 "assignee": "Zach Welliver",
-                "due_on": "2026-02-20",
+                "due_on": datetime.now() + timedelta(days=6),  # datetime object
                 "risks": ["Approaching deadline", "High workload"]
             },
             {
                 "name": "Easter Campaign Prep",
                 "project": "Production",
                 "assignee": "Nick Clark",
-                "due_on": "2026-02-25",
+                "due_on": datetime.now() + timedelta(days=11),  # datetime object
                 "risks": ["Resource constraints"]
             }
         ],
@@ -428,22 +430,26 @@ def generate_mock_data():
             {
                 "name": "Sunday Service - Feb 16",
                 "datetime": "2026-02-16T10:30:00Z",
+                "start_date": datetime.now() + timedelta(days=2),  # datetime object for template
                 "project": "Production",
                 "gid": "12345",
-                "days_until": 2
+                "days_until": 2,
+                "assignee": "Production Team"
             },
             {
                 "name": "Wednesday Night - Feb 19",
                 "datetime": "2026-02-19T19:00:00Z",
+                "start_date": datetime.now() + timedelta(days=5),  # datetime object for template
                 "project": "Production",
                 "gid": "12346",
-                "days_until": 5
+                "days_until": 5,
+                "assignee": "Production Team"
             }
         ],
         "upcoming_deadlines": [
             {
                 "name": "Easter Graphics Package",
-                "due_date": "2026-02-28",
+                "due_date": datetime.now() + timedelta(days=14),  # datetime object
                 "days_until": 14,
                 "project": "Post Production",
                 "gid": "12347"
@@ -615,17 +621,38 @@ if os.path.exists(templates_dir):
             return templates.TemplateResponse("dashboard.html", context)
         except Exception as e:
             logger.error(f"Error serving dashboard: {e}")
-            return HTMLResponse(content=f"<h1>Error loading dashboard: {e}</h1>", status_code=500)
+            logger.error(f"Error type: {type(e).__name__}")
+            import traceback
+            logger.error(f"Full traceback: {traceback.format_exc()}")
+            return HTMLResponse(content=f"<h1>Error loading dashboard: {e}</h1><pre>Error type: {type(e).__name__}</pre>", status_code=500)
 
-    # Optional: serve individual template sections for debugging
+    # Debug endpoint to check exact data structure
     @app.get("/debug/template")
     async def debug_template(request: Request):
         """Debug template rendering"""
         try:
-            data = get_cached_data()
+            raw_data = get_cached_data()
+
+            # Show the exact context we're passing to templates
+            data_with_timestamp = raw_data.copy() if raw_data else {}
+            data_with_timestamp["timestamp"] = datetime.now().strftime('%B %d, %Y at %I:%M %p')
+
+            context = {
+                "data": data_with_timestamp,
+                "total_tasks": raw_data.get("metrics", {}).get("total_tasks", 0) if raw_data else 0,
+                "team_capacity": raw_data.get("team_capacity", []) if raw_data else [],
+                "upcoming_shoots": raw_data.get("upcoming_shoots", []) if raw_data else [],
+                "upcoming_deadlines": raw_data.get("upcoming_deadlines", []) if raw_data else [],
+                "at_risk_tasks": raw_data.get("at_risk_tasks", []) if raw_data else [],
+            }
+
             return {
                 "templates_available": os.listdir(templates_dir),
-                "data_keys": list(data.keys()) if data else [],
+                "raw_data_keys": list(raw_data.keys()) if raw_data else [],
+                "context_keys": list(context.keys()),
+                "upcoming_deadlines_sample": context["upcoming_deadlines"][0] if context["upcoming_deadlines"] else None,
+                "upcoming_shoots_sample": context["upcoming_shoots"][0] if context["upcoming_shoots"] else None,
+                "data_timestamp_type": type(context["data"]["timestamp"]).__name__,
                 "template_dir": os.path.abspath(templates_dir)
             }
         except Exception as e:
