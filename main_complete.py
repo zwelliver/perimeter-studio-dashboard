@@ -598,10 +598,16 @@ if os.path.exists(frontend_dist):
             return {"error": "Frontend not available"}
 else:
     logger.warning(f"Frontend dist directory not found at: {frontend_dist}")
-    logger.info("Available directories:")
+    logger.info("Available directories in root:")
     for item in os.listdir("."):
         if os.path.isdir(item):
             logger.info(f"  - {item}")
+            # Also check subdirectories for debugging
+            try:
+                subdirs = [f for f in os.listdir(item) if os.path.isdir(os.path.join(item, f))]
+                logger.info(f"    subdirs: {subdirs}")
+            except:
+                pass
 
     # Fallback API-only root when frontend not available
     @app.get("/")
@@ -612,6 +618,25 @@ else:
             "environment": settings.environment,
             "version": "2.0.0"
         }
+
+    # Debug endpoint to check file system
+    @app.get("/debug/files")
+    async def debug_files():
+        """Debug endpoint to check what files exist"""
+        try:
+            files = {}
+            files["cwd"] = os.getcwd()
+            files["root_items"] = os.listdir(".")
+
+            # Check if frontend directory exists
+            if os.path.exists("frontend"):
+                files["frontend_items"] = os.listdir("frontend")
+                if os.path.exists("frontend/dist"):
+                    files["frontend_dist_items"] = os.listdir("frontend/dist")
+
+            return files
+        except Exception as e:
+            return {"error": str(e)}
 
 if __name__ == "__main__":
     import uvicorn
