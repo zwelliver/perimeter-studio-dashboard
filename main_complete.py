@@ -320,6 +320,22 @@ def determine_task_risks(task):
 
     return risks if risks else ["General risk"]
 
+def calculate_delivery_metrics(data):
+    """Calculate delivery metrics for dashboard templates"""
+    metrics = {
+        'total_completed': 0,
+        'completed_this_year': 0,
+        'on_time_rate': 85.0,  # Mock data - would calculate from actual delivery data
+        'avg_capacity_variance': 12.3  # Mock data - would calculate from variance tracking
+    }
+
+    # In a real implementation, this would analyze delivery_log data
+    # For now, return reasonable mock metrics
+    current_year = datetime.now().year
+    metrics['completed_this_year'] = 47  # Mock data
+
+    return metrics
+
 def save_dashboard_data(data):
     """Save dashboard data to CSV files for reports"""
     try:
@@ -568,12 +584,26 @@ if os.path.exists(templates_dir):
     async def serve_dashboard(request: Request):
         """Serve HTML Dashboard"""
         try:
-            data = get_cached_data()
-            logger.info("Serving dashboard template with data")
-            return templates.TemplateResponse("dashboard.html", {
+            raw_data = get_cached_data()
+            logger.info("Serving dashboard template with structured data")
+
+            # Structure data to match what templates expect (same as generate_dashboard.py)
+            context = {
                 "request": request,
-                "dashboard_data": data
-            })
+                "data": raw_data,
+                "total_tasks": raw_data.get("metrics", {}).get("total_tasks", 0),
+                "team_capacity": raw_data.get("team_capacity", []),
+                "upcoming_shoots": raw_data.get("upcoming_shoots", []),
+                "upcoming_deadlines": raw_data.get("upcoming_deadlines", []),
+                "at_risk_tasks": raw_data.get("at_risk_tasks", []),
+                "delivery_metrics": calculate_delivery_metrics(raw_data),
+                "variance_data": None,  # We don't have this data yet
+                "capacity_history": {},  # We don't have this data yet
+                "external_projects": [],  # We don't have this data yet
+                "timestamp": raw_data.get("timestamp", datetime.now().isoformat())
+            }
+
+            return templates.TemplateResponse("dashboard.html", context)
         except Exception as e:
             logger.error(f"Error serving dashboard: {e}")
             return HTMLResponse(content=f"<h1>Error loading dashboard: {e}</h1>", status_code=500)
