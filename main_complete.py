@@ -613,10 +613,10 @@ else:
     @app.get("/")
     async def root():
         return {
-            "message": "Studio Dashboard API",
+            "message": "Studio Dashboard API - FORCE REDEPLOY",
             "status": "online",
             "environment": settings.environment,
-            "version": "2.0.0"
+            "version": "2.0.1"
         }
 
     # Debug endpoint to check file system
@@ -641,7 +641,7 @@ else:
 if __name__ == "__main__":
     import uvicorn
     port = int(os.getenv("PORT", 8000))
-    logger.info(f"Starting Studio Dashboard on port {port}")
+    logger.info(f"Starting Studio Dashboard on port {port} - Version 2.0.1")
 
     uvicorn.run(
         app,
