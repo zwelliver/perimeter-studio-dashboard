@@ -40,5 +40,13 @@ STUDIO_SCRIPTS=/home/your-user/Scripts/StudioProcesses
 */15 * * * * cd $STUDIO_SCRIPTS && ./run_post_completion_feedback.sh >> logs/feedback.log 2>&1
 
 # ============================================
+# MAINTENANCE
+# ============================================
+
+# Log Rotation - Runs every Sunday at 3am
+# Rotates any .log file over 5 MB (keeps one backup as .log.1)
+0 3 * * 0 cd $STUDIO_SCRIPTS && ./rotate_logs.sh >> logs/log_rotation.log 2>&1
+
+# ============================================
 # END OF CRON JOBS
 # ============================================

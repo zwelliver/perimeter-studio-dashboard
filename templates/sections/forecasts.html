@@ -1,0 +1,42 @@
+<!-- Forecasted Projects -->
+<div id="forecasts" class="card full-width" style="margin-bottom: 30px;">
+    <h2>Forecasted Projects</h2>
+    <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Upcoming projects in the forecast pipeline</p>
+    {% if forecasted_projects %}
+        <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
+            {% for project in forecasted_projects %}
+                <div style="padding: 18px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-tertiary);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                        <div style="font-weight: 600; color: var(--text-primary); font-size: 16px; flex: 1; margin-right: 10px;">{{ project['name'] }}</div>
+                        {% if project.get('gid') %}
+                            <div style="font-size: 10px; color: var(--text-muted); background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px;">{{ project['gid'] }}</div>
+                        {% endif %}
+                    </div>
+                    {% if project.get('notes') %}
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">
+                            {{ project['notes'][:150] }}{% if project['notes']|length > 150 %}...{% endif %}
+                        </div>
+                    {% endif %}
+                    <div style="font-size: 11px; color: var(--text-primary); margin-bottom: 8px;">
+                        {% if project.get('start_on') and project.get('due_date') %}
+                            {{ project['start_on'].strftime('%b %-d') }} - {{ project['due_date'].strftime('%b %-d, %Y') }}
+                        {% elif project.get('due_date') %}
+                            {{ project['due_date'].strftime('%b %-d, %Y') }}
+                        {% elif project.get('start_on') %}
+                            Starts {{ project['start_on'].strftime('%b %-d, %Y') }}
+                        {% else %}
+                            Date TBD
+                        {% endif %}
+                    </div>
+                    {% if project.get('assignee') %}
+                        <div style="font-size: 11px; color: var(--text-secondary);">Assigned: {{ project['assignee'] }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+            <div style="font-size: 16px;">No forecasted projects at this time</div>
+        </div>
+    {% endif %}
+</div>

@@ -1,0 +1,44 @@
+<!-- Two-column layout for Performance Overview and Contracted/Outsourced Projects -->
+<div id="overview" class="performance-row" role="region" aria-label="Performance metrics and charts">
+    <!-- Performance Overview -->
+    <section class="card" role="region" aria-labelledby="performance-title">
+        <h2 id="performance-title">Performance Overview</h2>
+        <div class="metric" role="group" aria-labelledby="active-tasks-label">
+            <span id="active-tasks-label" class="metric-label">Active Tasks</span>
+            <span class="metric-value" aria-describedby="active-tasks-label">{{ total_tasks }}</span>
+        </div>
+        <div class="metric" role="group" aria-labelledby="completed-30d-label">
+            <span id="completed-30d-label" class="metric-label">Completed This Year</span>
+            <span class="metric-value positive" aria-describedby="completed-30d-label">{{ delivery_metrics.completed_this_year }}</span>
+        </div>
+        <div class="metric" role="group" aria-labelledby="on-time-rate-label">
+            <span id="on-time-rate-label" class="metric-label">On-Time Delivery Rate</span>
+            <span class="metric-value {% if delivery_metrics.on_time_rate >= 80 %}positive{% elif delivery_metrics.on_time_rate >= 60 %}warning{% else %}negative{% endif %}" aria-describedby="on-time-rate-label">{{ "%.1f"|format(delivery_metrics.on_time_rate) }}%</span>
+        </div>
+    </section>
+
+    <!-- Contracted/Outsourced Projects -->
+    <div class="card">
+        <h2>Contracted/Outsourced Projects</h2>
+        {% if external_projects %}
+            <div style="margin-top: 15px;">
+                {% for project in external_projects %}
+                    <div style="padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-tertiary);">
+                        <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">{{ project['name'] }}</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">
+                            {% if project.get('assignee') %}Assigned: {{ project['assignee'] }}{% endif %}
+                            {% if project.get('due_date') %} | Due: {{ project['due_date'].strftime('%b %d, %Y') }}{% endif %}
+                        </div>
+                        {% if project.get('notes') %}
+                            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px; font-style: italic;">{{ project['notes'][:100] }}{% if project['notes']|length > 100 %}...{% endif %}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+                <div style="font-size: 16px;">No external projects at this time</div>
+            </div>
+        {% endif %}
+    </div>
+</div>

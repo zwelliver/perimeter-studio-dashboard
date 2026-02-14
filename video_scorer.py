@@ -72,7 +72,7 @@ EXTERNAL_PROJECT_GIDS = {
 TEAM_CAPACITY = {
     "Zach Welliver": {
         "gid": "1205076276256605",
-        "capacity": 80,  # 80% capacity
+        "capacity": 100,  # 100% capacity
         "projects": ["Preproduction"]
     },
     "Nick Clark": {
@@ -118,8 +118,8 @@ TARGETS = {
     'Partners': 0.05
 }
 
-# Calculate total team capacity from individual limits (Zach 80% + Nick 100% + Adriel 100% + John 30%)
-MAX_CAPACITY = sum(member["capacity"] for member in TEAM_CAPACITY.values())  # 310%
+# Calculate total team capacity from individual limits (Zach 100% + Nick 100% + Adriel 100% + John 30%)
+MAX_CAPACITY = sum(member["capacity"] for member in TEAM_CAPACITY.values())  # 330%
 
 # Phase effort multipliers for allocation calculation
 # Post production (editing) requires significantly more time than planning/filming

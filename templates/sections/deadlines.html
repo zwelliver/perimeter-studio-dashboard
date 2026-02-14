@@ -1,0 +1,39 @@
+<!-- Upcoming Project Deadlines -->
+<div id="deadlines" class="card full-width" style="margin-bottom: 30px;">
+    <h2>Upcoming Project Deadlines</h2>
+    <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Projects due within the next 10 days</p>
+    {% if upcoming_deadlines %}
+        <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 15px;">
+            {% for deadline in upcoming_deadlines %}
+                <div style="padding: 16px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-tertiary); display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 6px; font-size: 16px;">{{ deadline['name'] }}</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;">{{ deadline.get('project_name', '') }}</div>
+                        {% if deadline.get('notes') %}
+                            <div style="font-size: 11px; color: var(--text-secondary); font-style: italic; margin-bottom: 8px;">{{ deadline['notes'][:100] }}{% if deadline['notes']|length > 100 %}...{% endif %}</div>
+                        {% endif %}
+                        {% if deadline.get('assignee') %}
+                            <div style="font-size: 11px; color: var(--text-primary); font-weight: 500;">Assigned: {{ deadline['assignee'] }}</div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div class="project-card-date">{{ deadline['due_date'].strftime('%a, %b %-d, %Y') if deadline.get('due_date') else 'Date TBD' }}</div>
+                        {% if deadline.get('days_until') is not none %}
+                            {% if deadline['days_until'] == 0 %}
+                                <div style="font-size: 22px; font-weight: 600; color: #dc3545; margin-top: 6px;">DUE TODAY</div>
+                            {% elif deadline['days_until'] <= 3 %}
+                                <div style="font-size: 22px; font-weight: 600; color: #ffc107; margin-top: 6px;">{{ deadline['days_until'] }} DAYS</div>
+                            {% else %}
+                                <div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">{{ deadline['days_until'] }} DAYS</div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+            <div style="font-size: 16px;">No upcoming deadlines in the next 10 days</div>
+        </div>
+    {% endif %}
+</div>

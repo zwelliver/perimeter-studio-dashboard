@@ -19,7 +19,7 @@ TEAM CAPACITY DASHBOARD - 2025-11-17 15:11
 ----------------------------------------------------------------------
 Team Member          Usage           Limit      Status
 ----------------------------------------------------------------------
-Zach Welliver         35.0% /  50%  ( 70.0%)  📈 High
+Zach Welliver         35.0% / 100%  ( 35.0%)  ✅ OK
 Nick Clark            22.5% / 100%  ( 22.5%)  ✅ OK
 Adriel Abella        110.0% / 100%  (110.0%)  🚨 OVER LIMIT
 ----------------------------------------------------------------------
@@ -139,7 +139,7 @@ Alerts are sent when:
 - Runs automatically every **15 minutes** via cron
 
 **Capacity Limits:**
-- Zach Welliver: 50%
+- Zach Welliver: 100%
 - Nick Clark: 100%
 - Adriel Abella: 100%
 
@@ -170,7 +170,7 @@ Weekly Allocation = (Base × Priority Multiplier) / Duration in weeks
    - ✅ Grok AI scores it
    - ✅ Calculates weekly allocation %
    - ✅ Assigns to **Zach Welliver**
-   - ✅ Checks if Zach over 50%
+   - ✅ Checks if Zach over 100%
    - ✅ Alerts if needed
 
 2. **Zach approves → moves to Production**

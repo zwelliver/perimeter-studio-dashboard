@@ -8,6 +8,7 @@ import os
 import json
 import math
 from datetime import datetime, timedelta, timezone
+from jinja2 import Environment, FileSystemLoader
 
 # Perimeter Church Brand Colors
 BRAND_NAVY = '#09243F'
@@ -94,7 +95,7 @@ def read_reports():
 
     # Fetch active tasks from Asana to calculate team capacity accurately
     team_capacity_config = {
-        'Zach Welliver': {'max': 80},
+        'Zach Welliver': {'max': 100},
         'Nick Clark': {'max': 100},
         'Adriel Abella': {'max': 100},
         'John Meyer': {'max': 30}
@@ -1102,6 +1103,16 @@ def generate_html_dashboard(data):
             box-sizing: border-box;
         }}
 
+        html {{
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }}
+
+        /* Section anchor targets */
+        #overview, #capacity, #metrics, #deadlines, #forecasts, #analytics {{
+            scroll-margin-top: 80px;
+        }}
+
         body {{
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
             background: var(--bg-primary);
@@ -1110,6 +1121,60 @@ def generate_html_dashboard(data):
             min-height: 100vh;
             overflow-x: hidden;
             transition: background-color 0.3s ease, color 0.3s ease;
+        }}
+
+        /* ===== STICKY NAVIGATION ===== */
+        .sticky-nav {{
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 0;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px var(--shadow-light);
+            backdrop-filter: blur(8px);
+            margin-left: -20px;
+            margin-right: -20px;
+            margin-top: -20px;
+        }}
+
+        .nav-container {{
+            max-width: 95%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            padding: 0 20px;
+        }}
+
+        .nav-link {{
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }}
+
+        .nav-link:hover {{
+            color: var(--brand-primary);
+            background: var(--hover-bg);
+            transform: translateY(-1px);
+        }}
+
+        .nav-link:focus {{
+            outline: 2px solid var(--brand-primary);
+            outline-offset: 2px;
+        }}
+
+        .nav-link.active {{
+            color: var(--brand-primary);
+            background: var(--active-bg);
+            font-weight: 600;
         }}
 
         .dashboard-container {{
@@ -1123,10 +1188,22 @@ def generate_html_dashboard(data):
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 2px 4px var(--shadow-light);
-            margin-bottom: 20px;
+            margin-bottom: 40px;
             border-left: 4px solid var(--border-accent);
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
             position: relative;
+        }}
+
+        .header-content {{
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+        }}
+
+        .header-text {{
+            flex: 1;
+            text-align: center;
         }}
 
         /* Theme Toggle Button */
@@ -1159,28 +1236,6 @@ def generate_html_dashboard(data):
             line-height: 1;
         }}
 
-        /* Header controls layout */
-        .header-controls {{
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            flex-direction: column;
-            margin-top: 15px;
-        }}
-
-        @media (min-width: 640px) {{
-            .header-controls {{
-                flex-direction: row;
-                align-items: center;
-            }}
-        }}
-
-        .export-controls {{
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }}
 
         .export-btn {{
             background: var(--brand-primary);
@@ -1691,6 +1746,7 @@ def generate_html_dashboard(data):
                 height: 100px;
             }}
 
+
             .progress-ring-value {{
                 font-size: 16px;
             }}
@@ -2140,6 +2196,7 @@ def generate_html_dashboard(data):
             width: 160px;
             height: 160px;
             text-align: center;
+            display: inline-block;
         }}
 
         .progress-ring-svg {{
@@ -2162,16 +2219,16 @@ def generate_html_dashboard(data):
 
         .progress-ring-text {{
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            width: 100px;
-            height: 60px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            text-align: center;
+            pointer-events: none;
         }}
 
         .progress-ring-value {{
@@ -2180,14 +2237,16 @@ def generate_html_dashboard(data):
             color: var(--text-primary);
             display: block;
             line-height: 1;
+            margin: 0;
         }}
 
         .progress-ring-label {{
             font-size: 9px;
             color: var(--text-secondary);
             display: block;
-            margin-top: 3px;
+            margin-top: 4px;
             line-height: 1.2;
+            font-weight: 500;
             max-width: 100%;
             text-align: center;
         }}
@@ -2735,19 +2794,56 @@ def generate_html_dashboard(data):
 
         .team-member {{
             margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border, #e9ecef);
+            background: var(--bg-secondary);
+        }}
+
+        .team-member.capacity-over {{
+            border-left: 3px solid var(--danger-color);
+        }}
+
+        .team-member.capacity-high {{
+            border-left: 3px solid var(--warning-color);
+        }}
+
+        .team-member.capacity-ok {{
+            border-left: 3px solid #28a745;
         }}
 
         .team-member-name {{
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 4px;
+        }}
+
+        .capacity-status {{
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }}
+
+        .capacity-status.capacity-over {{
+            color: var(--danger-color);
+            background: rgba(220, 53, 69, 0.1);
+        }}
+
+        .capacity-status.capacity-high {{
+            color: #e67e22;
+            background: rgba(230, 126, 34, 0.1);
+        }}
+
+        .capacity-status.capacity-ok {{
+            color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
         }}
 
         .team-member-capacity {{
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }}
 
         .full-width {{
@@ -2778,6 +2874,56 @@ def generate_html_dashboard(data):
                 box-shadow: none;
                 border: 1px solid #dee2e6;
                 page-break-inside: avoid;
+            }}
+        }}
+
+        /* Mobile Navigation */
+        @media (max-width: 768px) {{
+            .nav-container {{
+                gap: 15px;
+            }}
+
+            .nav-link {{
+                font-size: 12px;
+                padding: 6px 12px;
+            }}
+        }}
+
+        @media (max-width: 480px) {{
+            .nav-container {{
+                gap: 8px;
+                justify-content: space-between;
+            }}
+
+            .nav-link {{
+                font-size: 11px;
+                padding: 6px 8px;
+                flex: 1;
+                text-align: center;
+                min-width: 0;
+            }}
+        }}
+
+        /* Header Mobile Styles */
+        @media (max-width: 768px) {{
+            .header-content {{
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }}
+
+            .header-text {{
+                margin-bottom: 15px;
+            }}
+
+            .theme-toggle {{
+                align-self: flex-end;
+            }}
+        }}
+
+        @media (max-width: 480px) {{
+            .theme-toggle {{
+                align-self: center;
             }}
         }}
 
@@ -3151,6 +3297,7 @@ def generate_html_dashboard(data):
                 transform: scale(1.25);
             }}
 
+
             .progress-ring-value {{
                 font-size: 36px;
             }}
@@ -3226,6 +3373,7 @@ def generate_html_dashboard(data):
                 transform: scale(1.5);
             }}
 
+
             .progress-ring-value {{
                 font-size: 44px;
             }}
@@ -3262,31 +3410,34 @@ def generate_html_dashboard(data):
 <body>
     <div class="dashboard-container">
         <header class="header" role="banner">
-            <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
-            <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: {data['timestamp']}</p>
-
-            <div class="header-controls">
+            <div class="header-content">
+                <div class="header-text">
+                    <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
+                    <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
+                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: {data['timestamp']}</p>
+                </div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
-                    <span class="theme-icon" id="themeIcon">🌙</span>
                     <span id="themeText">Dark Mode</span>
                 </button>
-
-                <div class="export-controls">
-                    <button class="export-btn" onclick="exportToPDF()" aria-label="Export dashboard as PDF" title="Export as PDF">
-                        📄 PDF
-                    </button>
-                    <button class="export-btn" onclick="exportToCSV()" aria-label="Export data as CSV" title="Export as CSV">
-                        📊 CSV
-                    </button>
-                </div>
             </div>
             <span id="theme-description" class="sr-only">Switch between dark and light themes for better visibility</span>
         </header>
 
+        <!-- Sticky Navigation -->
+        <nav class="sticky-nav" role="navigation" aria-label="Dashboard sections">
+            <div class="nav-container">
+                <a href="#overview" class="nav-link">Overview</a>
+                <a href="#capacity" class="nav-link">Team Capacity</a>
+                <a href="#metrics" class="nav-link">Key Metrics</a>
+                <a href="#deadlines" class="nav-link">Deadlines</a>
+                <a href="#forecasts" class="nav-link">Forecasts</a>
+                <a href="#analytics" class="nav-link">Analytics</a>
+            </div>
+        </nav>
+
         <main role="main" aria-labelledby="dashboard-title">
             <!-- Two-column layout for Performance Overview and Contracted/Outsourced Projects -->
-            <div class="performance-row" role="region" aria-label="Performance metrics and charts">
+            <div id="overview" class="performance-row" role="region" aria-label="Performance metrics and charts">
             <!-- Performance Overview -->
             <section class="card" role="region" aria-labelledby="performance-title">
                 <h2 id="performance-title">Performance Overview</h2>
@@ -3343,8 +3494,7 @@ def generate_html_dashboard(data):
     else:
         html += """
             <div class="empty-state">
-                <div style="font-size: 36px; margin-bottom: 10px;">📋</div>
-                <div>No external projects</div>
+                <div style="font-size: 16px; color: var(--text-secondary);">No external projects</div>
             </div>
 """
 
@@ -3353,7 +3503,7 @@ def generate_html_dashboard(data):
         </div>
 
         <!-- Team Capacity (Full Width) -->
-        <div class="grid">
+        <div id="capacity" class="grid">
             <section class="card full-width" role="region" aria-labelledby="team-capacity-title">
                 <h2 id="team-capacity-title">Team Capacity</h2>
                 <div class="team-capacity-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 10px;" role="list" aria-label="Team member capacity overview">
@@ -3364,17 +3514,32 @@ def generate_html_dashboard(data):
         utilization = (member['current'] / member['max'] * 100) if member['max'] > 0 else 0
         over_capacity = member['current'] > member['max']
 
-        tooltip_text = f"Current: {member['current']:.1f}% • Target: {member['max']}% • Utilization: {utilization:.1f}%"
+        # Determine status label and CSS class
         if over_capacity:
-            tooltip_text += f" • OVER CAPACITY by {utilization - 100:.1f}%"
+            status_label = f"Over capacity (+{member['current'] - member['max']:.0f}%)"
+            status_class = "capacity-over"
+        elif utilization >= 80:
+            status_label = "Near capacity"
+            status_class = "capacity-high"
+        else:
+            status_label = "Available"
+            status_class = "capacity-ok"
+
+        tooltip_text = f"Allocated: {member['current']:.1f}% of {member['max']}% max"
+
+        # Bar fill: show allocation relative to max (capped at 100% width)
+        bar_pct = min(utilization, 100)
 
         html += f"""
-                    <div class="team-member tooltip" role="listitem" tabindex="0" aria-labelledby="member-{member['name'].replace(' ', '-').lower()}-name" data-tooltip="{tooltip_text}">
-                        <div id="member-{member['name'].replace(' ', '-').lower()}-name" class="team-member-name">{member['name']}</div>
+                    <div class="team-member tooltip {status_class}" role="listitem" tabindex="0" aria-labelledby="member-{member['name'].replace(' ', '-').lower()}-name" data-tooltip="{tooltip_text}">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                            <div id="member-{member['name'].replace(' ', '-').lower()}-name" class="team-member-name">{member['name']}</div>
+                            <div class="capacity-status {status_class}">{status_label}</div>
+                        </div>
                         <div class="team-member-capacity" aria-label="Current capacity utilization">{member['current']:.0f}% / {member['max']}% capacity</div>
                         <div class="progress-bar" role="progressbar" aria-valuenow="{utilization:.0f}" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: {utilization:.0f}%">
-                            <div class="progress-fill {'over-capacity' if over_capacity else ''}" style="width: {min(utilization, 100)}%" aria-hidden="true">
-                                {utilization:.0f}%
+                            <div class="progress-fill {'over-capacity' if over_capacity else ''}" style="width: {bar_pct}%" aria-hidden="true">
+                                {member['current']:.0f}% allocated
                             </div>
                         </div>
                     </div>
@@ -3386,7 +3551,7 @@ def generate_html_dashboard(data):
 
         <!-- At-Risk Tasks (Full Width) -->
         <div class="card full-width" style="margin-top: 30px; margin-bottom: 30px;">
-            <h2>⚠️ At-Risk Tasks</h2>
+            <h2>At-Risk Tasks</h2>
     """
 
     at_risk = data.get('at_risk_tasks', [])
@@ -3414,8 +3579,7 @@ def generate_html_dashboard(data):
     else:
         html += """
             <div class="success-state">
-                <div style="font-size: 48px;">✅</div>
-                <div style="font-size: 18px; margin-top: 10px;">No tasks currently at risk!</div>
+                <div style="font-size: 18px;">No tasks currently at risk</div>
             </div>
         """
 
@@ -3424,7 +3588,7 @@ def generate_html_dashboard(data):
 
         <!-- Upcoming Shoots -->
         <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>🎬 Upcoming Shoots</h2>
+            <h2>Upcoming Shoots</h2>
     """
 
     upcoming_shoots = data.get('upcoming_shoots', [])
@@ -3483,7 +3647,6 @@ def generate_html_dashboard(data):
     else:
         html += """
             <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
-                <div style="font-size: 48px; margin-bottom: 10px;">📅</div>
                 <div style="font-size: 16px;">No upcoming shoots scheduled</div>
             </div>
         """
@@ -3492,8 +3655,8 @@ def generate_html_dashboard(data):
         </div>
 
         <!-- Upcoming Project Deadlines -->
-        <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>⏰ Upcoming Project Deadlines</h2>
+        <div id="deadlines" class="card full-width" style="margin-bottom: 30px;">
+            <h2>Upcoming Project Deadlines</h2>
             <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Projects due within the next 10 days</p>
     """
 
@@ -3552,7 +3715,6 @@ def generate_html_dashboard(data):
     else:
         html += f"""
             <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
-                <div style="font-size: 48px; margin-bottom: 10px;">✅</div>
                 <div style="font-size: 16px;">No upcoming deadlines in the next 10 days</div>
             </div>
         """
@@ -3561,14 +3723,14 @@ def generate_html_dashboard(data):
         </div>
 
         <!-- Progress Rings -->
-        <div class="card full-width" style="margin-bottom: 30px; overflow: visible !important; padding: 40px 50px;">
-            <h2>📊 Key Performance Metrics</h2>
+        <div id="metrics" class="card full-width" style="margin-bottom: 30px; overflow: visible !important; padding: 40px 50px;">
+            <h2>Key Performance Metrics</h2>
             <div class="progress-rings-container" style="overflow: visible !important;">
                 <div class="progress-ring">
                     <svg class="progress-ring-svg" width="140" height="140">
                         <circle class="progress-ring-circle progress-ring-bg" cx="70" cy="70" r="55"></circle>
                         <circle class="progress-ring-circle progress-ring-progress" cx="70" cy="70" r="55"
-                                stroke="#4ecca3" id="ringOnTime"></circle>
+                                stroke="var(--success-color)" id="ringOnTime"></circle>
                     </svg>
                     <div class="progress-ring-text">
                         <span class="progress-ring-value" id="ringOnTimeValue">0%</span>
@@ -3579,7 +3741,7 @@ def generate_html_dashboard(data):
                     <svg class="progress-ring-svg" width="140" height="140">
                         <circle class="progress-ring-circle progress-ring-bg" cx="70" cy="70" r="55"></circle>
                         <circle class="progress-ring-circle progress-ring-progress" cx="70" cy="70" r="55"
-                                stroke="#60BBE9" id="ringUtilization"></circle>
+                                stroke="var(--brand-primary)" id="ringUtilization"></circle>
                     </svg>
                     <div class="progress-ring-text">
                         <span class="progress-ring-value" id="ringUtilizationValue">0%</span>
@@ -3590,7 +3752,7 @@ def generate_html_dashboard(data):
                     <svg class="progress-ring-svg" width="140" height="140">
                         <circle class="progress-ring-circle progress-ring-bg" cx="70" cy="70" r="55"></circle>
                         <circle class="progress-ring-circle progress-ring-progress" cx="70" cy="70" r="55"
-                                stroke="#a78bfa" id="ringProjects"></circle>
+                                stroke="var(--info-color)" id="ringProjects"></circle>
                     </svg>
                     <div class="progress-ring-text">
                         <span class="progress-ring-value" id="ringProjectsValue">0</span>
@@ -3609,14 +3771,6 @@ def generate_html_dashboard(data):
             </div>
         </div>
 
-        <!-- Radar/Spider Chart -->
-        <div class="card full-width" style="margin-bottom: 30px; overflow: visible;">
-            <h2>Workload Balance</h2>
-            <p style="color: var(--text-secondary); margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Actual vs Target distribution across categories</p>
-            <div class="radar-container" id="radarChart">
-                <!-- Radar will be generated by JavaScript -->
-            </div>
-        </div>
 
         <!-- Velocity Trend Chart -->
         <div class="card full-width" style="margin-bottom: 30px;">
@@ -3629,7 +3783,7 @@ def generate_html_dashboard(data):
 
         <!-- 6-Month Capacity Timeline -->
         <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>📆 6-Month Capacity Timeline</h2>
+            <h2>6-Month Capacity Timeline</h2>
             <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 15px;">
                 Weekly team capacity projection showing workload distribution over the next 26 weeks
             </div>
@@ -3738,7 +3892,7 @@ def generate_html_dashboard(data):
 
         <!-- Daily Workload Distribution Heatmap -->
         <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>📊 Daily Workload Distribution - Next 30 Days</h2>
+            <h2>Daily Workload Distribution - Next 30 Days</h2>
             <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 15px;">
                 <strong>How busy will each day be?</strong> Shows the team's expected workload intensity per day (work distributed across task timelines)
             </div>
@@ -3794,7 +3948,7 @@ def generate_html_dashboard(data):
 
         <!-- Historical Capacity Utilization -->
         <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>📈 Historical Capacity Utilization</h2>
+            <h2>Historical Capacity Utilization</h2>
             <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
                 Team utilization percentage over the last 30 days (click legend items to filter)
             </div>
@@ -3804,8 +3958,8 @@ def generate_html_dashboard(data):
         </div>
 
         <!-- Forecasted Projects -->
-        <div class="card full-width" style="margin-bottom: 30px;">
-            <h2>🔮 Forecasted Projects</h2>
+        <div id="forecasts" class="card full-width" style="margin-bottom: 30px;">
+            <h2>Forecasted Projects</h2>
             <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Upcoming projects in the forecast pipeline</p>
     """
 
@@ -3871,7 +4025,6 @@ def generate_html_dashboard(data):
     else:
         html += f"""
             <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
-                <div style="font-size: 48px; margin-bottom: 10px;">📋</div>
                 <div style="font-size: 16px;">No forecasted projects at this time</div>
             </div>
         """
@@ -3879,8 +4032,17 @@ def generate_html_dashboard(data):
     html += """
         </div>
 
+        <!-- Radar/Spider Chart -->
+        <div class="card full-width" style="margin-bottom: 30px; overflow: visible;">
+            <h2>Workload Balance</h2>
+            <p style="color: var(--text-secondary); margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Actual vs Target distribution across categories</p>
+            <div class="radar-container" id="radarChart">
+                <!-- Radar will be generated by JavaScript -->
+            </div>
+        </div>
+
         <!-- Historical Trends Chart -->
-        <div class="card full-width" style="margin-bottom: 30px;">
+        <div id="analytics" class="card full-width" style="margin-bottom: 30px;">
             <h2>Historical Allocation Trends</h2>
             <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
                 Daily allocation percentages over time
@@ -3919,10 +4081,10 @@ def generate_html_dashboard(data):
             status_icon = '✓'
             status_text = 'On Track'
         elif abs(cat['variance']) <= 10:
-            status_icon = '⚠️'
+            status_icon = '!'
             status_text = 'Watch'
         else:
-            status_icon = '⚠️'
+            status_icon = '!'
             if cat['variance'] > 0:
                 status_text = 'Over Allocated'
             else:
@@ -4096,12 +4258,55 @@ def generate_html_dashboard(data):
             return isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
         }}
 
+        // Function to get theme-aware dataset colors
+        function getThemeAwareMemberColors() {{
+            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            if (isDarkMode) {{
+                return {{
+                    'Zach Welliver': '#C694FF',   // Lighter purple
+                    'Nick Clark': '#5DADE2',      // Lighter blue
+                    'Adriel Abella': '#F4D03F',   // Lighter yellow
+                    'John Meyer': '#7DCEA0',      // Lighter teal
+                    'Team Total': '#60BBE9'       // Brand blue works in both themes
+                }};
+            }} else {{
+                return {{
+                    'Zach Welliver': '#9B59B6',   // Original purple
+                    'Nick Clark': '#36A2EB',      // Original blue
+                    'Adriel Abella': '#FFCE56',   // Original yellow
+                    'John Meyer': '#4BC0C0',      // Original teal
+                    'Team Total': '#60BBE9'       // Brand blue
+                }};
+            }}
+        }}
+
+        // Function to get theme-aware trend colors
+        function getThemeAwareTrendColors() {{
+            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            if (isDarkMode) {{
+                return ['#60BBE9', '#4A9CD9', '#7AC3ED', '#FFD700', '#FF6B6B'];  // Lighter colors for dark mode
+            }} else {{
+                return ['#60BBE9', '#09243F', '#28a745', '#ffc107', '#dc3545'];  // Original colors for light mode
+            }}
+        }}
+
         const trendsCtx = document.getElementById('trendsChart').getContext('2d');
-        new Chart(trendsCtx, {{
+
+        // Update dataset colors for theme
+        const trendColors = getThemeAwareTrendColors();
+        const trendsDataWithColors = {json.dumps(trends_datasets)};
+        trendsDataWithColors.forEach((dataset, index) => {{
+            if (index < trendColors.length) {{
+                dataset.borderColor = trendColors[index];
+                dataset.backgroundColor = trendColors[index];
+            }}
+        }});
+
+        window.trendsChart = new Chart(trendsCtx, {{
             type: 'line',
             data: {{
                 labels: {json.dumps(dates)},
-                datasets: {json.dumps(trends_datasets)}
+                datasets: trendsDataWithColors
             }},
             options: {{
                 responsive: true,
@@ -4233,13 +4438,7 @@ def generate_html_dashboard(data):
 
                 // Build datasets for each team member
                 const datasets = [];
-                const memberColors = {{
-                    'Zach Welliver': '#9B59B6',
-                    'Nick Clark': '#36A2EB',
-                    'Adriel Abella': '#FFCE56',
-                    'John Meyer': '#4BC0C0',
-                    'Team Total': '{BRAND_BLUE}'
-                }};
+                const memberColors = getThemeAwareMemberColors();
 
                 // Extract all unique dates from Team Total (or first available member)
                 let allDates = [];
@@ -4282,10 +4481,13 @@ def generate_html_dashboard(data):
                 }});
 
                 // Add 100% capacity redline
+                const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+                const thresholdColor = isDarkMode ? '#FF6B6B' : '#dc3545';
+
                 datasets.push({{
                     label: '100% Capacity Threshold',
                     data: Array(allDates.length).fill(100),
-                    borderColor: '#dc3545',
+                    borderColor: thresholdColor,
                     backgroundColor: 'transparent',
                     borderWidth: 2,
                     borderDash: [10, 5],
@@ -4553,7 +4755,7 @@ def generate_html_dashboard(data):
 
                     if (duration > 0) {{
                         projects.push({{
-                            name: '🎬 ' + shoot.name,
+                            name: shoot.name,
                             start: start,
                             duration: duration,
                             status: daysFromNow <= 2 ? 'critical' : 'normal'
@@ -4590,7 +4792,7 @@ def generate_html_dashboard(data):
 
                     if (duration > 0) {{
                         projects.push({{
-                            name: '⏰ ' + deadline.name,
+                            name: deadline.name,
                             start: start,
                             duration: duration,
                             status: daysToEnd <= 2 ? 'critical' : daysToEnd <= 5 ? 'warning' : 'normal'
@@ -4750,7 +4952,7 @@ def generate_html_dashboard(data):
                         tension: 0.4,
                         pointRadius: 6,
                         pointBackgroundColor: '#60BBE9',
-                        pointBorderColor: '#fff',
+                        pointBorderColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-secondary') || '#fff',
                         pointBorderWidth: 2
                     }}]
                 }},
@@ -4810,14 +5012,11 @@ def generate_html_dashboard(data):
             root.setAttribute('data-theme', newTheme);
 
             // Update toggle button
-            const themeIcon = document.getElementById('themeIcon');
             const themeText = document.getElementById('themeText');
 
             if (newTheme === 'dark') {{
-                themeIcon.textContent = '☀️';
                 themeText.textContent = 'Light Mode';
             }} else {{
-                themeIcon.textContent = '🌙';
                 themeText.textContent = 'Dark Mode';
             }}
 
@@ -4887,20 +5086,92 @@ def generate_html_dashboard(data):
             root.setAttribute('data-theme', storedTheme);
 
             // Update toggle button to match
-            const themeIcon = document.getElementById('themeIcon');
             const themeText = document.getElementById('themeText');
 
             if (storedTheme === 'dark') {{
-                themeIcon.textContent = '☀️';
                 themeText.textContent = 'Light Mode';
             }} else {{
-                themeIcon.textContent = '🌙';
                 themeText.textContent = 'Dark Mode';
             }}
         }}
 
         // Initialize theme on page load
         document.addEventListener('DOMContentLoaded', initializeTheme);
+
+        // Navigation functionality
+        function initializeNavigation() {{
+            // Add smooth scrolling to nav links
+            document.querySelectorAll('.nav-link').forEach(link => {{
+                link.addEventListener('click', function(e) {{
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+
+                    if (targetElement) {{
+                        const navHeight = document.querySelector('.sticky-nav').offsetHeight;
+                        const targetPosition = targetElement.offsetTop - navHeight - 20;
+
+                        window.scrollTo({{
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        }});
+
+                        // Update active state
+                        updateActiveNavLink(targetId);
+                    }}
+                }});
+            }});
+
+            // Update active nav link on scroll
+            window.addEventListener('scroll', throttle(updateActiveNavOnScroll, 100));
+        }}
+
+        function updateActiveNavLink(activeId) {{
+            document.querySelectorAll('.nav-link').forEach(link => {{
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${{activeId}}`) {{
+                    link.classList.add('active');
+                }}
+            }});
+        }}
+
+        function updateActiveNavOnScroll() {{
+            const sections = ['overview', 'capacity', 'metrics', 'deadlines', 'forecasts', 'analytics'];
+            const navHeight = document.querySelector('.sticky-nav').offsetHeight;
+            const scrollPos = window.scrollY + navHeight + 50;
+
+            for (let i = sections.length - 1; i >= 0; i--) {{
+                const section = document.getElementById(sections[i]);
+                if (section && section.offsetTop <= scrollPos) {{
+                    updateActiveNavLink(sections[i]);
+                    break;
+                }}
+            }}
+        }}
+
+        function throttle(func, limit) {{
+            let lastFunc;
+            let lastRan;
+            return function() {{
+                const context = this;
+                const args = arguments;
+                if (!lastRan) {{
+                    func.apply(context, args);
+                    lastRan = Date.now();
+                }} else {{
+                    clearTimeout(lastFunc);
+                    lastFunc = setTimeout(function() {{
+                        if ((Date.now() - lastRan) >= limit) {{
+                            func.apply(context, args);
+                            lastRan = Date.now();
+                        }}
+                    }}, limit - (Date.now() - lastRan));
+                }}
+            }}
+        }}
+
+        // Initialize navigation when DOM is ready
+        document.addEventListener('DOMContentLoaded', initializeNavigation);
 
         // Keyboard Navigation Support
         function setupKeyboardNavigation() {{
@@ -5377,6 +5648,104 @@ def generate_html_dashboard(data):
             `;
             document.head.appendChild(style);
         }}
+        // Add theme change listener to regenerate charts
+        function observeThemeChanges() {{
+            const observer = new MutationObserver(function(mutations) {{
+                mutations.forEach(function(mutation) {{
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {{
+                        console.log('Theme changed, regenerating charts...');
+
+                        // Regenerate all charts with new theme colors
+                        if (window.trendsChart) {{
+                            const newTrendColors = getThemeAwareTrendColors();
+                            window.trendsChart.data.datasets.forEach((dataset, index) => {{
+                                if (index < newTrendColors.length) {{
+                                    dataset.borderColor = newTrendColors[index];
+                                    dataset.backgroundColor = newTrendColors[index];
+                                }}
+                            }});
+
+                            // Update axis colors for theme
+                            const newTextColor = getChartTextColor();
+                            const newGridColor = getChartGridColor();
+
+                            window.trendsChart.options.scales.y.ticks.color = newTextColor;
+                            window.trendsChart.options.scales.y.grid.color = newGridColor;
+                            window.trendsChart.options.scales.x.ticks.color = newTextColor;
+                            window.trendsChart.options.scales.x.grid.color = newGridColor;
+                            window.trendsChart.options.plugins.legend.labels.color = newTextColor;
+
+                            window.trendsChart.update();
+                        }}
+
+                        if (window.capacityHistoryChart) {{
+                            const newMemberColors = getThemeAwareMemberColors();
+                            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+                            const newThresholdColor = isDarkMode ? '#FF6B6B' : '#dc3545';
+
+                            window.capacityHistoryChart.data.datasets.forEach((dataset) => {{
+                                if (dataset.label === '100% Capacity Threshold') {{
+                                    dataset.borderColor = newThresholdColor;
+                                }} else if (newMemberColors[dataset.label]) {{
+                                    dataset.borderColor = newMemberColors[dataset.label];
+                                    dataset.pointBackgroundColor = newMemberColors[dataset.label];
+                                    dataset.pointBorderColor = newMemberColors[dataset.label];
+                                    if (dataset.label === 'Team Total') {{
+                                        dataset.backgroundColor = newMemberColors[dataset.label] + '33';
+                                    }}
+                                }}
+                            }});
+
+                            // Update axis colors for theme
+                            const newTextColor = getChartTextColor();
+                            const newGridColor = getChartGridColor();
+
+                            if (window.capacityHistoryChart.options.scales.y) {{
+                                window.capacityHistoryChart.options.scales.y.ticks.color = newTextColor;
+                                window.capacityHistoryChart.options.scales.y.grid.color = newGridColor;
+                            }}
+                            if (window.capacityHistoryChart.options.scales.x) {{
+                                window.capacityHistoryChart.options.scales.x.ticks.color = newTextColor;
+                                window.capacityHistoryChart.options.scales.x.grid.color = newGridColor;
+                            }}
+                            if (window.capacityHistoryChart.options.plugins.legend) {{
+                                window.capacityHistoryChart.options.plugins.legend.labels.color = newTextColor;
+                            }}
+
+                            window.capacityHistoryChart.update();
+                        }}
+
+                        if (window.velocityChart) {{
+                            // Update axis colors for theme
+                            const newTextColor = getChartTextColor();
+                            const newGridColor = getChartGridColor();
+
+                            if (window.velocityChart.options.scales.y) {{
+                                window.velocityChart.options.scales.y.ticks.color = newTextColor;
+                                window.velocityChart.options.scales.y.grid.color = newGridColor;
+                            }}
+                            if (window.velocityChart.options.scales.x) {{
+                                window.velocityChart.options.scales.x.ticks.color = newTextColor;
+                                window.velocityChart.options.scales.x.grid.color = newGridColor;
+                            }}
+                            if (window.velocityChart.options.plugins.legend) {{
+                                window.velocityChart.options.plugins.legend.labels.color = newTextColor;
+                            }}
+
+                            window.velocityChart.update();
+                        }}
+                    }}
+                }});
+            }});
+
+            observer.observe(document.documentElement, {{
+                attributes: true,
+                attributeFilter: ['data-theme']
+            }});
+        }}
+
+        // Start observing theme changes
+        observeThemeChanges();
 """
 
     html += """
@@ -5393,8 +5762,79 @@ def generate_html_dashboard(data):
     with open(output_file, 'w') as f:
         f.write(html)
 
-    print(f"✅ HTML dashboard generated: {output_file}")
+    print(f"HTML dashboard generated: {output_file}")
     return output_file
+
+def generate_html_dashboard_jinja2(data):
+    """Generate HTML dashboard using Jinja2 templates"""
+
+    # Set up Jinja2 environment
+    template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+    env = Environment(loader=FileSystemLoader(template_dir))
+
+    # Prepare data context for templates
+    context = {
+        'data': data,
+        'total_tasks': data.get('active_task_count', 0),
+        'team_capacity': data.get('team_capacity', []),
+        'upcoming_shoots': data.get('upcoming_shoots', []),
+        'upcoming_deadlines': data.get('upcoming_deadlines', []),
+        'forecasted_projects': data.get('forecasted_projects', []),
+        'delivery_log': data.get('delivery_log'),
+        'variance_data': data.get('variance'),
+        'capacity_history': data.get('capacity_history_by_member', {}),
+        'external_projects': data.get('external_projects', []),
+    }
+
+    # Calculate additional metrics for templates
+    delivery_metrics = calculate_delivery_metrics(data)
+    context['delivery_metrics'] = delivery_metrics
+
+    # Render main dashboard template
+    template = env.get_template('dashboard.html')
+    html = template.render(**context)
+
+    # Save HTML dashboard
+    output_file = 'Reports/capacity_dashboard.html'
+    with open(output_file, 'w') as f:
+        f.write(html)
+
+    print(f"HTML dashboard generated: {output_file}")
+    return output_file
+
+def calculate_delivery_metrics(data):
+    """Extract delivery metrics for templates"""
+    metrics = {
+        'total_completed': 0,
+        'completed_this_year': 0,
+        'on_time_rate': 0,
+        'avg_capacity_variance': 0,
+    }
+
+    if data.get('delivery_log') is not None:
+        df = data['delivery_log']
+        metrics['total_completed'] = len(df)
+
+        # Calculate this year's completions
+        current_year = datetime.now().year
+        tasks_with_completion = df[df['Completed Date'].notna()]
+        completed_this_year = 0
+
+        for _, task in tasks_with_completion.iterrows():
+            try:
+                completion_date = pd.to_datetime(task['Completed Date'])
+                if completion_date.year == current_year:
+                    completed_this_year += 1
+            except:
+                pass
+
+        metrics['completed_this_year'] = completed_this_year
+
+        # Calculate on-time rate
+        on_time_count = len(df[df['Status'] == 'On Time']) if 'Status' in df.columns else 0
+        metrics['on_time_rate'] = (on_time_count / len(df) * 100) if len(df) > 0 else 0
+
+    return metrics
 
 def main():
     """Main dashboard generation function"""
@@ -5407,7 +5847,7 @@ def main():
     html_file = generate_html_dashboard(data)
 
     print(f"\nDashboard generation complete!")
-    print(f"📊 HTML: {html_file}")
+    print(f"HTML: {html_file}")
 
 if __name__ == "__main__":
     main()

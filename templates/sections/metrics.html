@@ -1,0 +1,42 @@
+<!-- Progress Rings -->
+<div id="metrics" class="card full-width" style="margin-bottom: 30px; overflow: visible !important; padding: 40px 50px;">
+    <h2>Key Performance Metrics</h2>
+    <div class="progress-rings-container" style="overflow: visible !important;">
+        <div class="progress-ring">
+            <svg class="progress-ring-svg" width="140" height="140">
+                <circle class="progress-ring-circle progress-ring-bg" cx="70" cy="70" r="55"></circle>
+                <circle class="progress-ring-circle progress-ring-progress" cx="70" cy="70" r="55"
+                        stroke="var(--success-color)" id="ringOnTime"></circle>
+            </svg>
+            <div class="progress-ring-text">
+                <span class="progress-ring-value" id="ringOnTimeValue">{{ "%.0f"|format(delivery_metrics.on_time_rate) }}%</span>
+                <span class="progress-ring-label">On-Time Delivery</span>
+            </div>
+        </div>
+        <div class="progress-ring">
+            <svg class="progress-ring-svg" width="140" height="140">
+                <circle class="progress-ring-circle progress-ring-bg" cx="70" cy="70" r="55"></circle>
+                <circle class="progress-ring-circle progress-ring-progress" cx="70" cy="70" r="55"
+                        stroke="var(--brand-primary)" id="ringUtilization"></circle>
+            </svg>
+            <div class="progress-ring-text">
+                {% set total_current = team_capacity | sum(attribute='current') %}
+                {% set total_max = team_capacity | sum(attribute='max') %}
+                {% set avg_utilization = (total_current / total_max * 100) if total_max > 0 else 0 %}
+                <span class="progress-ring-value" id="ringUtilizationValue">{{ "%.0f"|format(avg_utilization) }}%</span>
+                <span class="progress-ring-label">Team Utilization</span>
+            </div>
+        </div>
+        <div class="progress-ring">
+            <svg class="progress-ring-svg" width="140" height="140">
+                <circle class="progress-ring-circle progress-ring-bg" cx="70" cy="70" r="55"></circle>
+                <circle class="progress-ring-circle progress-ring-progress" cx="70" cy="70" r="55"
+                        stroke="var(--info-color)" id="ringProjects"></circle>
+            </svg>
+            <div class="progress-ring-text">
+                <span class="progress-ring-value" id="ringProjectsValue">{{ total_tasks }}</span>
+                <span class="progress-ring-label">Active Projects</span>
+            </div>
+        </div>
+    </div>
+</div>

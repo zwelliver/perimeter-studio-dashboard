@@ -1,0 +1,118 @@
+// Theme Toggle Functionality
+function toggleTheme() {
+    const root = document.documentElement;
+    const currentTheme = root.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+    root.setAttribute('data-theme', newTheme);
+
+    // Update toggle button
+    const themeText = document.getElementById('themeText');
+
+    if (newTheme === 'dark') {
+        themeText.textContent = 'Light Mode';
+    } else {
+        themeText.textContent = 'Dark Mode';
+    }
+
+    // Store preference in localStorage
+    localStorage.setItem('theme', newTheme);
+}
+
+function initializeTheme() {
+    // Check for saved theme preference or default to light mode
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+
+    const root = document.documentElement;
+    root.setAttribute('data-theme', theme);
+
+    // Update toggle button to match
+    const themeText = document.getElementById('themeText');
+
+    if (theme === 'dark') {
+        themeText.textContent = 'Light Mode';
+    } else {
+        themeText.textContent = 'Dark Mode';
+    }
+}
+
+// Navigation functionality
+function initializeNavigation() {
+    // Add smooth scrolling to nav links
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+
+            if (targetElement) {
+                const navHeight = document.querySelector('.sticky-nav').offsetHeight;
+                const targetPosition = targetElement.offsetTop - navHeight - 20;
+
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+
+                // Update active state
+                updateActiveNavLink(targetId);
+            }
+        });
+    });
+
+    // Update active nav link on scroll
+    window.addEventListener('scroll', throttle(updateActiveNavOnScroll, 100));
+}
+
+function updateActiveNavLink(activeId) {
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${activeId}`) {
+            link.classList.add('active');
+        }
+    });
+}
+
+function updateActiveNavOnScroll() {
+    const sections = ['overview', 'capacity', 'metrics', 'deadlines', 'forecasts', 'analytics'];
+    const navHeight = document.querySelector('.sticky-nav').offsetHeight;
+    const scrollPos = window.scrollY + navHeight + 50;
+
+    for (let i = sections.length - 1; i >= 0; i--) {
+        const section = document.getElementById(sections[i]);
+        if (section && section.offsetTop <= scrollPos) {
+            updateActiveNavLink(sections[i]);
+            break;
+        }
+    }
+}
+
+function throttle(func, limit) {
+    let lastFunc;
+    let lastRan;
+    return function() {
+        const context = this;
+        const args = arguments;
+        if (!lastRan) {
+            func.apply(context, args);
+            lastRan = Date.now();
+        } else {
+            clearTimeout(lastFunc);
+            lastFunc = setTimeout(function() {
+                if ((Date.now() - lastRan) >= limit) {
+                    func.apply(context, args);
+                    lastRan = Date.now();
+                }
+            }, limit - (Date.now() - lastRan));
+        }
+    }
+}
+
+// Initialize everything when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    initializeTheme();
+    initializeNavigation();
+    console.log('Dashboard initialized with Jinja2 templates!');
+});

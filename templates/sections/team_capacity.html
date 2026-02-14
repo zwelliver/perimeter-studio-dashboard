@@ -1,0 +1,29 @@
+<!-- Team Capacity (Full Width) -->
+<div id="capacity" class="grid">
+    <section class="card full-width" role="region" aria-labelledby="team-capacity-title">
+        <h2 id="team-capacity-title">Team Capacity</h2>
+        <div class="team-capacity-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 10px;" role="list" aria-label="Team member capacity overview">
+            {% for member in team_capacity %}
+                {% set utilization = (member['current'] / member['max'] * 100) if member['max'] > 0 else 0 %}
+                {% set over_capacity = member['current'] > member['max'] %}
+                {% set status_class = 'capacity-over' if over_capacity else ('capacity-high' if utilization >= 80 else 'capacity-ok') %}
+                {% set status_label = 'OVER CAPACITY' if over_capacity else ('HIGH' if utilization >= 80 else 'OK') %}
+                {% set bar_pct = (utilization if utilization <= 100 else 100) %}
+                {% set tooltip_text = member['name'] + ': ' + "%.0f"|format(member['current']) + '% / ' + "%.0f"|format(member['max']) + '% capacity' %}
+
+                <div class="team-member tooltip {{ status_class }}" role="listitem" tabindex="0" aria-labelledby="member-{{ member['name'].replace(' ', '-').lower() }}-name" data-tooltip="{{ tooltip_text }}">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                        <div id="member-{{ member['name'].replace(' ', '-').lower() }}-name" class="team-member-name">{{ member['name'] }}</div>
+                        <div class="capacity-status {{ status_class }}">{{ status_label }}</div>
+                    </div>
+                    <div class="team-member-capacity" aria-label="Current capacity utilization">{{ "%.0f"|format(member['current']) }}% / {{ member['max'] }}% capacity</div>
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ "%.0f"|format(utilization) }}" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: {{ "%.0f"|format(utilization) }}%">
+                        <div class="progress-fill {% if over_capacity %}over-capacity{% endif %}" style="width: {{ bar_pct }}%" aria-hidden="true">
+                            {{ "%.0f"|format(member['current']) }}% allocated
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>

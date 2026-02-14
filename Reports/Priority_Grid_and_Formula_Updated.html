@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Priority Scoring & Capacity Allocation System — Perimeter Church Video Studio</title>
+  <style>
+    /* =============================================
+       BASE STYLES
+    ============================================= */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --brand: #1B3A4B;
+      --brand-light: #e8eef2;
+      --brand-mid: #c5d5de;
+      --accent: #2e6b8a;
+      --accent-tint: #eaf3f8;
+      --formula-bg: #f0f7fb;
+      --formula-border: #2e6b8a;
+      --example-bg: #e8f4f8;
+      --example-border: #7ab5cc;
+      --rule: #d0dce3;
+      --text: #1a1a1a;
+      --text-secondary: #4a4a4a;
+      --table-alt: #f5f8fa;
+      --table-head-bg: #1B3A4B;
+      --table-head-text: #ffffff;
+      --border: #c8d8e0;
+      --safe-margin: 0.8in;
+    }
+
+    html {
+      font-size: 13px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--text);
+      background: #f2f4f6;
+      line-height: 1.6;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* =============================================
+       PAGE WRAPPER
+    ============================================= */
+    .page-wrapper {
+      max-width: 800px;
+      margin: 2rem auto;
+      background: #ffffff;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+      padding: 0.85in 0.8in 0.75in;
+    }
+
+    /* =============================================
+       DOCUMENT HEADER
+    ============================================= */
+    .doc-header {
+      text-align: center;
+      padding-bottom: 1.4rem;
+      border-bottom: 3px solid var(--brand);
+      margin-bottom: 1.8rem;
+    }
+
+    .doc-header .church-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin-bottom: 0.2rem;
+    }
+
+    .doc-header .dept-name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.85rem;
+    }
+
+    .doc-header h1 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--brand);
+      line-height: 1.3;
+      margin-bottom: 0.5rem;
+    }
+
+    .doc-header .subtitle {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    /* =============================================
+       SECTION HEADINGS
+    ============================================= */
+    h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--brand);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 2px solid var(--brand);
+      padding-bottom: 0.35rem;
+      margin-top: 2rem;
+      margin-bottom: 0.9rem;
+    }
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--brand);
+      margin-top: 1.4rem;
+      margin-bottom: 0.6rem;
+    }
+
+    h4 {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--brand);
+      margin-top: 1.1rem;
+      margin-bottom: 0.45rem;
+    }
+
+    /* =============================================
+       BODY TEXT
+    ============================================= */
+    p {
+      margin-bottom: 0.75rem;
+      color: var(--text);
+      font-size: 0.92rem;
+      line-height: 1.65;
+    }
+
+    strong {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    em {
+      font-style: italic;
+      color: var(--text-secondary);
+    }
+
+    /* =============================================
+       HORIZONTAL RULE
+    ============================================= */
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 1.6rem 0;
+    }
+
+    /* =============================================
+       ORDERED & UNORDERED LISTS
+    ============================================= */
+    ol, ul {
+      margin-left: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    li {
+      font-size: 0.92rem;
+      line-height: 1.65;
+      margin-bottom: 0.25rem;
+      color: var(--text);
+    }
+
+    li strong {
+      color: var(--text);
+    }
+
+    /* Scale definition lists */
+    .scale-list {
+      list-style: none;
+      margin-left: 0;
+      margin-bottom: 0.5rem;
+    }
+
+    .scale-list li {
+      padding: 0.45rem 0.6rem;
+      border-left: 3px solid var(--brand-mid);
+      margin-bottom: 0.45rem;
+      background: #fafcfd;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .scale-list li:nth-child(odd) {
+      background: var(--table-alt);
+    }
+
+    .scale-label {
+      font-weight: 700;
+      color: var(--brand);
+    }
+
+    /* =============================================
+       FORMULA / CALLOUT BOX
+    ============================================= */
+    .formula-box {
+      background: var(--formula-bg);
+      border: 1.5px solid var(--formula-border);
+      border-left: 5px solid var(--formula-border);
+      border-radius: 4px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0 1.2rem;
+    }
+
+    .formula-box p {
+      margin-bottom: 0.4rem;
+      font-size: 0.9rem;
+    }
+
+    .formula-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    .formula-center {
+      text-align: center;
+      margin: 1.1rem 0;
+    }
+
+    .formula-primary {
+      display: inline-block;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--brand);
+      background: var(--formula-bg);
+      border: 2px solid var(--formula-border);
+      border-radius: 5px;
+      padding: 0.6rem 1.8rem;
+      letter-spacing: 0.03em;
+    }
+
+    .formula-block {
+      background: var(--formula-bg);
+      border: 1.5px solid var(--formula-border);
+      border-left: 5px solid var(--formula-border);
+      border-radius: 4px;
+      padding: 0.85rem 1.2rem;
+      margin: 0.8rem 0 1rem;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.88rem;
+      line-height: 1.9;
+      color: var(--brand);
+    }
+
+    .formula-block strong {
+      color: var(--brand);
+    }
+
+    /* =============================================
+       EXAMPLE CALCULATION BOX
+    ============================================= */
+    .example-box {
+      background: var(--example-bg);
+      border: 1.5px solid var(--example-border);
+      border-left: 5px solid var(--example-border);
+      border-radius: 4px;
+      padding: 0.9rem 1.2rem;
+      margin: 0.7rem 0 1.1rem;
+    }
+
+    .example-box p {
+      margin-bottom: 0.35rem;
+      font-size: 0.9rem;
+    }
+
+    .example-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    .example-box .example-heading {
+      font-weight: 700;
+      color: var(--brand);
+      font-size: 0.9rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .example-box ul {
+      margin-left: 1.2rem;
+      margin-bottom: 0;
+    }
+
+    .example-box li {
+      font-size: 0.88rem;
+      margin-bottom: 0.15rem;
+    }
+
+    /* =============================================
+       TABLES
+    ============================================= */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 0.75rem 0 1.1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    thead tr {
+      background: var(--table-head-bg);
+      color: var(--table-head-text);
+    }
+
+    thead th {
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      border: 1px solid var(--brand);
+    }
+
+    tbody tr:nth-child(even) {
+      background: var(--table-alt);
+    }
+
+    tbody tr:nth-child(odd) {
+      background: #ffffff;
+    }
+
+    tbody td {
+      padding: 0.45rem 0.75rem;
+      border: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    tbody tr.total-row {
+      background: var(--brand-light);
+      font-weight: 700;
+    }
+
+    tbody tr.total-row td {
+      border-color: var(--brand-mid);
+    }
+
+    /* =============================================
+       SPECIAL RULES CALLOUT
+    ============================================= */
+    .special-rules {
+      background: #fffbf0;
+      border: 1.5px solid #d4a830;
+      border-left: 5px solid #d4a830;
+      border-radius: 4px;
+      padding: 0.75rem 1.1rem;
+      margin: 0.8rem 0 1rem;
+    }
+
+    .special-rules p {
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+    }
+
+    .special-rules p:last-child {
+      margin-bottom: 0;
+    }
+
+    .special-rules strong {
+      color: #7a5c10;
+    }
+
+    /* =============================================
+       BOUNDS BADGE
+    ============================================= */
+    .bounds-line {
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+      margin: 0.5rem 0 0.9rem;
+      flex-wrap: wrap;
+    }
+
+    .bounds-badge {
+      background: var(--brand);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.2rem 0.65rem;
+      border-radius: 3px;
+      letter-spacing: 0.04em;
+    }
+
+    /* =============================================
+       FORM SECTION
+    ============================================= */
+    .form-section {
+      background: #fafcfd;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.85rem 1rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .form-section h4 {
+      margin-top: 0;
+      margin-bottom: 0.55rem;
+      color: var(--brand);
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--brand-mid);
+      padding-bottom: 0.3rem;
+    }
+
+    .form-field {
+      margin-bottom: 0.55rem;
+      font-size: 0.89rem;
+    }
+
+    .form-field label {
+      font-weight: 700;
+      display: block;
+      margin-bottom: 0.1rem;
+    }
+
+    .form-field .hint {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    .form-note {
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      font-style: italic;
+      margin-bottom: 0.6rem;
+    }
+
+    /* Select-list items inside form */
+    .form-select-list {
+      list-style: none;
+      margin-left: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .form-select-list li {
+      font-size: 0.89rem;
+      padding: 0.25rem 0;
+      border-bottom: 1px dotted #dde5ea;
+      line-height: 1.55;
+    }
+
+    .form-select-list li:last-child {
+      border-bottom: none;
+    }
+
+    .form-checkbox-list {
+      list-style: none;
+      margin-left: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .form-checkbox-list li {
+      font-size: 0.89rem;
+      padding: 0.2rem 0;
+      line-height: 1.55;
+    }
+
+    .form-checkbox-list li::before {
+      content: "\2610";
+      margin-right: 0.45rem;
+      color: var(--brand);
+    }
+
+    /* =============================================
+       FOOTER
+    ============================================= */
+    .doc-footer {
+      margin-top: 2.5rem;
+      padding-top: 0.7rem;
+      border-top: 2px solid var(--brand);
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.05em;
+    }
+
+    /* =============================================
+       PRINT STYLES
+    ============================================= */
+    @media print {
+      @page {
+        size: letter;
+        margin: 0.75in 0.8in 0.8in;
+      }
+
+      html {
+        font-size: 11px;
+      }
+
+      body {
+        background: #ffffff;
+        color: #000000;
+      }
+
+      .page-wrapper {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+      }
+
+      h2 {
+        page-break-after: avoid;
+      }
+
+      h3, h4 {
+        page-break-after: avoid;
+      }
+
+      table {
+        page-break-inside: avoid;
+      }
+
+      .table-wrap {
+        page-break-inside: avoid;
+      }
+
+      .formula-box,
+      .formula-block,
+      .example-box,
+      .special-rules {
+        page-break-inside: avoid;
+      }
+
+      .section-break {
+        page-break-before: always;
+      }
+
+      .no-break {
+        page-break-inside: avoid;
+      }
+
+      .form-section {
+        page-break-inside: avoid;
+      }
+
+      /* Ensure background colors print */
+      thead tr {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        background: var(--table-head-bg) !important;
+        color: #ffffff !important;
+      }
+
+      tbody tr:nth-child(even) {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        background: #f5f8fa !important;
+      }
+
+      .formula-box,
+      .formula-block {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        background: #f0f7fb !important;
+      }
+
+      .example-box {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        background: #e8f4f8 !important;
+      }
+
+      .special-rules {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        background: #fffbf0 !important;
+      }
+
+      .doc-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- ==============================
+       DOCUMENT HEADER
+  =============================== -->
+  <header class="doc-header">
+    <div class="church-name">Perimeter Church</div>
+    <div class="dept-name">Video Studio</div>
+    <h1>Priority Scoring &amp; Capacity Allocation System<br>for Video Projects</h1>
+    <div class="subtitle">Internal Reference Document &mdash; Updated February 2026</div>
+  </header>
+
+
+  <!-- ==============================
+       INTRODUCTION
+  =============================== -->
+  <section class="no-break">
+    <h2>Introduction</h2>
+    <p>We aim to steward the Studio and its production resources to align with our church leadership&rsquo;s goals while efficiently and effectively meeting project needs. Every video follows a production pipeline&mdash;pre-production (~25%), production (~25%), and post-production (~50%)&mdash;each demanding personnel, time, and material costs.</p>
+    <p>This Priority Scoring &amp; Capacity Allocation System is an automated tool that guides resource allocation and prioritization, <strong>supporting decision-making without being the sole decision-maker.</strong> All scoring is performed by AI (Grok) based on objective project analysis, with built-in safeguards against manipulation.</p>
+  </section>
+
+  <hr class="section-divider">
+
+
+  <!-- ==============================
+       HOW THE SYSTEM WORKS
+  =============================== -->
+  <section class="no-break">
+    <h2>How the System Works</h2>
+    <p>When a video project is submitted or created in Asana, the system automatically:</p>
+    <ol>
+      <li><strong>Scores the project</strong> &mdash; AI analyzes the task name, notes, and content summary to assign a Priority Score, Complexity Rating, Category, and Type</li>
+      <li><strong>Calculates allocation</strong> &mdash; A formula converts scores into a weekly capacity percentage per team member</li>
+      <li><strong>Tracks capacity</strong> &mdash; The dashboard shows real-time team utilization, ensuring workload stays within sustainable limits</li>
+      <li><strong>Monitors delivery</strong> &mdash; On-time rates, variance, and at-risk projects are tracked continuously</li>
+    </ol>
+    <p>The system runs every 15 minutes, keeping all scores, allocations, and dashboards current.</p>
+  </section>
+
+  <hr class="section-divider">
+
+
+  <!-- ==============================
+       PRIORITY SCORE CALCULATION
+  =============================== -->
+  <section class="no-break">
+    <h2>Priority Score Calculation</h2>
+    <p>The priority score is calculated by adding the scores of three key factors: <strong>Purpose</strong>, <strong>Audience</strong>, and <strong>Scope</strong>. Each factor is rated on a scale from 1 to 4, resulting in a priority score ranging from 3 to 12. Higher scores indicate higher priority projects.</p>
+
+    <p><strong>Formula:</strong></p>
+    <div class="formula-center">
+      <span class="formula-primary">Priority Score = Purpose + Audience + Scope</span>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+
+  <!-- ==============================
+       FACTORS FOR PRIORITY SCORE
+  =============================== -->
+  <section>
+    <h2>Factors for Priority Score</h2>
+
+    <!-- PURPOSE -->
+    <div class="no-break">
+      <h3>1. Purpose</h3>
+      <p><strong>Definition:</strong> The &ldquo;why&rdquo; behind the video&mdash;its alignment with the church&rsquo;s mission and goals.</p>
+      <p><strong>Scale:</strong></p>
+      <ul class="scale-list">
+        <li><span class="scale-label">4: Equipping</span> &mdash; Discipleship content for our church, relevant to the broader Church, or tied to Senior Pastor Jeff Norris. <em>Examples: &ldquo;Digging Deeper,&rdquo; teaching series (e.g., &ldquo;God Owns It All&rdquo;), Strategic Partnerships (RightNow Media, Ron Blue, TGC), Jeff Norris sermon intros or content, Life on Life Missional Discipleship (LOL) videos.</em></li>
+        <li><span class="scale-label">3: Enriching</span> &mdash; &ldquo;Inviting, Inspiring&rdquo; stories and opportunities specific to Perimeter, especially seasonal (Holy Week, Easter, Christmas, Advent). <em>Examples: Weekly Opportunity Video (WOV), member testimonies, campaign updates (Forward, Frontier), music videos, seasonal promos, Belong ministry videos.</em></li>
+        <li><span class="scale-label">2: Ministry Support</span> &mdash; Initiated by a formal Perimeter ministry to directly support it. <em>Examples: event captures, recaps, highlights, promos, social media reels, ministry profiles for KidsRock, KidsQuest, GloryKids, KidsThrive, Rush, Camp All-American (CAA), Perimeter School, Men&rsquo;s, Women&rsquo;s, Young Adults.</em></li>
+        <li><span class="scale-label">1: Partner Support</span> &mdash; Requested by a partner or informal ministry to support them. <em>Examples: church plant, local non-profit, Perimeter Village, global partner/ministry.</em></li>
+      </ul>
+    </div>
+
+    <!-- AUDIENCE -->
+    <div class="no-break">
+      <h3>2. Audience</h3>
+      <p><strong>Definition:</strong> The &ldquo;who&rdquo; the video is intended to reach.</p>
+      <p><strong>Scale:</strong></p>
+      <ul class="scale-list">
+        <li><span class="scale-label">4: Church-wide</span> &mdash; Relevant to most/all our congregation, often played Sundays, or tied to Senior Pastor Jeff Norris, Outdoor Events (OME), or Belong ministry. <em>Examples: major updates, teaching series, Jeff Norris content, OME promos, Belong initiatives.</em></li>
+        <li><span class="scale-label">3: Community</span> &mdash; Represents Perimeter to a broader, external audience. <em>Examples: &ldquo;Plan Your Visit&rdquo; for newcomers, public-facing promos.</em></li>
+        <li><span class="scale-label">2: People Groups</span> &mdash; Relevant to key demographics (e.g., men, women, marrieds, youth, students, children, camp families). <em>Examples: videos for KidsRock, KidsQuest, GloryKids, KidsThrive, Rush, Camp All-American (CAA), Perimeter School, Men&rsquo;s, Women&rsquo;s, Young Adults.</em></li>
+        <li><span class="scale-label">1: Ministry Groups</span> &mdash; Relevant to specific groups, including partners (e.g., elders, camp staff, Perimeter Village).</li>
+      </ul>
+    </div>
+
+    <!-- SCOPE -->
+    <div class="no-break">
+      <h3>3. Scope</h3>
+      <p><strong>Definition:</strong> The &ldquo;impact and longevity&rdquo; of the video&mdash;how long it will remain relevant and its potential reach.</p>
+      <p><strong>Scale:</strong></p>
+      <ul class="scale-list">
+        <li><span class="scale-label">4: High</span> &mdash; Evergreen content with broad appeal, usable beyond initial context. <em>Examples: website staples, teaching series (e.g., &ldquo;God Owns It All&rdquo;), long-term Jeff Norris content, LOL discipleship videos.</em></li>
+        <li><span class="scale-label">3: Medium-High</span> &mdash; Significant but shorter-term relevance, including seasonal projects (Holy Week, Easter, Christmas, Advent, Christmas Eve). <em>Examples: campaign videos, multi-channel seasonal content.</em></li>
+        <li><span class="scale-label">2: Medium</span> &mdash; Event-driven or seasonal with moderate reach. <em>Examples: summer series, event promos for specific ministries.</em></li>
+        <li><span class="scale-label">1: Low</span> &mdash; Short-term, limited reach. <em>Examples: one-off event captures, single-use reels.</em></li>
+      </ul>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+
+  <!-- ==============================
+       COMPLEXITY SCORE
+  =============================== -->
+  <section>
+    <h2>Complexity Score (1&ndash;12 Scale)</h2>
+    <p><strong>Definition:</strong> The level of resources, time, and effort required to complete the project. Complexity is rated separately and does not affect the priority score. It is a primary input to the capacity allocation formula. Video duration is a key factor in determining complexity.</p>
+    <p><strong>Scale:</strong></p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Rating</th>
+            <th>Level</th>
+            <th>Description</th>
+            <th>Examples</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1&ndash;2</strong></td>
+            <td>Minimal</td>
+            <td>Simple talking head, under 1 min, minimal edits, single take</td>
+            <td>Quick announcement, single take with no effects</td>
+          </tr>
+          <tr>
+            <td><strong>3&ndash;4</strong></td>
+            <td>Low</td>
+            <td>Basic graphics, 1&ndash;2 min, single shoot, simple B-roll</td>
+            <td>Basic announcement, short intro video</td>
+          </tr>
+          <tr>
+            <td><strong>5&ndash;6</strong></td>
+            <td>Medium-Low</td>
+            <td>Multiple takes, 2&ndash;4 min, moderate graphics, basic effects</td>
+            <td>Standard teaching video, simple promo</td>
+          </tr>
+          <tr>
+            <td><strong>7&ndash;8</strong></td>
+            <td>Medium</td>
+            <td>Multiple shoots, 4&ndash;8 min, moderate effects, professional B-roll, motion graphics, OR 30&ndash;45 min multi-camera live-switched productions</td>
+            <td>Digging Deeper (live), testimonial with B-roll</td>
+          </tr>
+          <tr>
+            <td><strong>9&ndash;10</strong></td>
+            <td>High</td>
+            <td>Complex edits, 8&ndash;15 min, multi-day production, advanced effects, narrative structure, OR 30&ndash;45 min multi-camera remote productions</td>
+            <td>Digging Deeper (remote/Riverside), complex narrative</td>
+          </tr>
+          <tr>
+            <td><strong>11&ndash;12</strong></td>
+            <td>Very High</td>
+            <td>Multi-location shoots, 15+ min, extensive post-production, motion graphics, complex workflows</td>
+            <td>Feature-length content, complex motion graphics</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="special-rules no-break">
+      <p><strong>Special Rules:</strong></p>
+      <p><strong>Digging Deeper (Live/In-Person):</strong> Complexity = 8</p>
+      <p><strong>Digging Deeper (Remote/Riverside):</strong> Complexity = 9</p>
+      <p>All episodes in the same series use consistent complexity ratings</p>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+
+  <!-- ==============================
+       CAPACITY ALLOCATION FORMULA
+  =============================== -->
+  <section class="section-break">
+    <h2>Capacity Allocation Formula</h2>
+    <p>Once a project is scored, the system calculates how much of a team member&rsquo;s weekly capacity the task will consume. This replaces the previous static &ldquo;capacity score&rdquo; system.</p>
+
+    <p><strong>Formula:</strong></p>
+    <div class="formula-block">
+      Base = Complexity &times; 3.5 &times; Phase Multiplier<br>
+      Priority Factor = 0.5 + (Priority Score &divide; 24)<br>
+      Weekly Allocation % = (Base &times; Priority Factor) &divide; Duration in Weeks
+    </div>
+
+    <div class="bounds-line">
+      <strong>Bounds:</strong>
+      <span class="bounds-badge">Minimum 5%</span>
+      <span class="bounds-badge">Maximum 80%</span>
+    </div>
+
+    <!-- PHASE MULTIPLIERS -->
+    <div class="no-break">
+      <h3>Phase Multipliers</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Production Phase</th>
+              <th>Multiplier</th>
+              <th>Rationale</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Preproduction</td>
+              <td><strong>0.8&times;</strong></td>
+              <td>Planning and scripting &mdash; lighter effort</td>
+            </tr>
+            <tr>
+              <td>Production</td>
+              <td><strong>1.2&times;</strong></td>
+              <td>Filming and recording &mdash; moderate effort</td>
+            </tr>
+            <tr>
+              <td>Post Production</td>
+              <td><strong>2.0&times;</strong></td>
+              <td>Editing and revisions &mdash; most intensive</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- B-ROLL MULTIPLIER -->
+    <div class="no-break">
+      <h3>B-Roll Multiplier</h3>
+      <p>When B-roll capture is required, Production phase receives an additional 1.5&times; multiplier (1.2 &times; 1.5 = 1.8&times; effective).</p>
+    </div>
+
+    <!-- EXAMPLE CALCULATIONS -->
+    <div class="no-break">
+      <h3>Example Calculation</h3>
+
+      <div class="example-box">
+        <p class="example-heading">Example 1 &mdash; Complexity 7, Priority Score 10, 4-week duration, Production phase:</p>
+        <ul>
+          <li>Base: 7 &times; 3.5 &times; 1.2 = <strong>29.4</strong></li>
+          <li>Priority Factor: 0.5 + (10 &divide; 24) = <strong>0.917</strong></li>
+          <li>Weekly Allocation: (29.4 &times; 0.917) &divide; 4 = <strong>6.7% per week</strong></li>
+        </ul>
+      </div>
+
+      <div class="example-box">
+        <p class="example-heading">Example 2 &mdash; Complexity 9, Priority Score 11, 2-week duration, Post Production phase:</p>
+        <ul>
+          <li>Base: 9 &times; 3.5 &times; 2.0 = <strong>63.0</strong></li>
+          <li>Priority Factor: 0.5 + (11 &divide; 24) = <strong>0.958</strong></li>
+          <li>Weekly Allocation: (63.0 &times; 0.958) &divide; 2 = <strong>30.2% per week</strong></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+
+  <!-- ==============================
+       TEAM CAPACITY
+  =============================== -->
+  <section>
+    <h2>Team Capacity</h2>
+    <p>Each team member has a defined maximum weekly capacity. The system tracks real-time utilization against these limits.</p>
+
+    <div class="table-wrap no-break">
+      <table>
+        <thead>
+          <tr>
+            <th>Team Member</th>
+            <th>Max Capacity</th>
+            <th>Primary Phase</th>
+            <th>Flexibility</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Zach Welliver</td>
+            <td>100%</td>
+            <td>Preproduction</td>
+            <td>Solo projects</td>
+          </tr>
+          <tr>
+            <td>Nick Clark</td>
+            <td>100%</td>
+            <td>Production</td>
+            <td>Dedicated role</td>
+          </tr>
+          <tr>
+            <td>Adriel Abella</td>
+            <td>100%</td>
+            <td>Post Production</td>
+            <td>Dedicated role</td>
+          </tr>
+          <tr>
+            <td>John Meyer</td>
+            <td>30%</td>
+            <td>All phases</td>
+            <td>Flexible/support</td>
+          </tr>
+          <tr class="total-row">
+            <td><strong>Total</strong></td>
+            <td><strong>330%</strong></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- CAPACITY ALERTS -->
+    <div class="no-break">
+      <h3>Capacity Alerts</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Threshold</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Above 100%</strong></td>
+              <td>Over Capacity</td>
+              <td>Immediate alert &mdash; workload must be redistributed</td>
+            </tr>
+            <tr>
+              <td><strong>90&ndash;100%</strong></td>
+              <td>Near Limit</td>
+              <td>Warning &mdash; no new projects without offloading</td>
+            </tr>
+            <tr>
+              <td><strong>75&ndash;90%</strong></td>
+              <td>High Utilization</td>
+              <td>Monitor &mdash; approaching limits</td>
+            </tr>
+            <tr>
+              <td><strong>Below 75%</strong></td>
+              <td>Healthy</td>
+              <td>Capacity available for new projects</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+
+  <!-- ==============================
+       CONTENT CATEGORY TARGETS
+  =============================== -->
+  <section>
+    <h2>Content Category Targets</h2>
+    <p>The studio aims to distribute production capacity across five content categories to ensure alignment with church priorities.</p>
+
+    <div class="table-wrap no-break">
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Target</th>
+            <th>Description</th>
+            <th>Typical Priority Profile</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Spiritual Formation</strong></td>
+            <td>25%</td>
+            <td>Discipleship and teaching content</td>
+            <td>Purpose 4, Audience 4, Scope 3&ndash;4</td>
+          </tr>
+          <tr>
+            <td><strong>Communications</strong></td>
+            <td>30%</td>
+            <td>Stories, updates, and seasonal content</td>
+            <td>Purpose 3, Audience 2&ndash;4, Scope 2&ndash;3</td>
+          </tr>
+          <tr>
+            <td><strong>Creative Resources</strong></td>
+            <td>15%</td>
+            <td>Creative outreach &mdash; music videos, campaigns</td>
+            <td>Purpose 3, Audience 3, Scope 3&ndash;4</td>
+          </tr>
+          <tr>
+            <td><strong>Pastoral/Strategic</strong></td>
+            <td>20%</td>
+            <td>Senior Pastor and strategic leadership content</td>
+            <td>Purpose 4, Audience 4, Scope 4</td>
+          </tr>
+          <tr>
+            <td><strong>Partners</strong></td>
+            <td>5%</td>
+            <td>Church plants, nonprofits, global partners</td>
+            <td>Purpose 1, Audience 1&ndash;3, Scope 1&ndash;2</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+
+  <!-- ==============================
+       MANIPULATION SAFEGUARDS
+  =============================== -->
+  <section class="no-break">
+    <h2>Manipulation Safeguards</h2>
+    <p>The AI scoring system includes built-in protections:</p>
+    <ul>
+      <li><strong>Cross-verification:</strong> Self-reported form fields (Purpose, Audience, Scope selections) are treated as secondary. The AI analyzes the actual content summary and notes, overriding form selections when they conflict with the factual content.</li>
+      <li><strong>Audit logging:</strong> All scoring overrides and mismatches are logged with reasoning for review.</li>
+      <li><strong>Consistency checks:</strong> Series episodes (e.g., Digging Deeper) are enforced to maintain consistent complexity across all installments.</li>
+    </ul>
+  </section>
+
+  <hr class="section-divider">
+
+
+  <!-- ==============================
+       HOW TO USE THE SYSTEM
+  =============================== -->
+  <section class="no-break">
+    <h2>How to Use the System</h2>
+    <ol>
+      <li><strong>Submit a project</strong> in Asana with a clear name, notes, and content summary</li>
+      <li><strong>The system scores automatically</strong> &mdash; Priority, Complexity, Category, and Type are assigned within 15 minutes</li>
+      <li><strong>Review the dashboard</strong> &mdash; Check team capacity, upcoming deadlines, and at-risk projects at any time</li>
+      <li><strong>Plan with capacity in mind</strong> &mdash; For high-priority projects with high complexity, verify team members have sufficient capacity before scheduling</li>
+      <li><strong>Track delivery</strong> &mdash; Monitor on-time rates and allocation accuracy to continuously improve estimation</li>
+    </ol>
+  </section>
+
+  <hr class="section-divider">
+
+
+  <!-- ==============================
+       VIDEO BRIEF FORM
+  =============================== -->
+  <section class="section-break">
+    <h2>Video Brief Form for Video Requests</h2>
+    <p>Thank you for submitting a video request! This form helps us gather the details needed to understand your project and assess its priority and complexity. Please complete all sections thoroughly. If you&rsquo;re unsure about any part, use the <strong>Additional Information</strong> section for notes.</p>
+
+    <!-- SECTION 1 -->
+    <div class="form-section no-break">
+      <h4>Section 1: Basic Information</h4>
+      <div class="form-field">
+        <label>Project Name:</label>
+        <span class="hint">e.g., &ldquo;Plan Your Visit Video&rdquo;, &ldquo;God Owns It All Teaching Series&rdquo;</span>
+      </div>
+      <div class="form-field">
+        <label>Requester&rsquo;s Name:</label>
+      </div>
+      <div class="form-field">
+        <label>Requester&rsquo;s Email:</label>
+      </div>
+      <div class="form-field">
+        <label>Ministry/Department:</label>
+        <span class="hint">e.g., KidsRock, Belong, Outdoor Events</span>
+      </div>
+      <div class="form-field">
+        <label>Date Needed:</label>
+        <span class="hint">e.g., MM/DD/YYYY</span>
+      </div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="form-section no-break">
+      <h4>Section 2: Video Content Summary</h4>
+      <p class="form-note">Please provide a brief summary of the video content in 3&ndash;5 bullet points. This should outline the story, teaching subject, promo, or key message.</p>
+      <p class="form-note"><em>Examples: For a teaching video, list key points or scriptures; for a promo, include event details or call to action; for a testimony, highlight main themes.</em></p>
+      <ul class="form-checkbox-list">
+        <li>Bullet Point 1:</li>
+        <li>Bullet Point 2:</li>
+        <li>Bullet Point 3:</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="form-section no-break">
+      <h4>Section 3: Purpose of the Video</h4>
+      <p class="form-note">This helps us understand the video&rsquo;s primary intent. Select a category and explain your choice.</p>
+      <div class="form-field">
+        <label>What is the main purpose of this video? (Select one)</label>
+        <ul class="form-select-list">
+          <li><strong>Equipping</strong> &mdash; Discipleship or teaching content for the broader Church. <em>Examples: Teaching series, training videos.</em></li>
+          <li><strong>Enriching</strong> &mdash; Inspiring stories or updates for our community. <em>Examples: Testimonies, seasonal content.</em></li>
+          <li><strong>Ministry Support</strong> &mdash; Supports a formal ministry&rsquo;s activities. <em>Examples: Event promos, ministry recaps.</em></li>
+          <li><strong>Partner Support</strong> &mdash; Supports external partners or informal ministries. <em>Examples: Church plant videos, outreach content.</em></li>
+        </ul>
+      </div>
+      <div class="form-field">
+        <label>Why did you select this purpose?</label>
+        <span class="hint">e.g., &ldquo;This promo will support a new KidsRock event.&rdquo;</span>
+      </div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="form-section no-break">
+      <h4>Section 4: Target Audience</h4>
+      <div class="form-field">
+        <label>Who is the primary audience? (Select one)</label>
+        <ul class="form-select-list">
+          <li><strong>Church-wide</strong> &mdash; Most or all of the congregation. <em>Examples: Service announcements, teaching series.</em></li>
+          <li><strong>Community</strong> &mdash; External audience or newcomers. <em>Examples: &ldquo;Plan Your Visit&rdquo; videos.</em></li>
+          <li><strong>People Groups</strong> &mdash; Specific demographics in the church. <em>Examples: Youth, families.</em></li>
+          <li><strong>Ministry Groups</strong> &mdash; Specific teams or participants. <em>Examples: Volunteers, staff.</em></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SECTION 5 -->
+    <div class="form-section no-break">
+      <h4>Section 5: Scope of the Video</h4>
+      <p class="form-note">This reflects the video&rsquo;s impact and longevity.</p>
+
+      <div class="form-field">
+        <label>How will this video be used? (Select all that apply)</label>
+        <ul class="form-checkbox-list">
+          <li>Played during services</li>
+          <li>Posted on the church website</li>
+          <li>Shared on social media</li>
+          <li>Used in ministry events</li>
+          <li>Other: ____________________</li>
+        </ul>
+      </div>
+
+      <div class="form-field">
+        <label>Expected Lifespan: (Select one)</label>
+        <ul class="form-select-list">
+          <li><strong>Short-term</strong> &mdash; One-time or event-specific. <em>Examples: Event promos.</em></li>
+          <li><strong>Medium-term</strong> &mdash; Seasonal or series-based. <em>Examples: Summer campaigns.</em></li>
+          <li><strong>Long-term</strong> &mdash; Evergreen content. <em>Examples: Teaching resources.</em></li>
+        </ul>
+      </div>
+
+      <div class="form-field">
+        <label>Part of a larger campaign? (Yes/No)</label>
+        <span class="hint">If yes: ____________________</span>
+      </div>
+
+      <div class="form-field">
+        <label>Tied to a key church season? (Yes/No)</label>
+        <span class="hint">e.g., Easter, Christmas</span>
+      </div>
+    </div>
+
+    <!-- SECTION 6 -->
+    <div class="form-section no-break">
+      <h4>Section 6: Production Details</h4>
+      <p class="form-note">This helps us estimate the effort required.</p>
+
+      <div class="form-field">
+        <label>Type of Video: (Select one)</label>
+        <ul class="form-select-list">
+          <li>Talking Head</li>
+          <li>Interview/Testimony</li>
+          <li>Event Recap</li>
+          <li>Promo/Advertisement</li>
+          <li>Teaching/Training</li>
+          <li>Other: ____________________</li>
+        </ul>
+      </div>
+
+      <div class="form-field">
+        <label>Approximate Length:</label>
+        <span class="hint">e.g., 2 minutes</span>
+      </div>
+
+      <div class="form-field">
+        <label>Visual and Audio Elements: (Select all that apply)</label>
+        <ul class="form-checkbox-list">
+          <li>Basic graphics (e.g., titles)</li>
+          <li>Advanced graphics (e.g., animations)</li>
+          <li>Multiple locations</li>
+          <li>B-roll footage needed</li>
+          <li>Voiceover</li>
+          <li>Other: ____________________</li>
+        </ul>
+      </div>
+
+      <div class="form-field">
+        <label>Timeline Urgency: (Select one)</label>
+        <ul class="form-select-list">
+          <li><strong>Standard</strong> (4&ndash;6 weeks)</li>
+          <li><strong>Expedited</strong> (2&ndash;3 weeks)</li>
+          <li><strong>Rush</strong> (under 2 weeks)</li>
+        </ul>
+      </div>
+
+      <div class="form-field">
+        <label>Additional Production Notes:</label>
+        <span class="hint">e.g., &ldquo;Filming at an off-site event.&rdquo;</span>
+      </div>
+    </div>
+
+    <!-- SECTION 7 -->
+    <div class="form-section no-break">
+      <h4>Section 7: Additional Information</h4>
+      <div class="form-field">
+        <label>Anything else we should know?</label>
+        <span class="hint">e.g., special requests or challenges</span>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- ==============================
+       DOCUMENT FOOTER
+  =============================== -->
+  <footer class="doc-footer">
+    Updated February 2026 &nbsp;|&nbsp; Perimeter Church Video Studio
+  </footer>
+
+</div>
+</body>
+</html>

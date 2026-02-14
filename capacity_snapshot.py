@@ -13,7 +13,7 @@ load_dotenv()
 
 # Team capacity configuration (matches generate_dashboard.py)
 TEAM_CAPACITY = {
-    'Zach Welliver': {'max': 80},
+    'Zach Welliver': {'max': 100},
     'Nick Clark': {'max': 100},
     'Adriel Abella': {'max': 100},
     'John Meyer': {'max': 30}

@@ -748,20 +748,15 @@
 <h2>Contracted/Outsourced Projects</h2>
 <div class="metric">
 <span class="metric-label">Contracted/Outsourced</span>
-<span class="metric-value">0 Active</span>
+<span class="metric-value">1 Active</span>
+</div>
+<div class="external-project-item">
+<div class="task-list-item">• Record Family Conversations | Videographer: john booth (Due: 2026-03-28)</div>
 </div>
 </div><div class="card" style="margin-top: 30px; margin-bottom: 30px;">
-<h2>⚠️ At-Risk Tasks</h2>
-<div style="margin-top: 15px;">
-<div class="at-risk-item">
-<div class="project-task-name">Spotlight - Go on a GO Journey (Play date is 2/15)</div>
-<div class="task-detail">
-                        Production | Nick Clark | Due: 2026-02-11
-                    </div>
-<div class="task-risk">
-                        • Due in 6 days, needs scheduling
-                    </div>
-</div>
+<h2>At-Risk Tasks</h2>
+<div class="success-state">
+<div style="font-size: 18px;">No tasks currently at risk</div>
 </div>
 </div>
     <div class="card">
@@ -780,6 +775,14 @@
         </div>
     </div>
     <div class="card" style="margin-bottom: 30px;">
+<h2>Historical Capacity Utilization</h2>
+<div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+                Team utilization percentage over the last 30 days (click legend items to filter)
+            </div>
+<div class="chart-container">
+<canvas id="capacityHistoryChart"></canvas>
+</div>
+</div><div class="card" style="margin-bottom: 30px;">
 <h2>Category Performance Summary</h2>
 <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px;">
                 Allocation performance across all project categories
@@ -798,12 +801,12 @@
 <tbody>
 <tr style="background: rgba(96, 187, 233, 0.05); border-bottom: 1px solid var(--border-color);">
 <td style="padding: 12px 16px; font-weight: 500; color: var(--text-primary);">Communications</td>
-<td style="padding: 12px 16px; text-align: right; font-weight: 500;">49.8%</td>
+<td style="padding: 12px 16px; text-align: right; font-weight: 500;">48.5%</td>
 <td style="padding: 12px 16px; text-align: right; color: var(--text-secondary);">30.0%</td>
-<td class="negative" style="padding: 12px 16px; text-align: right; font-weight: 600;">+19.8%</td>
+<td class="negative" style="padding: 12px 16px; text-align: right; font-weight: 600;">+18.5%</td>
 <td style="padding: 12px 16px; text-align: center; font-size: 12px;">
 <span style="display: inline-flex; align-items: center; gap: 4px;">
-<span>⚠️</span>
+<span>!</span>
 <span>Over Allocated</span>
 </span>
 </td>
@@ -815,7 +818,7 @@
 <td class="negative" style="padding: 12px 16px; text-align: right; font-weight: 600;">-10.2%</td>
 <td style="padding: 12px 16px; text-align: center; font-size: 12px;">
 <span style="display: inline-flex; align-items: center; gap: 4px;">
-<span>⚠️</span>
+<span>!</span>
 <span>Under Allocated</span>
 </span>
 </td>
@@ -834,24 +837,24 @@
 </tr>
 <tr style="background: transparent; border-bottom: 1px solid var(--border-color);">
 <td style="padding: 12px 16px; font-weight: 500; color: var(--text-primary);">Pastoral/Strategic</td>
-<td style="padding: 12px 16px; text-align: right; font-weight: 500;">33.9%</td>
+<td style="padding: 12px 16px; text-align: right; font-weight: 500;">34.9%</td>
 <td style="padding: 12px 16px; text-align: right; color: var(--text-secondary);">20.0%</td>
-<td class="negative" style="padding: 12px 16px; text-align: right; font-weight: 600;">+13.9%</td>
+<td class="negative" style="padding: 12px 16px; text-align: right; font-weight: 600;">+14.9%</td>
 <td style="padding: 12px 16px; text-align: center; font-size: 12px;">
 <span style="display: inline-flex; align-items: center; gap: 4px;">
-<span>⚠️</span>
+<span>!</span>
 <span>Over Allocated</span>
 </span>
 </td>
 </tr>
 <tr style="background: rgba(96, 187, 233, 0.05); border-bottom: 1px solid var(--border-color);">
 <td style="padding: 12px 16px; font-weight: 500; color: var(--text-primary);">Spiritual Formation</td>
-<td style="padding: 12px 16px; text-align: right; font-weight: 500;">11.2%</td>
+<td style="padding: 12px 16px; text-align: right; font-weight: 500;">11.6%</td>
 <td style="padding: 12px 16px; text-align: right; color: var(--text-secondary);">25.0%</td>
-<td class="negative" style="padding: 12px 16px; text-align: right; font-weight: 600;">-13.8%</td>
+<td class="negative" style="padding: 12px 16px; text-align: right; font-weight: 600;">-13.4%</td>
 <td style="padding: 12px 16px; text-align: center; font-size: 12px;">
 <span style="display: inline-flex; align-items: center; gap: 4px;">
-<span>⚠️</span>
+<span>!</span>
 <span>Under Allocated</span>
 </span>
 </td>
@@ -865,127 +868,13 @@
     <div class="tv-content" id="projects-content">
         <h1 class="tab-title">Projects & Timeline</h1>
         <div class="grid"><div class="card full-width" style="margin-bottom: 30px;">
-<h2>🎬 Upcoming Shoots</h2>
+<h2>Upcoming Shoots</h2>
 <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
 <div class="project-card">
 <div class="project-card-header">
 <div>
-<div class="project-card-date">Tue, Feb 10</div>
-<div class="project-card-time">12:30 PM</div>
-</div>
-<span class="project-card-badge">Production</span>
-</div>
-<div style="margin-bottom: 12px;">
-<a class="project-card-title" href="https://app.asana.com/0/0/1212955373192693/f" target="_blank">
-                            DD into Parenting - Ep. 6: Parenting Through Trauma
-                        </a>
-</div>
-<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-<a href="https://app.asana.com/0/0/1212955373192693/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
-                            View in Asana →
-                        </a>
-</div>
-</div>
-<div class="project-card">
-<div class="project-card-header">
-<div>
-<div class="project-card-date">Tue, Feb 10</div>
-<div class="project-card-time">2:00 PM</div>
-</div>
-<span class="project-card-badge">Production</span>
-</div>
-<div style="margin-bottom: 12px;">
-<a class="project-card-title" href="https://app.asana.com/0/0/1212955372735433/f" target="_blank">
-                            DD into Parenting - Ep. 5: Love Languages and Parenting
-                        </a>
-</div>
-<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-<a href="https://app.asana.com/0/0/1212955372735433/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
-                            View in Asana →
-                        </a>
-</div>
-</div>
-<div class="project-card">
-<div class="project-card-header">
-<div>
-<div class="project-card-date">Wed, Feb 11</div>
-<div class="project-card-time">10:00 AM</div>
-</div>
-<span class="project-card-badge">Production</span>
-</div>
-<div style="margin-bottom: 12px;">
-<a class="project-card-title" href="https://app.asana.com/0/0/1212955372720028/f" target="_blank">
-                            DD into Parenting - Ep. 1: God's Design for Parenting
-                        </a>
-</div>
-<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-<a href="https://app.asana.com/0/0/1212955372720028/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
-                            View in Asana →
-                        </a>
-</div>
-</div>
-<div class="project-card">
-<div class="project-card-header">
-<div>
-<div class="project-card-date">Wed, Feb 11</div>
-<div class="project-card-time">11:45 AM</div>
-</div>
-<span class="project-card-badge">Production</span>
-</div>
-<div style="margin-bottom: 12px;">
-<a class="project-card-title" href="https://app.asana.com/0/0/1212955371981515/f" target="_blank">
-                            DD into Parenting - Ep. 4: Parenting in an Anxious Age
-                        </a>
-</div>
-<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-<a href="https://app.asana.com/0/0/1212955371981515/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
-                            View in Asana →
-                        </a>
-</div>
-</div>
-<div class="project-card">
-<div class="project-card-header">
-<div>
-<div class="project-card-date">Thu, Feb 12</div>
-<div class="project-card-time">11:00 AM</div>
-</div>
-<span class="project-card-badge">Production</span>
-</div>
-<div style="margin-bottom: 12px;">
-<a class="project-card-title" href="https://app.asana.com/0/0/1212955368760383/f" target="_blank">
-                            DD into Parenting - Ep. 2: Parenting by Grace
-                        </a>
-</div>
-<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-<a href="https://app.asana.com/0/0/1212955368760383/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
-                            View in Asana →
-                        </a>
-</div>
-</div>
-<div class="project-card">
-<div class="project-card-header">
-<div>
-<div class="project-card-date">Thu, Feb 12</div>
-<div class="project-card-time">1:30 PM</div>
-</div>
-<span class="project-card-badge">Production</span>
-</div>
-<div style="margin-bottom: 12px;">
-<a class="project-card-title" href="https://app.asana.com/0/0/1212955368765135/f" target="_blank">
-                            DD into Parenting - Ep. 8: Parenting Wrap Up
-                        </a>
-</div>
-<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-<a href="https://app.asana.com/0/0/1212955368765135/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
-                            View in Asana →
-                        </a>
-</div>
-</div>
-<div class="project-card">
-<div class="project-card-header">
-<div>
 <div class="project-card-date">Mon, Feb 16</div>
-<div class="project-card-time">12:00 AM</div>
+<div class="project-card-time">2:00 PM</div>
 </div>
 <span class="project-card-badge">Production</span>
 </div>
@@ -1022,6 +911,25 @@
 <div class="project-card">
 <div class="project-card-header">
 <div>
+<div class="project-card-date">Thu, Feb 19</div>
+<div class="project-card-time">3:30 PM</div>
+</div>
+<span class="project-card-badge">Production</span>
+</div>
+<div style="margin-bottom: 12px;">
+<a class="project-card-title" href="https://app.asana.com/0/0/1213164615075147/f" target="_blank">
+                            Frontier Video Testimonial #1
+                        </a>
+</div>
+<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+<a href="https://app.asana.com/0/0/1213164615075147/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
+                            View in Asana →
+                        </a>
+</div>
+</div>
+<div class="project-card">
+<div class="project-card-header">
+<div>
 <div class="project-card-date">Fri, Feb 27</div>
 <div class="project-card-time">9:00 AM</div>
 </div>
@@ -1034,6 +942,25 @@
 </div>
 <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
 <a href="https://app.asana.com/0/0/1211501316730562/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
+                            View in Asana →
+                        </a>
+</div>
+</div>
+<div class="project-card">
+<div class="project-card-header">
+<div>
+<div class="project-card-date">Fri, Feb 27</div>
+<div class="project-card-time">10:00 AM</div>
+</div>
+<span class="project-card-badge">Production</span>
+</div>
+<div style="margin-bottom: 12px;">
+<a class="project-card-title" href="https://app.asana.com/0/0/1212666183767969/f" target="_blank">
+                            CAA Staff Recruitment Video
+                        </a>
+</div>
+<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+<a href="https://app.asana.com/0/0/1212666183767969/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
                             View in Asana →
                         </a>
 </div>
@@ -1058,91 +985,15 @@
 </div>
 </div>
 </div>
-</div><div class="card full-width" style="margin-bottom: 30px;">
-<h2>⏰ Upcoming Project Deadlines</h2>
+</div><div class="card full-width" id="deadlines" style="margin-bottom: 30px;">
+<h2>Upcoming Project Deadlines</h2>
 <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Projects due within the next 10 days</p>
 <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
 <div class="project-card">
 <div class="project-card-header">
 <div>
-<div class="project-card-date">Thu, Feb 5, 2026</div>
-<div style="font-size: 22px; font-weight: 600; color: #dc3545; margin-top: 6px;">DUE TODAY</div>
-</div>
-<span class="project-card-badge">Post Production</span>
-</div>
-<div style="margin-bottom: 12px;">
-<a class="project-card-title" href="https://app.asana.com/0/0/1211995020691865/f" target="_blank">
-                            Radical Dependence Teaching Series
-                        </a>
-</div>
-<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-<a href="https://app.asana.com/0/0/1211995020691865/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
-                            View in Asana →
-                        </a>
-</div>
-</div>
-<div class="project-card">
-<div class="project-card-header">
-<div>
-<div class="project-card-date">Thu, Feb 5, 2026</div>
-<div style="font-size: 22px; font-weight: 600; color: #dc3545; margin-top: 6px;">DUE TODAY</div>
-</div>
-<span class="project-card-badge">Post Production</span>
-</div>
-<div style="margin-bottom: 12px;">
-<a class="project-card-title" href="https://app.asana.com/0/0/1212753445542451/f" target="_blank">
-                            WOV - Evan Forester
-                        </a>
-</div>
-<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-<a href="https://app.asana.com/0/0/1212753445542451/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
-                            View in Asana →
-                        </a>
-</div>
-</div>
-<div class="project-card">
-<div class="project-card-header">
-<div>
-<div class="project-card-date">Fri, Feb 6, 2026</div>
-<div style="font-size: 22px; font-weight: 600; color: #fd7e14; margin-top: 6px;">DUE TOMORROW</div>
-</div>
-<span class="project-card-badge">Post Production</span>
-</div>
-<div style="margin-bottom: 12px;">
-<a class="project-card-title" href="https://app.asana.com/0/0/1213066002629279/f" target="_blank">
-                            Ask a Pastor social videos - February
-                        </a>
-</div>
-<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-<a href="https://app.asana.com/0/0/1213066002629279/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
-                            View in Asana →
-                        </a>
-</div>
-</div>
-<div class="project-card">
-<div class="project-card-header">
-<div>
-<div class="project-card-date">Wed, Feb 11, 2026</div>
-<div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">6 DAYS</div>
-</div>
-<span class="project-card-badge">Production</span>
-</div>
-<div style="margin-bottom: 12px;">
-<a class="project-card-title" href="https://app.asana.com/0/0/1212860192944708/f" target="_blank">
-                            Spotlight - Go on a GO Journey (Play date is 2/15)
-                        </a>
-</div>
-<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-<a href="https://app.asana.com/0/0/1212860192944708/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
-                            View in Asana →
-                        </a>
-</div>
-</div>
-<div class="project-card">
-<div class="project-card-header">
-<div>
-<div class="project-card-date">Thu, Feb 12, 2026</div>
-<div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">7 DAYS</div>
+<div class="project-card-date">Tue, Feb 17, 2026</div>
+<div style="font-size: 22px; font-weight: 600; color: #ffc107; margin-top: 6px;">3 DAYS</div>
 </div>
 <span class="project-card-badge">Post Production</span>
 </div>
@@ -1160,18 +1011,75 @@
 <div class="project-card">
 <div class="project-card-header">
 <div>
-<div class="project-card-date">Thu, Feb 12, 2026</div>
-<div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">7 DAYS</div>
+<div class="project-card-date">Thu, Feb 19, 2026</div>
+<div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">5 DAYS</div>
+</div>
+<span class="project-card-badge">Production</span>
+</div>
+<div style="margin-bottom: 12px;">
+<a class="project-card-title" href="https://app.asana.com/0/0/1212984031375033/f" target="_blank">
+                            Digging Deeper Recording with Chris Kam
+                        </a>
+</div>
+<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+<a href="https://app.asana.com/0/0/1212984031375033/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
+                            View in Asana →
+                        </a>
+</div>
+</div>
+<div class="project-card">
+<div class="project-card-header">
+<div>
+<div class="project-card-date">Thu, Feb 19, 2026</div>
+<div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">5 DAYS</div>
 </div>
 <span class="project-card-badge">Post Production</span>
 </div>
 <div style="margin-bottom: 12px;">
-<a class="project-card-title" href="https://app.asana.com/0/0/1212503969089918/f" target="_blank">
-                            Womens Retreat Laura Madden Memorial Video
+<a class="project-card-title" href="https://app.asana.com/0/0/1211995020691865/f" target="_blank">
+                            Radical Dependence Teaching Series
                         </a>
 </div>
 <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-<a href="https://app.asana.com/0/0/1212503969089918/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
+<a href="https://app.asana.com/0/0/1211995020691865/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
+                            View in Asana →
+                        </a>
+</div>
+</div>
+<div class="project-card">
+<div class="project-card-header">
+<div>
+<div class="project-card-date">Fri, Feb 20, 2026</div>
+<div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">6 DAYS</div>
+</div>
+<span class="project-card-badge">Post Production</span>
+</div>
+<div style="margin-bottom: 12px;">
+<a class="project-card-title" href="https://app.asana.com/0/0/1212722729151901/f" target="_blank">
+                            Holy Week website b-roll video update
+                        </a>
+</div>
+<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+<a href="https://app.asana.com/0/0/1212722729151901/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
+                            View in Asana →
+                        </a>
+</div>
+</div>
+<div class="project-card">
+<div class="project-card-header">
+<div>
+<div class="project-card-date">Mon, Feb 23, 2026</div>
+<div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">9 DAYS</div>
+</div>
+<span class="project-card-badge">Production</span>
+</div>
+<div style="margin-bottom: 12px;">
+<a class="project-card-title" href="https://app.asana.com/0/0/1212723227394840/f" target="_blank">
+                            Unlimited Grace - Podcast- February
+                        </a>
+</div>
+<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+<a href="https://app.asana.com/0/0/1212723227394840/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
                             View in Asana →
                         </a>
 </div>
@@ -1195,130 +1103,130 @@
 <canvas id="velocityChart"></canvas>
 </div>
 </div><div class="card full-width" style="margin-bottom: 30px;">
-<h2>📊 Daily Workload Distribution - Next 30 Days</h2>
+<h2>Daily Workload Distribution - Next 30 Days</h2>
 <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 15px;">
 <strong>How busy will each day be?</strong> Shows the team's expected workload intensity per day (work distributed across task timelines)
             </div>
 <div class="heatmap-grid">
-<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-05: 52.3% capacity">
-<div style="font-weight: bold;">02/05</div>
-<div style="font-size: 9px; margin-top: 2px;">52%</div>
-</div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-06: 36.8% capacity">
-<div style="font-weight: bold;">02/06</div>
-<div style="font-size: 9px; margin-top: 2px;">37%</div>
-</div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-07: 35.2% capacity">
-<div style="font-weight: bold;">02/07</div>
-<div style="font-size: 9px; margin-top: 2px;">35%</div>
-</div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-08: 35.2% capacity">
-<div style="font-weight: bold;">02/08</div>
-<div style="font-size: 9px; margin-top: 2px;">35%</div>
-</div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-09: 35.2% capacity">
-<div style="font-weight: bold;">02/09</div>
-<div style="font-size: 9px; margin-top: 2px;">35%</div>
-</div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-10: 35.2% capacity">
-<div style="font-weight: bold;">02/10</div>
-<div style="font-size: 9px; margin-top: 2px;">35%</div>
-</div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-11: 35.2% capacity">
-<div style="font-weight: bold;">02/11</div>
-<div style="font-size: 9px; margin-top: 2px;">35%</div>
-</div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-12: 33.5% capacity">
-<div style="font-weight: bold;">02/12</div>
-<div style="font-size: 9px; margin-top: 2px;">34%</div>
-</div>
-<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-13: 26.5% capacity">
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-13: 42.7% capacity">
 <div style="font-weight: bold;">02/13</div>
-<div style="font-size: 9px; margin-top: 2px;">26%</div>
+<div style="font-size: 9px; margin-top: 2px;">43%</div>
 </div>
-<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-14: 26.5% capacity">
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-14: 42.7% capacity">
 <div style="font-weight: bold;">02/14</div>
-<div style="font-size: 9px; margin-top: 2px;">26%</div>
+<div style="font-size: 9px; margin-top: 2px;">43%</div>
 </div>
-<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-15: 26.5% capacity">
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-15: 42.7% capacity">
 <div style="font-weight: bold;">02/15</div>
-<div style="font-size: 9px; margin-top: 2px;">26%</div>
+<div style="font-size: 9px; margin-top: 2px;">43%</div>
 </div>
-<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-16: 26.5% capacity">
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-16: 42.7% capacity">
 <div style="font-weight: bold;">02/16</div>
+<div style="font-size: 9px; margin-top: 2px;">43%</div>
+</div>
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-17: 46.7% capacity">
+<div style="font-weight: bold;">02/17</div>
+<div style="font-size: 9px; margin-top: 2px;">47%</div>
+</div>
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-18: 42.1% capacity">
+<div style="font-weight: bold;">02/18</div>
+<div style="font-size: 9px; margin-top: 2px;">42%</div>
+</div>
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-19: 42.1% capacity">
+<div style="font-weight: bold;">02/19</div>
+<div style="font-size: 9px; margin-top: 2px;">42%</div>
+</div>
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-20: 26.1% capacity">
+<div style="font-weight: bold;">02/20</div>
 <div style="font-size: 9px; margin-top: 2px;">26%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-17: 30.6% capacity">
-<div style="font-weight: bold;">02/17</div>
-<div style="font-size: 9px; margin-top: 2px;">31%</div>
-</div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-18: 30.6% capacity">
-<div style="font-weight: bold;">02/18</div>
-<div style="font-size: 9px; margin-top: 2px;">31%</div>
-</div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-19: 30.6% capacity">
-<div style="font-weight: bold;">02/19</div>
-<div style="font-size: 9px; margin-top: 2px;">31%</div>
-</div>
-<div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-20: 27.1% capacity">
-<div style="font-weight: bold;">02/20</div>
-<div style="font-size: 9px; margin-top: 2px;">27%</div>
-</div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-21: 31.3% capacity">
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-21: 28.5% capacity">
 <div style="font-weight: bold;">02/21</div>
-<div style="font-size: 9px; margin-top: 2px;">31%</div>
+<div style="font-size: 9px; margin-top: 2px;">28%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-22: 37.7% capacity">
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-22: 34.5% capacity">
 <div style="font-weight: bold;">02/22</div>
+<div style="font-size: 9px; margin-top: 2px;">35%</div>
+</div>
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-23: 36.1% capacity">
+<div style="font-weight: bold;">02/23</div>
+<div style="font-size: 9px; margin-top: 2px;">36%</div>
+</div>
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-24: 43.0% capacity">
+<div style="font-weight: bold;">02/24</div>
+<div style="font-size: 9px; margin-top: 2px;">43%</div>
+</div>
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-25: 46.1% capacity">
+<div style="font-weight: bold;">02/25</div>
+<div style="font-size: 9px; margin-top: 2px;">46%</div>
+</div>
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-26: 37.9% capacity">
+<div style="font-weight: bold;">02/26</div>
 <div style="font-size: 9px; margin-top: 2px;">38%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-23: 39.4% capacity">
-<div style="font-weight: bold;">02/23</div>
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-27: 36.4% capacity">
+<div style="font-weight: bold;">02/27</div>
+<div style="font-size: 9px; margin-top: 2px;">36%</div>
+</div>
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-28: 36.4% capacity">
+<div style="font-weight: bold;">02/28</div>
+<div style="font-size: 9px; margin-top: 2px;">36%</div>
+</div>
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-01: 36.4% capacity">
+<div style="font-weight: bold;">03/01</div>
+<div style="font-size: 9px; margin-top: 2px;">36%</div>
+</div>
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-02: 39.4% capacity">
+<div style="font-weight: bold;">03/02</div>
 <div style="font-size: 9px; margin-top: 2px;">39%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-24: 40.6% capacity">
-<div style="font-weight: bold;">02/24</div>
-<div style="font-size: 9px; margin-top: 2px;">41%</div>
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-03: 43.3% capacity">
+<div style="font-weight: bold;">03/03</div>
+<div style="font-size: 9px; margin-top: 2px;">43%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-25: 43.9% capacity">
-<div style="font-weight: bold;">02/25</div>
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-04: 43.3% capacity">
+<div style="font-weight: bold;">03/04</div>
+<div style="font-size: 9px; margin-top: 2px;">43%</div>
+</div>
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-05: 43.3% capacity">
+<div style="font-weight: bold;">03/05</div>
+<div style="font-size: 9px; margin-top: 2px;">43%</div>
+</div>
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-06: 40.0% capacity">
+<div style="font-weight: bold;">03/06</div>
+<div style="font-size: 9px; margin-top: 2px;">40%</div>
+</div>
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-07: 40.0% capacity">
+<div style="font-weight: bold;">03/07</div>
+<div style="font-size: 9px; margin-top: 2px;">40%</div>
+</div>
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-08: 40.0% capacity">
+<div style="font-weight: bold;">03/08</div>
+<div style="font-size: 9px; margin-top: 2px;">40%</div>
+</div>
+<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-09: 40.0% capacity">
+<div style="font-weight: bold;">03/09</div>
+<div style="font-size: 9px; margin-top: 2px;">40%</div>
+</div>
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-10: 43.9% capacity">
+<div style="font-weight: bold;">03/10</div>
 <div style="font-size: 9px; margin-top: 2px;">44%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-26: 35.2% capacity">
-<div style="font-weight: bold;">02/26</div>
-<div style="font-size: 9px; margin-top: 2px;">35%</div>
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-11: 43.9% capacity">
+<div style="font-weight: bold;">03/11</div>
+<div style="font-size: 9px; margin-top: 2px;">44%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-27: 35.2% capacity">
-<div style="font-weight: bold;">02/27</div>
-<div style="font-size: 9px; margin-top: 2px;">35%</div>
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-12: 43.9% capacity">
+<div style="font-weight: bold;">03/12</div>
+<div style="font-size: 9px; margin-top: 2px;">44%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-28: 35.2% capacity">
-<div style="font-weight: bold;">02/28</div>
-<div style="font-size: 9px; margin-top: 2px;">35%</div>
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-13: 42.1% capacity">
+<div style="font-weight: bold;">03/13</div>
+<div style="font-size: 9px; margin-top: 2px;">42%</div>
 </div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-01: 35.2% capacity">
-<div style="font-weight: bold;">03/01</div>
-<div style="font-size: 9px; margin-top: 2px;">35%</div>
-</div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-02: 35.8% capacity">
-<div style="font-weight: bold;">03/02</div>
-<div style="font-size: 9px; margin-top: 2px;">36%</div>
-</div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-03: 40.0% capacity">
-<div style="font-weight: bold;">03/03</div>
-<div style="font-size: 9px; margin-top: 2px;">40%</div>
-</div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-04: 40.0% capacity">
-<div style="font-weight: bold;">03/04</div>
-<div style="font-size: 9px; margin-top: 2px;">40%</div>
-</div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-05: 40.0% capacity">
-<div style="font-weight: bold;">03/05</div>
-<div style="font-size: 9px; margin-top: 2px;">40%</div>
-</div>
-<div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-06: 36.5% capacity">
-<div style="font-weight: bold;">03/06</div>
-<div style="font-size: 9px; margin-top: 2px;">36%</div>
+<div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-14: 42.1% capacity">
+<div style="font-weight: bold;">03/14</div>
+<div style="font-size: 9px; margin-top: 2px;">42%</div>
 </div>
 </div>
 <div style="margin-top: 15px; font-size: 11px; color: var(--text-secondary); display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
@@ -1337,73 +1245,74 @@
     <div class="tv-content" id="forecast-content">
         <h1 class="tab-title">Capacity Forecast</h1>
         <div class="grid"><div class="card full-width" style="margin-bottom: 30px;">
-<h2>📆 6-Month Capacity Timeline</h2>
+<h2>6-Month Capacity Timeline</h2>
 <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 15px;">
                 Weekly team capacity projection showing workload distribution over the next 26 weeks
             </div>
 <div style="margin-top: 15px;">
 <!-- Timeline header with month labels -->
 <div style="display: flex; margin-bottom: 10px; font-size: 12px; font-weight: bold; color: var(--text-secondary);">
-<div style="flex: 4; text-align: center; border-right: 1px solid #dee2e6;">Feb</div>
+<div style="flex: 3; text-align: center; border-right: 1px solid #dee2e6;">Feb</div>
 <div style="flex: 4; text-align: center; border-right: 1px solid #dee2e6;">Mar</div>
-<div style="flex: 5; text-align: center; border-right: 1px solid #dee2e6;">Apr</div>
-<div style="flex: 4; text-align: center; border-right: 1px solid #dee2e6;">May</div>
+<div style="flex: 4; text-align: center; border-right: 1px solid #dee2e6;">Apr</div>
+<div style="flex: 5; text-align: center; border-right: 1px solid #dee2e6;">May</div>
 <div style="flex: 4; text-align: center; border-right: 1px solid #dee2e6;">Jun</div>
-<div style="flex: 5; text-align: center;">Jul</div>
+<div style="flex: 5; text-align: center; border-right: 1px solid #dee2e6;">Jul</div>
+<div style="flex: 1; text-align: center;">Aug</div>
 </div>
 <!-- Timeline bars -->
 <div style="display: flex; gap: 3px; height: 60px; align-items: flex-end;">
-<div style="flex: 1; background: #fd7e14; height: 49.18433179723503%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 1 (2026-02-05): 38% capacity, 13 tasks">
+<div style="flex: 1; background: #fd7e14; height: 56.05194805194805%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 1 (2026-02-13): 43% capacity, 11 tasks">
 </div>
-<div style="flex: 1; background: #ffc107; height: 37.262672811059915%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 2 (2026-02-12): 29% capacity, 10 tasks">
+<div style="flex: 1; background: #ffc107; height: 46.82251082251082%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 2 (2026-02-20): 36% capacity, 19 tasks">
 </div>
-<div style="flex: 1; background: #ffc107; height: 46.54838709677419%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 3 (2026-02-19): 36% capacity, 18 tasks">
+<div style="flex: 1; background: #fd7e14; height: 51.718614718614724%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 3 (2026-02-27): 40% capacity, 17 tasks">
 </div>
-<div style="flex: 1; background: #fd7e14; height: 47.626728110599075%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 4 (2026-02-26): 37% capacity, 17 tasks">
+<div style="flex: 1; background: #fd7e14; height: 54.19480519480519%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 4 (2026-03-06): 42% capacity, 17 tasks">
 </div>
-<div style="flex: 1; background: #fd7e14; height: 46.967741935483865%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 5 (2026-03-05): 36% capacity, 17 tasks">
+<div style="flex: 1; background: #fd7e14; height: 57.23376623376625%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 5 (2026-03-13): 44% capacity, 19 tasks">
 </div>
-<div style="flex: 1; background: #fd7e14; height: 50.68202764976958%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 6 (2026-03-12): 39% capacity, 17 tasks">
+<div style="flex: 1; background: #fd7e14; height: 54.194805194805205%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 6 (2026-03-20): 42% capacity, 18 tasks">
 </div>
-<div style="flex: 1; background: #fd7e14; height: 52.0%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 7 (2026-03-19): 40% capacity, 18 tasks">
+<div style="flex: 1; background: #ffc107; height: 30.558441558441558%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 7 (2026-03-27): 24% capacity, 10 tasks">
 </div>
-<div style="flex: 1; background: #ffc107; height: 34.02764976958525%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 8 (2026-03-26): 26% capacity, 12 tasks">
+<div style="flex: 1; background: #28a745; height: 25.887445887445885%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 8 (2026-04-03): 20% capacity, 7 tasks">
 </div>
-<div style="flex: 1; background: #ffc107; height: 27.557603686635943%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 9 (2026-04-02): 21% capacity, 8 tasks">
+<div style="flex: 1; background: #28a745; height: 24.424242424242426%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 9 (2026-04-10): 19% capacity, 6 tasks">
 </div>
-<div style="flex: 1; background: #28a745; height: 26.778801843317975%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 10 (2026-04-09): 21% capacity, 7 tasks">
+<div style="flex: 1; background: #28a745; height: 15.645021645021648%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 10 (2026-04-17): 12% capacity, 4 tasks">
 </div>
-<div style="flex: 1; background: #28a745; height: 18.03225806451613%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 11 (2026-04-16): 14% capacity, 6 tasks">
+<div style="flex: 1; background: #28a745; height: 10.242424242424244%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 11 (2026-04-24): 8% capacity, 2 tasks">
 </div>
-<div style="flex: 1; background: #28a745; height: 11.682027649769589%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 12 (2026-04-23): 9% capacity, 3 tasks">
+<div style="flex: 1; background: #28a745; height: 10.861471861471859%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 12 (2026-05-01): 8% capacity, 3 tasks">
 </div>
-<div style="flex: 1; background: #28a745; height: 11.382488479262676%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 13 (2026-04-30): 9% capacity, 4 tasks">
+<div style="flex: 1; background: #28a745; height: 9.735930735930738%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 13 (2026-05-08): 7% capacity, 4 tasks">
 </div>
-<div style="flex: 1; background: #28a745; height: 10.663594470046085%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 14 (2026-05-07): 8% capacity, 4 tasks">
+<div style="flex: 1; background: #28a745; height: 9.454545454545455%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 14 (2026-05-15): 7% capacity, 3 tasks">
 </div>
-<div style="flex: 1; background: #28a745; height: 10.064516129032262%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 15 (2026-05-14): 8% capacity, 3 tasks">
+<div style="flex: 1; background: #28a745; height: 9.454545454545455%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 15 (2026-05-22): 7% capacity, 3 tasks">
 </div>
-<div style="flex: 1; background: #28a745; height: 10.064516129032262%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 16 (2026-05-21): 8% capacity, 3 tasks">
+<div style="flex: 1; background: #28a745; height: 11.367965367965368%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 16 (2026-05-29): 9% capacity, 5 tasks">
 </div>
-<div style="flex: 1; background: #28a745; height: 11.861751152073733%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 17 (2026-05-28): 9% capacity, 5 tasks">
+<div style="flex: 1; background: #28a745; height: 9.67965367965368%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 17 (2026-06-05): 7% capacity, 3 tasks">
 </div>
-<div style="flex: 1; background: #28a745; height: 10.783410138248849%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 18 (2026-06-04): 8% capacity, 3 tasks">
+<div style="flex: 1; background: #28a745; height: 8.441558441558442%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 18 (2026-06-12): 6% capacity, 3 tasks">
 </div>
-<div style="flex: 1; background: #28a745; height: 8.68663594470046%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 19 (2026-06-11): 7% capacity, 3 tasks">
+<div style="flex: 1; background: #28a745; height: 9.84848484848485%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 19 (2026-06-19): 8% capacity, 3 tasks">
 </div>
-<div style="flex: 1; background: #28a745; height: 10.483870967741936%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 20 (2026-06-18): 8% capacity, 3 tasks">
+<div style="flex: 1; background: #28a745; height: 8.272727272727273%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 20 (2026-06-26): 6% capacity, 3 tasks">
 </div>
-<div style="flex: 1; background: #28a745; height: 10.004608294930877%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 21 (2026-06-25): 8% capacity, 3 tasks">
+<div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 21 (2026-07-03): 2% capacity, 1 tasks">
 </div>
-<div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 22 (2026-07-02): 2% capacity, 1 tasks">
+<div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 22 (2026-07-10): 2% capacity, 1 tasks">
 </div>
-<div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 23 (2026-07-09): 2% capacity, 1 tasks">
+<div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 23 (2026-07-17): 0% capacity, 1 tasks">
 </div>
-<div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 24 (2026-07-16): 0% capacity, 1 tasks">
+<div style="flex: 1; background: #28a745; height: 6.696969696969697%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 24 (2026-07-24): 5% capacity, 2 tasks">
 </div>
-<div style="flex: 1; background: #28a745; height: 5.211981566820277%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 25 (2026-07-23): 4% capacity, 2 tasks">
+<div style="flex: 1; background: #28a745; height: 14.857142857142858%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 25 (2026-07-31): 11% capacity, 3 tasks">
 </div>
-<div style="flex: 1; background: #28a745; height: 15.336405529953918%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 26 (2026-07-30): 12% capacity, 3 tasks">
+<div style="flex: 1; background: #28a745; height: 15.757575757575758%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;" title="Week 26 (2026-08-07): 12% capacity, 3 tasks">
 </div>
 </div>
 <!-- Week number labels (show every 4th week) -->
@@ -1446,51 +1355,10 @@
                     Colors scale adaptively based on peak workload over the 6-month period
                 </div>
 </div>
-</div><div class="card full-width" style="margin-bottom: 30px;">
-<h2>📈 Historical Capacity Utilization</h2>
-<div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
-                Team utilization percentage over the last 30 days (click legend items to filter)
-            </div>
-<div class="chart-container">
-<canvas id="capacityHistoryChart"></canvas>
-</div>
-</div><div class="card full-width" style="margin-bottom: 30px;">
-<h2>🔮 Forecasted Projects</h2>
+</div><div class="card full-width" id="forecasts" style="margin-bottom: 30px;">
+<h2>Forecasted Projects</h2>
 <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Upcoming projects in the forecast pipeline</p>
 <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
-<div class="project-card">
-<div class="project-card-header">
-<div style="flex: 1;">
-<div class="project-card-date">Mar 1, 2026</div>
-</div>
-</div>
-<div style="margin-bottom: 12px;">
-<a class="project-card-title" href="https://app.asana.com/0/0/1212347340841821/f" style="font-weight: 600;" target="_blank">
-                            March: Testimonial Video
-                        </a>
-</div>
-<div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
-                        Project Title:
-March: Testimonial Video
-
-Category:
-Communications
-
-Type:
-Enriching
-
-Estimated Start Date:
-Jan 16, 2026
-
-Estimated Due Date:
-Mar 1, 202...
-                    </div>
-<div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-<a href="https://app.asana.com/0/0/1212347340841821/f" style="color: #60BBE9; text-decoration: none; font-size: 14px;" target="_blank">
-                            View in Asana →
-                        </a>
-</div>
-</div>
 <div class="project-card">
 <div class="project-card-header">
 <div style="flex: 1;">
@@ -1931,7 +1799,7 @@ Dec 1...
 <div class="radar-container" id="radarChart">
 <!-- Radar will be generated by JavaScript -->
 </div>
-</div><div class="card full-width" style="margin-bottom: 30px;">
+</div><div class="card full-width" id="analytics" style="margin-bottom: 30px;">
 <h2>Historical Allocation Trends</h2>
 <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
                 Daily allocation percentages over time
@@ -1962,12 +1830,55 @@ Dec 1...
             return isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
         }
 
+        // Function to get theme-aware dataset colors
+        function getThemeAwareMemberColors() {
+            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            if (isDarkMode) {
+                return {
+                    'Zach Welliver': '#C694FF',   // Lighter purple
+                    'Nick Clark': '#5DADE2',      // Lighter blue
+                    'Adriel Abella': '#F4D03F',   // Lighter yellow
+                    'John Meyer': '#7DCEA0',      // Lighter teal
+                    'Team Total': '#60BBE9'       // Brand blue works in both themes
+                };
+            } else {
+                return {
+                    'Zach Welliver': '#9B59B6',   // Original purple
+                    'Nick Clark': '#36A2EB',      // Original blue
+                    'Adriel Abella': '#FFCE56',   // Original yellow
+                    'John Meyer': '#4BC0C0',      // Original teal
+                    'Team Total': '#60BBE9'       // Brand blue
+                };
+            }
+        }
+
+        // Function to get theme-aware trend colors
+        function getThemeAwareTrendColors() {
+            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            if (isDarkMode) {
+                return ['#60BBE9', '#4A9CD9', '#7AC3ED', '#FFD700', '#FF6B6B'];  // Lighter colors for dark mode
+            } else {
+                return ['#60BBE9', '#09243F', '#28a745', '#ffc107', '#dc3545'];  // Original colors for light mode
+            }
+        }
+
         const trendsCtx = document.getElementById('trendsChart').getContext('2d');
-        new Chart(trendsCtx, {
+
+        // Update dataset colors for theme
+        const trendColors = getThemeAwareTrendColors();
+        const trendsDataWithColors = [{"label": "Spiritual Formation", "data": [18.7, 18.3, 10.8, 10.9, 9.3, 11.1, 11.2, 11.3, 11.5, 11.6, 11.4, 11.6, 11.8, 11.9, 8.5, 8.5, 8.5, 8.6, 8.7, 8.8, 8.9, 9.0, 9.1, 8.6, 8.7, 8.8, 8.9, 9.0, 8.8, 8.9, 9.0, 9.3, 9.5, 9.6, 9.8, 9.9, 10.1, 10.3, 10.4, 10.6, 9.7, 9.9, 10.3, 10.4, 9.9, 10.3, 10.5, 10.2, 10.2, 12.1, 11.5, 11.6, 11.8, 11.9, 12.0, 12.1, 12.0, 11.7, 11.8, 9.1, 9.0, 9.0, 14.4, 18.9, 17.4, 17.1, 17.3, 17.4, 14.5, 14.9, 14.7, 14.5, 14.5, 14.9, 15.1, 15.2, 14.6, 18.0, 14.7], "borderColor": "#60BBE9", "backgroundColor": "#60BBE9", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Communications", "data": [30.5, 29.7, 33.1, 32.8, 32.8, 32.4, 32.1, 32.1, 31.8, 31.6, 33.4, 32.5, 32.6, 32.7, 52.6, 52.9, 53.4, 53.5, 53.7, 54.2, 54.7, 55.2, 55.8, 58.9, 59.4, 60.0, 60.6, 61.1, 59.2, 59.8, 60.4, 62.1, 62.6, 63.1, 63.7, 64.3, 64.9, 65.5, 66.1, 66.8, 62.8, 63.3, 63.0, 62.6, 56.4, 56.0, 56.7, 57.1, 58.4, 57.0, 54.4, 54.8, 55.3, 55.7, 56.2, 56.7, 58.0, 53.2, 53.6, 41.1, 40.4, 40.8, 39.2, 38.9, 35.0, 34.7, 34.8, 34.9, 37.1, 37.3, 37.3, 36.6, 37.7, 37.0, 37.4, 38.0, 36.4, 35.3, 35.5], "borderColor": "#09243F", "backgroundColor": "#09243F", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Creative Resources", "data": [9.4, 6.4, 11.2, 11.3, 9.7, 11.5, 11.7, 11.8, 11.9, 12.0, 11.9, 12.1, 11.8, 11.5, 7.9, 7.7, 7.4, 7.2, 7.0, 6.7, 6.5, 6.3, 6.1, 5.5, 5.3, 5.0, 4.8, 4.5, 4.1, 3.9, 3.6, 2.8, 2.5, 2.3, 2.0, 1.7, 1.4, 1.0, 0.7, 0.4, 3.2, 3.0, 2.8, 2.4, 2.0, 1.7, 1.4, 1.0, 0.7, 0.3, 2.3, 2.0, 1.7, 1.4, 1.1, 0.7, 0.4, 2.5, 2.1, 1.4, 1.1, 0.8, 0.5, 0.2, 6.0, 5.7, 5.6, 5.4, 5.4, 5.3, 5.1, 4.8, 4.5, 4.4, 4.2, 4.0, 3.6, 3.3, 3.1], "borderColor": "#28a745", "backgroundColor": "#28a745", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Pastoral/Strategic", "data": [37.0, 42.7, 45.0, 45.0, 38.1, 45.0, 45.0, 44.8, 44.9, 44.8, 43.3, 43.7, 43.8, 43.9, 31.0, 30.9, 30.7, 30.7, 30.6, 30.3, 29.9, 29.5, 29.1, 27.0, 26.6, 26.2, 25.7, 25.3, 27.9, 27.5, 27.0, 25.8, 25.4, 25.0, 24.5, 24.1, 23.7, 23.2, 22.7, 22.3, 23.8, 23.4, 23.6, 24.3, 31.5, 31.7, 31.2, 31.6, 30.7, 30.6, 31.8, 31.5, 31.3, 31.0, 30.7, 30.5, 29.6, 32.6, 32.4, 48.5, 49.6, 49.3, 45.8, 41.9, 41.6, 42.5, 42.4, 42.3, 43.0, 42.5, 42.9, 44.1, 43.3, 43.6, 43.3, 42.8, 45.4, 43.5, 46.7], "borderColor": "#ffc107", "backgroundColor": "#ffc107", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Partners", "data": [4.4, 3.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.4, 0.4, 0.3, 0.2, 0.2, 0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "borderColor": "#dc3545", "backgroundColor": "#dc3545", "borderWidth": 2, "fill": false, "tension": 0.1}];
+        trendsDataWithColors.forEach((dataset, index) => {
+            if (index < trendColors.length) {
+                dataset.borderColor = trendColors[index];
+                dataset.backgroundColor = trendColors[index];
+            }
+        });
+
+        window.trendsChart = new Chart(trendsCtx, {
             type: 'line',
             data: {
-                labels: ["2025-11-25", "2025-11-26", "2025-11-27", "2025-11-28", "2025-11-29", "2025-11-30", "2025-12-01", "2025-12-02", "2025-12-03", "2025-12-04", "2025-12-05", "2025-12-06", "2025-12-07", "2025-12-08", "2025-12-09", "2025-12-10", "2025-12-11", "2025-12-12", "2025-12-13", "2025-12-14", "2025-12-15", "2025-12-16", "2025-12-17", "2025-12-18", "2025-12-19", "2025-12-20", "2025-12-21", "2025-12-22", "2025-12-23", "2025-12-24", "2025-12-25", "2025-12-28", "2025-12-29", "2025-12-30", "2025-12-31", "2026-01-01", "2026-01-02", "2026-01-03", "2026-01-04", "2026-01-05", "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09", "2026-01-10", "2026-01-11", "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15", "2026-01-16", "2026-01-17", "2026-01-18", "2026-01-19", "2026-01-20", "2026-01-21", "2026-01-22", "2026-01-23", "2026-01-24", "2026-01-25", "2026-01-26", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30", "2026-01-31", "2026-02-01", "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05"],
-                datasets: [{"label": "Spiritual Formation", "data": [18.7, 18.3, 10.8, 10.9, 9.3, 11.1, 11.2, 11.3, 11.5, 11.6, 11.4, 11.6, 11.8, 11.9, 8.5, 8.5, 8.5, 8.6, 8.7, 8.8, 8.9, 9.0, 9.1, 8.6, 8.7, 8.8, 8.9, 9.0, 8.8, 8.9, 9.0, 9.3, 9.5, 9.6, 9.8, 9.9, 10.1, 10.3, 10.4, 10.6, 9.7, 9.9, 10.3, 10.4, 9.9, 10.3, 10.5, 10.2, 10.2, 12.1, 11.5, 11.6, 11.8, 11.9, 12.0, 12.1, 12.0, 11.7, 11.8, 9.1, 9.0, 9.0, 14.4, 18.9, 17.4, 17.1, 17.3, 17.4, 14.5, 14.9, 14.7], "borderColor": "#60BBE9", "backgroundColor": "#60BBE9", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Communications", "data": [30.5, 29.7, 33.1, 32.8, 32.8, 32.4, 32.1, 32.1, 31.8, 31.6, 33.4, 32.5, 32.6, 32.7, 52.6, 52.9, 53.4, 53.5, 53.7, 54.2, 54.7, 55.2, 55.8, 58.9, 59.4, 60.0, 60.6, 61.1, 59.2, 59.8, 60.4, 62.1, 62.6, 63.1, 63.7, 64.3, 64.9, 65.5, 66.1, 66.8, 62.8, 63.3, 63.0, 62.6, 56.4, 56.0, 56.7, 57.1, 58.4, 57.0, 54.4, 54.8, 55.3, 55.7, 56.2, 56.7, 58.0, 53.2, 53.6, 41.1, 40.4, 40.8, 39.2, 38.9, 35.0, 34.7, 34.8, 34.9, 37.1, 37.3, 37.3], "borderColor": "#09243F", "backgroundColor": "#09243F", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Creative Resources", "data": [9.4, 6.4, 11.2, 11.3, 9.7, 11.5, 11.7, 11.8, 11.9, 12.0, 11.9, 12.1, 11.8, 11.5, 7.9, 7.7, 7.4, 7.2, 7.0, 6.7, 6.5, 6.3, 6.1, 5.5, 5.3, 5.0, 4.8, 4.5, 4.1, 3.9, 3.6, 2.8, 2.5, 2.3, 2.0, 1.7, 1.4, 1.0, 0.7, 0.4, 3.2, 3.0, 2.8, 2.4, 2.0, 1.7, 1.4, 1.0, 0.7, 0.3, 2.3, 2.0, 1.7, 1.4, 1.1, 0.7, 0.4, 2.5, 2.1, 1.4, 1.1, 0.8, 0.5, 0.2, 6.0, 5.7, 5.6, 5.4, 5.4, 5.3, 5.1], "borderColor": "#28a745", "backgroundColor": "#28a745", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Pastoral/Strategic", "data": [37.0, 42.7, 45.0, 45.0, 38.1, 45.0, 45.0, 44.8, 44.9, 44.8, 43.3, 43.7, 43.8, 43.9, 31.0, 30.9, 30.7, 30.7, 30.6, 30.3, 29.9, 29.5, 29.1, 27.0, 26.6, 26.2, 25.7, 25.3, 27.9, 27.5, 27.0, 25.8, 25.4, 25.0, 24.5, 24.1, 23.7, 23.2, 22.7, 22.3, 23.8, 23.4, 23.6, 24.3, 31.5, 31.7, 31.2, 31.6, 30.7, 30.6, 31.8, 31.5, 31.3, 31.0, 30.7, 30.5, 29.6, 32.6, 32.4, 48.5, 49.6, 49.3, 45.8, 41.9, 41.6, 42.5, 42.4, 42.3, 43.0, 42.5, 42.9], "borderColor": "#ffc107", "backgroundColor": "#ffc107", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Partners", "data": [4.4, 3.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.4, 0.4, 0.3, 0.2, 0.2, 0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "borderColor": "#dc3545", "backgroundColor": "#dc3545", "borderWidth": 2, "fill": false, "tension": 0.1}]
+                labels: ["2025-11-25", "2025-11-26", "2025-11-27", "2025-11-28", "2025-11-29", "2025-11-30", "2025-12-01", "2025-12-02", "2025-12-03", "2025-12-04", "2025-12-05", "2025-12-06", "2025-12-07", "2025-12-08", "2025-12-09", "2025-12-10", "2025-12-11", "2025-12-12", "2025-12-13", "2025-12-14", "2025-12-15", "2025-12-16", "2025-12-17", "2025-12-18", "2025-12-19", "2025-12-20", "2025-12-21", "2025-12-22", "2025-12-23", "2025-12-24", "2025-12-25", "2025-12-28", "2025-12-29", "2025-12-30", "2025-12-31", "2026-01-01", "2026-01-02", "2026-01-03", "2026-01-04", "2026-01-05", "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09", "2026-01-10", "2026-01-11", "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15", "2026-01-16", "2026-01-17", "2026-01-18", "2026-01-19", "2026-01-20", "2026-01-21", "2026-01-22", "2026-01-23", "2026-01-24", "2026-01-25", "2026-01-26", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30", "2026-01-31", "2026-02-01", "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05", "2026-02-06", "2026-02-07", "2026-02-08", "2026-02-09", "2026-02-10", "2026-02-11", "2026-02-12", "2026-02-13"],
+                datasets: trendsDataWithColors
             },
             options: {
                 responsive: true,
@@ -2089,18 +2000,12 @@ Dec 1...
                 const historyCtx = chartElement.getContext('2d');
                 console.log('Canvas context obtained:', !!historyCtx);
 
-                const capacityHistoryByMember = {"Zach Welliver": [{"date": "2026-01-06", "utilization_percent": 198.0}, {"date": "2026-01-07", "utilization_percent": 194.0}, {"date": "2026-01-08", "utilization_percent": 194.0}, {"date": "2026-01-09", "utilization_percent": 180.0}, {"date": "2026-01-10", "utilization_percent": 180.0}, {"date": "2026-01-11", "utilization_percent": 180.0}, {"date": "2026-01-12", "utilization_percent": 130.0}, {"date": "2026-01-13", "utilization_percent": 120.0}, {"date": "2026-01-14", "utilization_percent": 130.0}, {"date": "2026-01-15", "utilization_percent": 130.0}, {"date": "2026-01-16", "utilization_percent": 130.0}, {"date": "2026-01-17", "utilization_percent": 130.0}, {"date": "2026-01-18", "utilization_percent": 130.0}, {"date": "2026-01-19", "utilization_percent": 130.0}, {"date": "2026-01-20", "utilization_percent": 130.0}, {"date": "2026-01-21", "utilization_percent": 140.0}, {"date": "2026-01-22", "utilization_percent": 140.0}, {"date": "2026-01-23", "utilization_percent": 140.0}, {"date": "2026-01-24", "utilization_percent": 292.0}, {"date": "2026-01-25", "utilization_percent": 324.0}, {"date": "2026-01-26", "utilization_percent": 196.2}, {"date": "2026-01-27", "utilization_percent": 227.5}, {"date": "2026-01-28", "utilization_percent": 265.0}, {"date": "2026-01-29", "utilization_percent": 258.8}, {"date": "2026-01-30", "utilization_percent": 252.5}, {"date": "2026-01-31", "utilization_percent": 252.5}, {"date": "2026-02-01", "utilization_percent": 252.5}, {"date": "2026-02-02", "utilization_percent": 258.8}, {"date": "2026-02-03", "utilization_percent": 236.2}, {"date": "2026-02-04", "utilization_percent": 230.0}], "Nick Clark": [{"date": "2026-01-06", "utilization_percent": 51.0}, {"date": "2026-01-07", "utilization_percent": 58.0}, {"date": "2026-01-08", "utilization_percent": 42.0}, {"date": "2026-01-09", "utilization_percent": 71.0}, {"date": "2026-01-10", "utilization_percent": 59.0}, {"date": "2026-01-11", "utilization_percent": 59.0}, {"date": "2026-01-12", "utilization_percent": 71.0}, {"date": "2026-01-13", "utilization_percent": 150.0}, {"date": "2026-01-14", "utilization_percent": 64.0}, {"date": "2026-01-15", "utilization_percent": 64.0}, {"date": "2026-01-16", "utilization_percent": 64.0}, {"date": "2026-01-17", "utilization_percent": 64.0}, {"date": "2026-01-18", "utilization_percent": 64.0}, {"date": "2026-01-19", "utilization_percent": 64.0}, {"date": "2026-01-20", "utilization_percent": 64.0}, {"date": "2026-01-21", "utilization_percent": 64.0}, {"date": "2026-01-22", "utilization_percent": 58.0}, {"date": "2026-01-23", "utilization_percent": 58.0}, {"date": "2026-01-24", "utilization_percent": 58.0}, {"date": "2026-01-25", "utilization_percent": 58.0}, {"date": "2026-01-26", "utilization_percent": 58.0}, {"date": "2026-01-27", "utilization_percent": 58.0}, {"date": "2026-01-28", "utilization_percent": 64.0}, {"date": "2026-01-29", "utilization_percent": 64.0}, {"date": "2026-01-30", "utilization_percent": 63.0}, {"date": "2026-01-31", "utilization_percent": 63.0}, {"date": "2026-02-01", "utilization_percent": 63.0}, {"date": "2026-02-02", "utilization_percent": 63.0}, {"date": "2026-02-03", "utilization_percent": 63.0}, {"date": "2026-02-04", "utilization_percent": 69.0}], "Adriel Abella": [{"date": "2026-01-06", "utilization_percent": 27.0}, {"date": "2026-01-07", "utilization_percent": 27.0}, {"date": "2026-01-08", "utilization_percent": 27.0}, {"date": "2026-01-09", "utilization_percent": 27.0}, {"date": "2026-01-10", "utilization_percent": 27.0}, {"date": "2026-01-11", "utilization_percent": 27.0}, {"date": "2026-01-12", "utilization_percent": 27.0}, {"date": "2026-01-13", "utilization_percent": 27.0}, {"date": "2026-01-14", "utilization_percent": 32.0}, {"date": "2026-01-15", "utilization_percent": 27.0}, {"date": "2026-01-16", "utilization_percent": 27.0}, {"date": "2026-01-17", "utilization_percent": 27.0}, {"date": "2026-01-18", "utilization_percent": 27.0}, {"date": "2026-01-19", "utilization_percent": 27.0}, {"date": "2026-01-20", "utilization_percent": 27.0}, {"date": "2026-01-21", "utilization_percent": 27.0}, {"date": "2026-01-22", "utilization_percent": 27.0}, {"date": "2026-01-23", "utilization_percent": 27.0}, {"date": "2026-01-24", "utilization_percent": 27.0}, {"date": "2026-01-25", "utilization_percent": 39.0}, {"date": "2026-01-26", "utilization_percent": 44.0}, {"date": "2026-01-27", "utilization_percent": 44.0}, {"date": "2026-01-28", "utilization_percent": 44.0}, {"date": "2026-01-29", "utilization_percent": 49.0}, {"date": "2026-01-30", "utilization_percent": 55.0}, {"date": "2026-01-31", "utilization_percent": 55.0}, {"date": "2026-02-01", "utilization_percent": 55.0}, {"date": "2026-02-02", "utilization_percent": 55.0}, {"date": "2026-02-03", "utilization_percent": 73.0}, {"date": "2026-02-04", "utilization_percent": 68.0}], "John Meyer": [{"date": "2026-01-06", "utilization_percent": 40.0}, {"date": "2026-01-07", "utilization_percent": 40.0}, {"date": "2026-01-08", "utilization_percent": 40.0}, {"date": "2026-01-09", "utilization_percent": 40.0}, {"date": "2026-01-10", "utilization_percent": 40.0}, {"date": "2026-01-11", "utilization_percent": 40.0}, {"date": "2026-01-12", "utilization_percent": 40.0}, {"date": "2026-01-13", "utilization_percent": 40.0}, {"date": "2026-01-14", "utilization_percent": 40.0}, {"date": "2026-01-15", "utilization_percent": 40.0}, {"date": "2026-01-16", "utilization_percent": 40.0}, {"date": "2026-01-17", "utilization_percent": 40.0}, {"date": "2026-01-18", "utilization_percent": 40.0}, {"date": "2026-01-19", "utilization_percent": 40.0}, {"date": "2026-01-20", "utilization_percent": 40.0}, {"date": "2026-01-21", "utilization_percent": 40.0}, {"date": "2026-01-22", "utilization_percent": 40.0}, {"date": "2026-01-23", "utilization_percent": 40.0}, {"date": "2026-01-24", "utilization_percent": 40.0}, {"date": "2026-01-25", "utilization_percent": 40.0}, {"date": "2026-01-26", "utilization_percent": 40.0}, {"date": "2026-01-27", "utilization_percent": 40.0}, {"date": "2026-01-28", "utilization_percent": 40.0}, {"date": "2026-01-29", "utilization_percent": 0.0}, {"date": "2026-01-30", "utilization_percent": 0.0}, {"date": "2026-01-31", "utilization_percent": 0.0}, {"date": "2026-02-01", "utilization_percent": 0.0}, {"date": "2026-02-02", "utilization_percent": 0.0}, {"date": "2026-02-03", "utilization_percent": 0.0}, {"date": "2026-02-04", "utilization_percent": 0.0}], "Team Total": [{"date": "2026-01-06", "utilization_percent": 67.5}, {"date": "2026-01-07", "utilization_percent": 69.3}, {"date": "2026-01-08", "utilization_percent": 63.6}, {"date": "2026-01-09", "utilization_percent": 71.4}, {"date": "2026-01-10", "utilization_percent": 67.1}, {"date": "2026-01-11", "utilization_percent": 67.1}, {"date": "2026-01-12", "utilization_percent": 62.5}, {"date": "2026-01-13", "utilization_percent": 88.9}, {"date": "2026-01-14", "utilization_percent": 61.8}, {"date": "2026-01-15", "utilization_percent": 60.0}, {"date": "2026-01-16", "utilization_percent": 60.0}, {"date": "2026-01-17", "utilization_percent": 60.0}, {"date": "2026-01-18", "utilization_percent": 60.0}, {"date": "2026-01-19", "utilization_percent": 60.0}, {"date": "2026-01-20", "utilization_percent": 60.0}, {"date": "2026-01-21", "utilization_percent": 61.8}, {"date": "2026-01-22", "utilization_percent": 59.6}, {"date": "2026-01-23", "utilization_percent": 59.6}, {"date": "2026-01-24", "utilization_percent": 86.8}, {"date": "2026-01-25", "utilization_percent": 96.8}, {"date": "2026-01-26", "utilization_percent": 87.4}, {"date": "2026-01-27", "utilization_percent": 95.5}, {"date": "2026-01-28", "utilization_percent": 107.1}, {"date": "2026-01-29", "utilization_percent": 103.2}, {"date": "2026-01-30", "utilization_percent": 103.2}, {"date": "2026-01-31", "utilization_percent": 103.2}, {"date": "2026-02-01", "utilization_percent": 103.2}, {"date": "2026-02-02", "utilization_percent": 104.8}, {"date": "2026-02-03", "utilization_percent": 104.8}, {"date": "2026-02-04", "utilization_percent": 103.5}]};
+                const capacityHistoryByMember = {"Zach Welliver": [{"date": "2026-01-14", "utilization_percent": 130.0}, {"date": "2026-01-15", "utilization_percent": 130.0}, {"date": "2026-01-16", "utilization_percent": 130.0}, {"date": "2026-01-17", "utilization_percent": 130.0}, {"date": "2026-01-18", "utilization_percent": 130.0}, {"date": "2026-01-19", "utilization_percent": 130.0}, {"date": "2026-01-20", "utilization_percent": 130.0}, {"date": "2026-01-21", "utilization_percent": 140.0}, {"date": "2026-01-22", "utilization_percent": 140.0}, {"date": "2026-01-23", "utilization_percent": 140.0}, {"date": "2026-01-24", "utilization_percent": 292.0}, {"date": "2026-01-25", "utilization_percent": 324.0}, {"date": "2026-01-26", "utilization_percent": 196.2}, {"date": "2026-01-27", "utilization_percent": 227.5}, {"date": "2026-01-28", "utilization_percent": 265.0}, {"date": "2026-01-29", "utilization_percent": 258.8}, {"date": "2026-01-30", "utilization_percent": 252.5}, {"date": "2026-01-31", "utilization_percent": 252.5}, {"date": "2026-02-01", "utilization_percent": 252.5}, {"date": "2026-02-02", "utilization_percent": 258.8}, {"date": "2026-02-03", "utilization_percent": 236.2}, {"date": "2026-02-04", "utilization_percent": 230.0}, {"date": "2026-02-05", "utilization_percent": 230.0}, {"date": "2026-02-06", "utilization_percent": 194.0}, {"date": "2026-02-07", "utilization_percent": 194.0}, {"date": "2026-02-08", "utilization_percent": 194.0}, {"date": "2026-02-09", "utilization_percent": 194.0}, {"date": "2026-02-10", "utilization_percent": 163.0}, {"date": "2026-02-11", "utilization_percent": 177.0}, {"date": "2026-02-12", "utilization_percent": 152.0}], "Nick Clark": [{"date": "2026-01-14", "utilization_percent": 64.0}, {"date": "2026-01-15", "utilization_percent": 64.0}, {"date": "2026-01-16", "utilization_percent": 64.0}, {"date": "2026-01-17", "utilization_percent": 64.0}, {"date": "2026-01-18", "utilization_percent": 64.0}, {"date": "2026-01-19", "utilization_percent": 64.0}, {"date": "2026-01-20", "utilization_percent": 64.0}, {"date": "2026-01-21", "utilization_percent": 64.0}, {"date": "2026-01-22", "utilization_percent": 58.0}, {"date": "2026-01-23", "utilization_percent": 58.0}, {"date": "2026-01-24", "utilization_percent": 58.0}, {"date": "2026-01-25", "utilization_percent": 58.0}, {"date": "2026-01-26", "utilization_percent": 58.0}, {"date": "2026-01-27", "utilization_percent": 58.0}, {"date": "2026-01-28", "utilization_percent": 64.0}, {"date": "2026-01-29", "utilization_percent": 64.0}, {"date": "2026-01-30", "utilization_percent": 63.0}, {"date": "2026-01-31", "utilization_percent": 63.0}, {"date": "2026-02-01", "utilization_percent": 63.0}, {"date": "2026-02-02", "utilization_percent": 63.0}, {"date": "2026-02-03", "utilization_percent": 63.0}, {"date": "2026-02-04", "utilization_percent": 69.0}, {"date": "2026-02-05", "utilization_percent": 69.0}, {"date": "2026-02-06", "utilization_percent": 69.0}, {"date": "2026-02-07", "utilization_percent": 69.0}, {"date": "2026-02-08", "utilization_percent": 69.0}, {"date": "2026-02-09", "utilization_percent": 64.0}, {"date": "2026-02-10", "utilization_percent": 78.0}, {"date": "2026-02-11", "utilization_percent": 78.0}, {"date": "2026-02-12", "utilization_percent": 89.0}], "Adriel Abella": [{"date": "2026-01-14", "utilization_percent": 32.0}, {"date": "2026-01-15", "utilization_percent": 27.0}, {"date": "2026-01-16", "utilization_percent": 27.0}, {"date": "2026-01-17", "utilization_percent": 27.0}, {"date": "2026-01-18", "utilization_percent": 27.0}, {"date": "2026-01-19", "utilization_percent": 27.0}, {"date": "2026-01-20", "utilization_percent": 27.0}, {"date": "2026-01-21", "utilization_percent": 27.0}, {"date": "2026-01-22", "utilization_percent": 27.0}, {"date": "2026-01-23", "utilization_percent": 27.0}, {"date": "2026-01-24", "utilization_percent": 27.0}, {"date": "2026-01-25", "utilization_percent": 39.0}, {"date": "2026-01-26", "utilization_percent": 44.0}, {"date": "2026-01-27", "utilization_percent": 44.0}, {"date": "2026-01-28", "utilization_percent": 44.0}, {"date": "2026-01-29", "utilization_percent": 49.0}, {"date": "2026-01-30", "utilization_percent": 55.0}, {"date": "2026-01-31", "utilization_percent": 55.0}, {"date": "2026-02-01", "utilization_percent": 55.0}, {"date": "2026-02-02", "utilization_percent": 55.0}, {"date": "2026-02-03", "utilization_percent": 73.0}, {"date": "2026-02-04", "utilization_percent": 68.0}, {"date": "2026-02-05", "utilization_percent": 62.0}, {"date": "2026-02-06", "utilization_percent": 62.0}, {"date": "2026-02-07", "utilization_percent": 62.0}, {"date": "2026-02-08", "utilization_percent": 62.0}, {"date": "2026-02-09", "utilization_percent": 62.0}, {"date": "2026-02-10", "utilization_percent": 72.0}, {"date": "2026-02-11", "utilization_percent": 72.0}, {"date": "2026-02-12", "utilization_percent": 59.0}], "John Meyer": [{"date": "2026-01-14", "utilization_percent": 40.0}, {"date": "2026-01-15", "utilization_percent": 40.0}, {"date": "2026-01-16", "utilization_percent": 40.0}, {"date": "2026-01-17", "utilization_percent": 40.0}, {"date": "2026-01-18", "utilization_percent": 40.0}, {"date": "2026-01-19", "utilization_percent": 40.0}, {"date": "2026-01-20", "utilization_percent": 40.0}, {"date": "2026-01-21", "utilization_percent": 40.0}, {"date": "2026-01-22", "utilization_percent": 40.0}, {"date": "2026-01-23", "utilization_percent": 40.0}, {"date": "2026-01-24", "utilization_percent": 40.0}, {"date": "2026-01-25", "utilization_percent": 40.0}, {"date": "2026-01-26", "utilization_percent": 40.0}, {"date": "2026-01-27", "utilization_percent": 40.0}, {"date": "2026-01-28", "utilization_percent": 40.0}, {"date": "2026-01-29", "utilization_percent": 0.0}, {"date": "2026-01-30", "utilization_percent": 0.0}, {"date": "2026-01-31", "utilization_percent": 0.0}, {"date": "2026-02-01", "utilization_percent": 0.0}, {"date": "2026-02-02", "utilization_percent": 0.0}, {"date": "2026-02-03", "utilization_percent": 0.0}, {"date": "2026-02-04", "utilization_percent": 0.0}, {"date": "2026-02-05", "utilization_percent": 0.0}, {"date": "2026-02-06", "utilization_percent": 0.0}, {"date": "2026-02-07", "utilization_percent": 0.0}, {"date": "2026-02-08", "utilization_percent": 0.0}, {"date": "2026-02-09", "utilization_percent": 0.0}, {"date": "2026-02-10", "utilization_percent": 90.0}, {"date": "2026-02-11", "utilization_percent": 90.0}, {"date": "2026-02-12", "utilization_percent": 90.0}], "Team Total": [{"date": "2026-01-14", "utilization_percent": 61.8}, {"date": "2026-01-15", "utilization_percent": 60.0}, {"date": "2026-01-16", "utilization_percent": 60.0}, {"date": "2026-01-17", "utilization_percent": 60.0}, {"date": "2026-01-18", "utilization_percent": 60.0}, {"date": "2026-01-19", "utilization_percent": 60.0}, {"date": "2026-01-20", "utilization_percent": 60.0}, {"date": "2026-01-21", "utilization_percent": 61.8}, {"date": "2026-01-22", "utilization_percent": 59.6}, {"date": "2026-01-23", "utilization_percent": 59.6}, {"date": "2026-01-24", "utilization_percent": 86.8}, {"date": "2026-01-25", "utilization_percent": 96.8}, {"date": "2026-01-26", "utilization_percent": 87.4}, {"date": "2026-01-27", "utilization_percent": 95.5}, {"date": "2026-01-28", "utilization_percent": 107.1}, {"date": "2026-01-29", "utilization_percent": 103.2}, {"date": "2026-01-30", "utilization_percent": 103.2}, {"date": "2026-01-31", "utilization_percent": 103.2}, {"date": "2026-02-01", "utilization_percent": 103.2}, {"date": "2026-02-02", "utilization_percent": 104.8}, {"date": "2026-02-03", "utilization_percent": 104.8}, {"date": "2026-02-04", "utilization_percent": 103.5}, {"date": "2026-02-05", "utilization_percent": 101.6}, {"date": "2026-02-06", "utilization_percent": 98.5}, {"date": "2026-02-07", "utilization_percent": 98.5}, {"date": "2026-02-08", "utilization_percent": 98.5}, {"date": "2026-02-09", "utilization_percent": 97.0}, {"date": "2026-02-10", "utilization_percent": 103.0}, {"date": "2026-02-11", "utilization_percent": 107.3}, {"date": "2026-02-12", "utilization_percent": 99.1}]};
                 console.log('Data received:', Object.keys(capacityHistoryByMember), 'members with data');
 
                 // Build datasets for each team member
                 const datasets = [];
-                const memberColors = {
-                    'Zach Welliver': '#9B59B6',
-                    'Nick Clark': '#36A2EB',
-                    'Adriel Abella': '#FFCE56',
-                    'John Meyer': '#4BC0C0',
-                    'Team Total': '#60BBE9'
-                };
+                const memberColors = getThemeAwareMemberColors();
 
                 // Extract all unique dates from Team Total (or first available member)
                 let allDates = [];
@@ -2143,10 +2048,13 @@ Dec 1...
                 });
 
                 // Add 100% capacity redline
+                const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+                const thresholdColor = isDarkMode ? '#FF6B6B' : '#dc3545';
+
                 datasets.push({
                     label: '100% Capacity Threshold',
                     data: Array(allDates.length).fill(100),
-                    borderColor: '#dc3545',
+                    borderColor: thresholdColor,
                     backgroundColor: 'transparent',
                     borderWidth: 2,
                     borderDash: [10, 5],
@@ -2368,8 +2276,8 @@ Dec 1...
             if (!timelineContainer) return;
 
             // Real shoots and deadlines data
-            const shoots = [{"name": "DD into Parenting - Ep. 6: Parenting Through Trauma", "datetime": "2026-02-10T17:30:00+00:00", "start_on": null, "due_on": "2026-04-23", "type": "shoot"}, {"name": "DD into Parenting - Ep. 5: Love Languages and Parenting", "datetime": "2026-02-10T19:00:00+00:00", "start_on": null, "due_on": "2026-04-16", "type": "shoot"}, {"name": "DD into Parenting - Ep. 1: God's Design for Parenting", "datetime": "2026-02-11T15:00:00+00:00", "start_on": null, "due_on": "2026-03-19", "type": "shoot"}, {"name": "DD into Parenting - Ep. 4: Parenting in an Anxious Age", "datetime": "2026-02-11T16:45:00+00:00", "start_on": null, "due_on": "2026-04-09", "type": "shoot"}, {"name": "DD into Parenting - Ep. 2: Parenting by Grace", "datetime": "2026-02-12T16:00:00+00:00", "start_on": null, "due_on": "2026-03-26", "type": "shoot"}, {"name": "DD into Parenting - Ep. 8: Parenting Wrap Up", "datetime": "2026-02-12T18:30:00+00:00", "start_on": null, "due_on": "2026-05-08", "type": "shoot"}, {"name": "Unlimited Grace - Podcast- February", "datetime": "2026-02-16T00:00:00+00:00", "start_on": null, "due_on": "2026-02-23", "type": "shoot"}, {"name": "Digging Deeper Recording with Chris Kam", "datetime": "2026-02-19T18:00:00+00:00", "start_on": null, "due_on": "2026-02-19", "type": "shoot"}, {"name": "Kingdom Purpose Journey Curriculum Module", "datetime": "2026-02-27T14:00:00+00:00", "start_on": null, "due_on": "2026-03-23", "type": "shoot"}, {"name": "Jeff Norris: Mission to the World Teaching", "datetime": "2026-03-05T19:45:00+00:00", "start_on": null, "due_on": "2026-03-05", "type": "shoot"}];
-            const deadlines = [{"name": "Radical Dependence Teaching Series", "start_on": null, "due_date": "2026-02-05", "type": "deadline"}, {"name": "WOV - Evan Forester", "start_on": null, "due_date": "2026-02-05", "type": "deadline"}, {"name": "Ask a Pastor social videos - February", "start_on": null, "due_date": "2026-02-06", "type": "deadline"}, {"name": "Spotlight - Go on a GO Journey (Play date is 2/15)", "start_on": null, "due_date": "2026-02-11", "type": "deadline"}, {"name": "Unlimited Grace - Podcast-January", "start_on": null, "due_date": "2026-02-12", "type": "deadline"}, {"name": "Womens Retreat Laura Madden Memorial Video", "start_on": null, "due_date": "2026-02-12", "type": "deadline"}];
+            const shoots = [{"name": "Unlimited Grace - Podcast- February", "datetime": "2026-02-16T19:00:00+00:00", "start_on": null, "due_on": "2026-02-23", "type": "shoot"}, {"name": "Digging Deeper Recording with Chris Kam", "datetime": "2026-02-19T18:00:00+00:00", "start_on": null, "due_on": "2026-02-19", "type": "shoot"}, {"name": "Frontier Video Testimonial #1", "datetime": "2026-02-19T20:30:00+00:00", "start_on": null, "due_on": "2026-02-26", "type": "shoot"}, {"name": "Kingdom Purpose Journey Curriculum Module", "datetime": "2026-02-27T14:00:00+00:00", "start_on": null, "due_on": "2026-03-23", "type": "shoot"}, {"name": "CAA Staff Recruitment Video", "datetime": "2026-02-27T15:00:00+00:00", "start_on": null, "due_on": "2026-03-12", "type": "shoot"}, {"name": "Jeff Norris: Mission to the World Teaching", "datetime": "2026-03-05T19:45:00+00:00", "start_on": null, "due_on": "2026-03-05", "type": "shoot"}];
+            const deadlines = [{"name": "Unlimited Grace - Podcast-January", "start_on": null, "due_date": "2026-02-17", "type": "deadline"}, {"name": "Digging Deeper Recording with Chris Kam", "start_on": null, "due_date": "2026-02-19", "type": "deadline"}, {"name": "Radical Dependence Teaching Series", "start_on": null, "due_date": "2026-02-19", "type": "deadline"}, {"name": "Holy Week website b-roll video update", "start_on": null, "due_date": "2026-02-20", "type": "deadline"}, {"name": "Unlimited Grace - Podcast- February", "start_on": null, "due_date": "2026-02-23", "type": "deadline"}];
 
             // Combine and convert to timeline format
             const now = new Date();
@@ -2414,7 +2322,7 @@ Dec 1...
 
                     if (duration > 0) {
                         projects.push({
-                            name: '🎬 ' + shoot.name,
+                            name: shoot.name,
                             start: start,
                             duration: duration,
                             status: daysFromNow <= 2 ? 'critical' : 'normal'
@@ -2451,7 +2359,7 @@ Dec 1...
 
                     if (duration > 0) {
                         projects.push({
-                            name: '⏰ ' + deadline.name,
+                            name: deadline.name,
                             start: start,
                             duration: duration,
                             status: daysToEnd <= 2 ? 'critical' : daysToEnd <= 5 ? 'warning' : 'normal'
@@ -2510,7 +2418,7 @@ Dec 1...
             const numLevels = 5;
 
             // Real category allocation data
-            const categories = [{"name": "Communications", "actual": 49.82112676056338, "target": 30.0}, {"name": "Creative Resources", "actual": 4.840845070422535, "target": 15.0}, {"name": "Partners", "actual": 0.1352112676056338, "target": 5.0}, {"name": "Pastoral/Strategic", "actual": 33.88309859154929, "target": 20.0}, {"name": "Spiritual Formation", "actual": 11.180281690140845, "target": 25.0}];
+            const categories = [{"name": "Communications", "actual": 48.496202531645565, "target": 30.0}, {"name": "Creative Resources", "actual": 4.754430379746836, "target": 15.0}, {"name": "Partners", "actual": 0.12151898734177215, "target": 5.0}, {"name": "Pastoral/Strategic", "actual": 34.91645569620253, "target": 20.0}, {"name": "Spiritual Formation", "actual": 11.586075949367087, "target": 25.0}];
 
             let svg = `<svg class="radar-svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">`;
 
@@ -2588,7 +2496,13 @@ Dec 1...
             }
 
             // Use actual weekly completion data
-            const weeklyData = [0, 0, 0, 4, 4, 1, 4, 2];
+            const weeklyData = [0, 0, 0, 1, 1, 4, 3, 4];
+
+            // Calculate appropriate Y-axis maximum with headroom
+            const maxValue = Math.max(...weeklyData);
+            const suggestedMax = Math.max(6, Math.ceil(maxValue * 1.3)); // At least 6, or 30% above max value
+            const stepSize = suggestedMax <= 10 ? 1 : Math.ceil(suggestedMax / 8); // Use step of 1 for small ranges
+
 
             const ctx = canvas.getContext('2d');
             window.velocityChart = new Chart(ctx, {
@@ -2605,7 +2519,7 @@ Dec 1...
                         tension: 0.4,
                         pointRadius: 6,
                         pointBackgroundColor: '#60BBE9',
-                        pointBorderColor: '#fff',
+                        pointBorderColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-secondary') || '#fff',
                         pointBorderWidth: 2
                     }]
                 },
@@ -2616,7 +2530,20 @@ Dec 1...
                     devicePixelRatio: window.devicePixelRatio || 1,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, ticks: { stepSize: 2, color: getChartTextColor() }, grid: { color: getChartGridColor() } },
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: suggestedMax,
+                            ticks: {
+                                stepSize: stepSize,
+                                color: getChartTextColor(),
+                                callback: function(value) {
+                                    if (Number.isInteger(value)) {
+                                        return value;
+                                    }
+                                }
+                            },
+                            grid: { color: getChartGridColor() }
+                        },
                         x: { ticks: { color: getChartTextColor() }, grid: { color: getChartGridColor() } }
                     }
                 }
@@ -2633,9 +2560,9 @@ Dec 1...
         // Initialize other charts
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
-                animateProgressRing('ringOnTime', 'ringOnTimeValue', 100);
-                animateProgressRing('ringUtilization', 'ringUtilizationValue', 92);
-                animateProgressRing('ringProjects', 'ringProjectsValue', 45, true);
+                animateProgressRing('ringOnTime', 'ringOnTimeValue', 92);
+                animateProgressRing('ringUtilization', 'ringUtilizationValue', 98);
+                animateProgressRing('ringProjects', 'ringProjectsValue', 43, true);
 
                 generateTimeline();
                 generateRadarChart();
@@ -2652,14 +2579,11 @@ Dec 1...
             root.setAttribute('data-theme', newTheme);
 
             // Update toggle button
-            const themeIcon = document.getElementById('themeIcon');
             const themeText = document.getElementById('themeText');
 
             if (newTheme === 'dark') {
-                themeIcon.textContent = '☀️';
                 themeText.textContent = 'Light Mode';
             } else {
-                themeIcon.textContent = '🌙';
                 themeText.textContent = 'Dark Mode';
             }
 
@@ -2729,20 +2653,92 @@ Dec 1...
             root.setAttribute('data-theme', storedTheme);
 
             // Update toggle button to match
-            const themeIcon = document.getElementById('themeIcon');
             const themeText = document.getElementById('themeText');
 
             if (storedTheme === 'dark') {
-                themeIcon.textContent = '☀️';
                 themeText.textContent = 'Light Mode';
             } else {
-                themeIcon.textContent = '🌙';
                 themeText.textContent = 'Dark Mode';
             }
         }
 
         // Initialize theme on page load
         document.addEventListener('DOMContentLoaded', initializeTheme);
+
+        // Navigation functionality
+        function initializeNavigation() {
+            // Add smooth scrolling to nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+
+                    if (targetElement) {
+                        const navHeight = document.querySelector('.sticky-nav').offsetHeight;
+                        const targetPosition = targetElement.offsetTop - navHeight - 20;
+
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+
+                        // Update active state
+                        updateActiveNavLink(targetId);
+                    }
+                });
+            });
+
+            // Update active nav link on scroll
+            window.addEventListener('scroll', throttle(updateActiveNavOnScroll, 100));
+        }
+
+        function updateActiveNavLink(activeId) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${activeId}`) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        function updateActiveNavOnScroll() {
+            const sections = ['overview', 'capacity', 'metrics', 'deadlines', 'forecasts', 'analytics'];
+            const navHeight = document.querySelector('.sticky-nav').offsetHeight;
+            const scrollPos = window.scrollY + navHeight + 50;
+
+            for (let i = sections.length - 1; i >= 0; i--) {
+                const section = document.getElementById(sections[i]);
+                if (section && section.offsetTop <= scrollPos) {
+                    updateActiveNavLink(sections[i]);
+                    break;
+                }
+            }
+        }
+
+        function throttle(func, limit) {
+            let lastFunc;
+            let lastRan;
+            return function() {
+                const context = this;
+                const args = arguments;
+                if (!lastRan) {
+                    func.apply(context, args);
+                    lastRan = Date.now();
+                } else {
+                    clearTimeout(lastFunc);
+                    lastFunc = setTimeout(function() {
+                        if ((Date.now() - lastRan) >= limit) {
+                            func.apply(context, args);
+                            lastRan = Date.now();
+                        }
+                    }, limit - (Date.now() - lastRan));
+                }
+            }
+        }
+
+        // Initialize navigation when DOM is ready
+        document.addEventListener('DOMContentLoaded', initializeNavigation);
 
         // Keyboard Navigation Support
         function setupKeyboardNavigation() {
@@ -3219,6 +3215,104 @@ Dec 1...
             `;
             document.head.appendChild(style);
         }
+        // Add theme change listener to regenerate charts
+        function observeThemeChanges() {
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                        console.log('Theme changed, regenerating charts...');
+
+                        // Regenerate all charts with new theme colors
+                        if (window.trendsChart) {
+                            const newTrendColors = getThemeAwareTrendColors();
+                            window.trendsChart.data.datasets.forEach((dataset, index) => {
+                                if (index < newTrendColors.length) {
+                                    dataset.borderColor = newTrendColors[index];
+                                    dataset.backgroundColor = newTrendColors[index];
+                                }
+                            });
+
+                            // Update axis colors for theme
+                            const newTextColor = getChartTextColor();
+                            const newGridColor = getChartGridColor();
+
+                            window.trendsChart.options.scales.y.ticks.color = newTextColor;
+                            window.trendsChart.options.scales.y.grid.color = newGridColor;
+                            window.trendsChart.options.scales.x.ticks.color = newTextColor;
+                            window.trendsChart.options.scales.x.grid.color = newGridColor;
+                            window.trendsChart.options.plugins.legend.labels.color = newTextColor;
+
+                            window.trendsChart.update();
+                        }
+
+                        if (window.capacityHistoryChart) {
+                            const newMemberColors = getThemeAwareMemberColors();
+                            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+                            const newThresholdColor = isDarkMode ? '#FF6B6B' : '#dc3545';
+
+                            window.capacityHistoryChart.data.datasets.forEach((dataset) => {
+                                if (dataset.label === '100% Capacity Threshold') {
+                                    dataset.borderColor = newThresholdColor;
+                                } else if (newMemberColors[dataset.label]) {
+                                    dataset.borderColor = newMemberColors[dataset.label];
+                                    dataset.pointBackgroundColor = newMemberColors[dataset.label];
+                                    dataset.pointBorderColor = newMemberColors[dataset.label];
+                                    if (dataset.label === 'Team Total') {
+                                        dataset.backgroundColor = newMemberColors[dataset.label] + '33';
+                                    }
+                                }
+                            });
+
+                            // Update axis colors for theme
+                            const newTextColor = getChartTextColor();
+                            const newGridColor = getChartGridColor();
+
+                            if (window.capacityHistoryChart.options.scales.y) {
+                                window.capacityHistoryChart.options.scales.y.ticks.color = newTextColor;
+                                window.capacityHistoryChart.options.scales.y.grid.color = newGridColor;
+                            }
+                            if (window.capacityHistoryChart.options.scales.x) {
+                                window.capacityHistoryChart.options.scales.x.ticks.color = newTextColor;
+                                window.capacityHistoryChart.options.scales.x.grid.color = newGridColor;
+                            }
+                            if (window.capacityHistoryChart.options.plugins.legend) {
+                                window.capacityHistoryChart.options.plugins.legend.labels.color = newTextColor;
+                            }
+
+                            window.capacityHistoryChart.update();
+                        }
+
+                        if (window.velocityChart) {
+                            // Update axis colors for theme
+                            const newTextColor = getChartTextColor();
+                            const newGridColor = getChartGridColor();
+
+                            if (window.velocityChart.options.scales.y) {
+                                window.velocityChart.options.scales.y.ticks.color = newTextColor;
+                                window.velocityChart.options.scales.y.grid.color = newGridColor;
+                            }
+                            if (window.velocityChart.options.scales.x) {
+                                window.velocityChart.options.scales.x.ticks.color = newTextColor;
+                                window.velocityChart.options.scales.x.grid.color = newGridColor;
+                            }
+                            if (window.velocityChart.options.plugins.legend) {
+                                window.velocityChart.options.plugins.legend.labels.color = newTextColor;
+                            }
+
+                            window.velocityChart.update();
+                        }
+                    }
+                });
+            });
+
+            observer.observe(document.documentElement, {
+                attributes: true,
+                attributeFilter: ['data-theme']
+            });
+        }
+
+        // Start observing theme changes
+        observeThemeChanges();
 
     
 

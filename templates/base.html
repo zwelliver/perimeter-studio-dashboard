@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perimeter Studio Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* ===== CSS VARIABLES FOR THEME SYSTEM ===== */
+        :root {
+            /* Light Theme Colors */
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #e9ecef;
+
+            --text-primary: #09243F;
+            --text-secondary: #6c757d;
+            --text-muted: #adb5bd;
+
+            --brand-primary: #60BBE9;
+            --brand-secondary: #09243F;
+            --brand-accent: #60BBE9;
+
+            --border-color: #dee2e6;
+            --border-accent: #60BBE9;
+
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
+
+            /* Status Colors */
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+
+            /* Chart Colors */
+            --chart-bg: #e9ecef;
+            --chart-progress: var(--brand-primary);
+
+            /* Interactive Elements */
+            --hover-bg: rgba(96, 187, 233, 0.1);
+            --active-bg: rgba(96, 187, 233, 0.2);
+
+            /* Mobile Breakpoints */
+            --mobile-breakpoint: 768px;
+            --tablet-breakpoint: 1024px;
+        }
+
+        /* Dark Theme */
+        :root[data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --bg-tertiary: #404040;
+
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-muted: #808080;
+
+            --brand-primary: #60BBE9;
+            --brand-secondary: #4a9cd9;
+            --brand-accent: #7ac3ed;
+
+            --border-color: #404040;
+            --border-accent: #60BBE9;
+
+            --shadow-light: rgba(255, 255, 255, 0.1);
+            --shadow-medium: rgba(255, 255, 255, 0.15);
+
+            --chart-bg: #404040;
+            --chart-progress: var(--brand-primary);
+
+            --hover-bg: rgba(96, 187, 233, 0.2);
+            --active-bg: rgba(96, 187, 233, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        /* Section anchor targets */
+        #overview, #capacity, #metrics, #deadlines, #forecasts, #analytics {
+            scroll-margin-top: 80px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 20px;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* ===== STICKY NAVIGATION ===== */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 0;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px var(--shadow-light);
+            backdrop-filter: blur(8px);
+            margin-left: -20px;
+            margin-right: -20px;
+            margin-top: -20px;
+        }
+
+        .nav-container {
+            max-width: 95%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            padding: 0 20px;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: var(--brand-primary);
+            background: var(--hover-bg);
+            transform: translateY(-1px);
+        }
+
+        .nav-link:focus {
+            outline: 2px solid var(--brand-primary);
+            outline-offset: 2px;
+        }
+
+        .nav-link.active {
+            color: var(--brand-primary);
+            background: var(--active-bg);
+            font-weight: 600;
+        }
+
+        .dashboard-container {
+            max-width: 95%;
+            margin: 0 auto;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow-light);
+            margin-bottom: 40px;
+            border-left: 4px solid var(--border-accent);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .header-text {
+            flex: 1;
+            text-align: center;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle:hover {
+            background: var(--hover-bg);
+            border-color: var(--brand-primary);
+        }
+
+        .theme-toggle:active {
+            background: var(--active-bg);
+        }
+
+        .theme-icon {
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        /* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+        /* Focus management for keyboard navigation */
+        .theme-toggle:focus {
+            outline: 2px solid var(--brand-primary);
+            outline-offset: 2px;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            :root {
+                --shadow-light: rgba(0, 0, 0, 0.3);
+                --shadow-medium: rgba(0, 0, 0, 0.4);
+            }
+
+            .header {
+                border-left-width: 6px;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* Screen reader only text */
+        .sr-only {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+
+        /* Skip link for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--brand-primary);
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 1000;
+        }
+
+        .skip-link:focus {
+            top: 6px;
+        }
+
+        /* Focus indicators for interactive elements */
+        .card:focus-within {
+            box-shadow: 0 0 0 2px var(--brand-primary);
+        }
+
+        .progress-ring:focus {
+            outline: 2px solid var(--brand-primary);
+            outline-offset: 2px;
+        }
+
+        /* Improved color contrast for text */
+        h1, h2, h3 {
+            color: var(--text-primary);
+        }
+
+        /* Header Mobile Styles */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .header-text {
+                margin-bottom: 15px;
+            }
+
+            .theme-toggle {
+                align-self: flex-end;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .theme-toggle {
+                align-self: center;
+            }
+        }
+
+        /* Mobile Navigation */
+        @media (max-width: 768px) {
+            .nav-container {
+                gap: 15px;
+            }
+
+            .nav-link {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-container {
+                gap: 8px;
+                justify-content: space-between;
+            }
+
+            .nav-link {
+                font-size: 11px;
+                padding: 6px 8px;
+                flex: 1;
+                text-align: center;
+                min-width: 0;
+            }
+        }
+
+        /* ===== MAIN CONTENT STYLES ===== */
+        {% include 'sections/styles.html' %}
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <div class="dashboard-container">
+        {% include 'sections/header.html' %}
+        {% include 'sections/navigation.html' %}
+
+        <main id="main-content" role="main" aria-labelledby="dashboard-title">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script>
+        {% include 'sections/scripts.html' %}
+    </script>
+</body>
+</html>

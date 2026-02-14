@@ -31,7 +31,7 @@ START_DATE_FIELD_GID = "1211967927674488"
 
 # Team member capacities (max hours per day)
 TEAM_CAPACITIES = {
-    "Zach Welliver": 80,
+    "Zach Welliver": 100,
     "Nick Clark": 100,
     "Adriel Abella": 100,
     "John Meyer": 30

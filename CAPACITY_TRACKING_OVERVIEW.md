@@ -51,7 +51,7 @@ Grok Output:
 **What it does:**
 - Tracks all active tasks across 4 projects (Preproduction, Production, Post Production, Forecast)
 - Calculates total capacity allocation by category
-- Monitors team member capacity (Zach 50%, Nick 100%, Adriel 100%, John 30%)
+- Monitors team member capacity (Zach 100%, Nick 100%, Adriel 100%, John 30%)
 - Generates alerts when capacity exceeds safe thresholds
 - Compares actual allocation vs. target allocation by category
 
@@ -255,7 +255,7 @@ Allocation Accuracy: No data yet (setup required)
 
 | Team Member    | Capacity | Projects                                      |
 |----------------|----------|-----------------------------------------------|
-| Zach Welliver  | 50%      | Preproduction                                 |
+| Zach Welliver  | 100%     | Preproduction                                 |
 | Nick Clark     | 100%     | Production                                    |
 | Adriel Abella  | 100%     | Post Production                               |
 | John Meyer     | 30%      | Preproduction, Production, Post Production    |

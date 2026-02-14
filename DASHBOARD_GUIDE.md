@@ -100,7 +100,7 @@ Shows:
 - 🔴 Red: Over capacity (alert)
 
 **Team Members:**
-- Zach Welliver: 50% max (Preproduction)
+- Zach Welliver: 100% max (Preproduction)
 - Nick Clark: 100% max (Production)
 - Adriel Abella: 100% max (Post Production)
 - John Meyer: 30% max (All phases)
