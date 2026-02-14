@@ -7,7 +7,9 @@ from datetime import datetime
 from fastapi import APIRouter
 import logging
 
-from app.services.reports import get_fresh_data, clear_cache, get_cache_age
+# Temporarily use simple mock data to debug deployment
+# from app.services.reports import get_fresh_data, clear_cache, get_cache_age
+from app.services.reports_simple import get_fresh_data, clear_cache, get_cache_age
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
