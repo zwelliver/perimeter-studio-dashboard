@@ -12,10 +12,11 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
 from pydantic_settings import BaseSettings
 from pydantic import Field
 import requests
@@ -46,6 +47,9 @@ dashboard_cache = {
     'last_updated': None,
     'cache_duration': settings.cache_duration
 }
+
+# Templates
+templates = Jinja2Templates(directory="templates")
 
 # Scheduler
 scheduler = AsyncIOScheduler()
@@ -551,97 +555,64 @@ async def health():
         "cache_age": (datetime.now() - dashboard_cache.get('last_updated', datetime.now())).total_seconds() if dashboard_cache.get('last_updated') else 0
     }
 
-# Serve frontend (when built)
-frontend_dist = "frontend/dist"
-logger.info(f"Current working directory: {os.getcwd()}")
-logger.info(f"Looking for frontend at: {os.path.abspath(frontend_dist)}")
-logger.info(f"Frontend dist exists: {os.path.exists(frontend_dist)}")
+# Serve HTML Dashboard
+templates_dir = "templates"
+logger.info(f"Looking for templates at: {os.path.abspath(templates_dir)}")
+logger.info(f"Templates directory exists: {os.path.exists(templates_dir)}")
 
-if os.path.exists(frontend_dist):
-    logger.info(f"Mounting frontend from: {frontend_dist}")
-    logger.info(f"Frontend files: {os.listdir(frontend_dist)}")
+if os.path.exists(templates_dir):
+    logger.info(f"Found templates directory with files: {os.listdir(templates_dir)}")
 
-    # Mount assets at /assets instead of /static to match Vite's build output
-    assets_dir = f"{frontend_dist}/assets"
-    if os.path.exists(assets_dir):
-        logger.info(f"Mounting assets from: {assets_dir}")
-        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
-    else:
-        logger.error(f"Assets directory not found: {assets_dir}")
+    # Root route serves the HTML dashboard
+    @app.get("/", response_class=HTMLResponse)
+    async def serve_dashboard(request: Request):
+        """Serve HTML Dashboard"""
+        try:
+            data = get_cached_data()
+            logger.info("Serving dashboard template with data")
+            return templates.TemplateResponse("dashboard.html", {
+                "request": request,
+                "dashboard_data": data
+            })
+        except Exception as e:
+            logger.error(f"Error serving dashboard: {e}")
+            return HTMLResponse(content=f"<h1>Error loading dashboard: {e}</h1>", status_code=500)
 
-    # Root route serves the frontend
-    @app.get("/")
-    async def serve_root():
-        """Serve React SPA at root"""
-        index_path = f"{frontend_dist}/index.html"
-        if os.path.exists(index_path):
-            logger.info(f"Serving index.html from: {index_path}")
-            return FileResponse(index_path)
-        else:
-            logger.error(f"index.html not found at: {index_path}")
-            return {"error": "Frontend not available"}
+    # Optional: serve individual template sections for debugging
+    @app.get("/debug/template")
+    async def debug_template(request: Request):
+        """Debug template rendering"""
+        try:
+            data = get_cached_data()
+            return {
+                "templates_available": os.listdir(templates_dir),
+                "data_keys": list(data.keys()) if data else [],
+                "template_dir": os.path.abspath(templates_dir)
+            }
+        except Exception as e:
+            return {"error": str(e)}
 
-    # Catch-all route for SPA routing (must be last)
-    @app.get("/{full_path:path}")
-    async def serve_spa(full_path: str):
-        """Serve React SPA for all other routes"""
-        # Don't intercept API routes or health
-        if full_path.startswith("api/") or full_path == "health":
-            raise HTTPException(status_code=404, detail="Not found")
-
-        index_path = f"{frontend_dist}/index.html"
-        if os.path.exists(index_path):
-            logger.info(f"SPA routing: serving index.html for path: {full_path}")
-            return FileResponse(index_path)
-        else:
-            logger.error(f"SPA routing: index.html not found at: {index_path}")
-            return {"error": "Frontend not available"}
 else:
-    logger.warning(f"Frontend dist directory not found at: {frontend_dist}")
+    logger.warning(f"Templates directory not found at: {templates_dir}")
     logger.info("Available directories in root:")
     for item in os.listdir("."):
         if os.path.isdir(item):
             logger.info(f"  - {item}")
-            # Also check subdirectories for debugging
-            try:
-                subdirs = [f for f in os.listdir(item) if os.path.isdir(os.path.join(item, f))]
-                logger.info(f"    subdirs: {subdirs}")
-            except:
-                pass
 
-    # Fallback API-only root when frontend not available
+    # Fallback API-only root when templates not available
     @app.get("/")
     async def root():
         return {
-            "message": "Studio Dashboard API - FORCE REDEPLOY",
+            "message": "Studio Dashboard API - TEMPLATES NOT FOUND",
             "status": "online",
             "environment": settings.environment,
-            "version": "2.0.1"
+            "version": "2.0.2"
         }
-
-    # Debug endpoint to check file system
-    @app.get("/debug/files")
-    async def debug_files():
-        """Debug endpoint to check what files exist"""
-        try:
-            files = {}
-            files["cwd"] = os.getcwd()
-            files["root_items"] = os.listdir(".")
-
-            # Check if frontend directory exists
-            if os.path.exists("frontend"):
-                files["frontend_items"] = os.listdir("frontend")
-                if os.path.exists("frontend/dist"):
-                    files["frontend_dist_items"] = os.listdir("frontend/dist")
-
-            return files
-        except Exception as e:
-            return {"error": str(e)}
 
 if __name__ == "__main__":
     import uvicorn
     port = int(os.getenv("PORT", 8000))
-    logger.info(f"Starting Studio Dashboard on port {port} - Version 2.0.1")
+    logger.info(f"Starting Studio Dashboard on port {port} - Version 2.0.2")
 
     uvicorn.run(
         app,
