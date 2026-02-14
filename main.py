@@ -49,8 +49,14 @@ app.include_router(health.router, prefix="/api", tags=["health"])
 # Health endpoints are in health router
 
 # Serve static files (frontend build)
-if os.path.exists("studio-command-center/frontend/dist"):
-    app.mount("/static", StaticFiles(directory="studio-command-center/frontend/dist/assets"), name="static")
+frontend_dist = "studio-command-center/frontend/dist"
+if os.path.exists(frontend_dist):
+    logger.info(f"Mounting static files from: {frontend_dist}")
+    app.mount("/static", StaticFiles(directory=f"{frontend_dist}/assets"), name="static")
+else:
+    logger.warning(f"Frontend dist directory not found: {frontend_dist}")
+    logger.info(f"Current working directory: {os.getcwd()}")
+    logger.info(f"Directory contents: {os.listdir('.')}")
 
 # Serve frontend
 @app.get("/")
@@ -60,7 +66,8 @@ async def serve_frontend():
     if os.path.exists(frontend_path):
         return FileResponse(frontend_path)
     else:
-        return {"message": "Studio Dashboard API", "docs": "/docs"}
+        logger.warning(f"Frontend index.html not found: {frontend_path}")
+        return {"message": "Studio Dashboard API", "docs": "/docs", "frontend_missing": True}
 
 # Catch-all route for frontend routing (SPA)
 @app.get("/{path:path}")
