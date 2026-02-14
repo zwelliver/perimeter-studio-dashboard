@@ -1,6 +1,4 @@
-[providers]
-python = "3.11"
-nodejs = "18"
+providers = ["python", "node"]
 
 [variables]
 PYTHONPATH = "/app"
@@ -8,7 +6,7 @@ PIP_DISABLE_PIP_VERSION_CHECK = "1"
 PIP_NO_CACHE_DIR = "1"
 
 [phases.setup]
-nixPkgs = ["python311", "nodejs_18", "npm"]
+nixPkgs = ["python311", "nodejs_18"]
 
 [phases.install]
 cmds = [
