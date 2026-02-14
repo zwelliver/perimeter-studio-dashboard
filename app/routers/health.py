@@ -6,7 +6,9 @@ from datetime import datetime
 from fastapi import APIRouter
 
 from app.config import settings
-from app.services.reports import get_cache_age
+# Temporarily use simple mock data to debug deployment
+# from app.services.reports import get_cache_age
+from app.services.reports_simple import get_cache_age
 
 router = APIRouter()
 

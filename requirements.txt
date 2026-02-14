@@ -26,3 +26,6 @@ jinja2==3.1.4
 # Asana integration
 asana==5.0.10
 openpyxl==3.1.5
+
+# Data processing (required by generate_dashboard.py)
+pandas==2.2.3
