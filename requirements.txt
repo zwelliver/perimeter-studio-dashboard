@@ -1,0 +1,35 @@
+# FastAPI and ASGI server
+fastapi==0.115.0
+uvicorn[standard]==0.30.0
+
+# Configuration management
+pydantic-settings==2.5.0
+python-dotenv==1.0.0
+
+# Background job scheduling
+apscheduler==3.10.4
+
+# Data processing
+pandas==2.1.4
+openpyxl==3.1.2
+
+# HTTP client for Asana API
+requests==2.31.0
+httpx==0.28.0
+asana==5.0.10
+
+# File handling
+python-multipart==0.0.17
+
+# Template engine (if needed for reports)
+jinja2==3.1.4
+
+# Date/time handling
+python-dateutil==2.8.2
+
+# Additional utilities
+python-jose[cryptography]==3.3.0
+bcrypt==4.2.0
+
+# CORS support
+fastapi-cors==0.0.6

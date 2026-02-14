@@ -1,0 +1,32 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "nixpacks",
+    "buildCommand": "pip install -r requirements.txt && cd studio-command-center/frontend && npm ci && npm run build"
+  },
+  "deploy": {
+    "startCommand": "uvicorn main:app --host 0.0.0.0 --port $PORT",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 3
+  },
+  "environments": {
+    "production": {
+      "variables": {
+        "ENVIRONMENT": "production",
+        "CACHE_DURATION": "3600"
+      }
+    },
+    "staging": {
+      "variables": {
+        "ENVIRONMENT": "staging",
+        "CACHE_DURATION": "1800"
+      }
+    }
+  },
+  "volumes": [
+    {
+      "name": "reports-storage",
+      "mountPath": "/app/Reports"
+    }
+  ]
+}
