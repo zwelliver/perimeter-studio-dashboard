@@ -1,6 +1,6 @@
 {
   "deploy": {
-    "buildCommand": "pip install -r requirements.txt && cd studio-command-center/frontend && npm install && npm run build",
+    "buildCommand": "chmod +x build.sh && ./build.sh",
     "startCommand": "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
   },
   "volumes": [
