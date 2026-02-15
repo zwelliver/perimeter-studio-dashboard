@@ -3,226 +3,4287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Dashboard</title>
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Perimeter Studio Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ===== CSS VARIABLES FOR THEME SYSTEM ===== */
+        :root {
+            /* Light Theme Colors */
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #e9ecef;
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
+            --text-primary: #09243F;
+            --text-secondary: #6c757d;
+            --text-muted: #adb5bd;
+
+            --brand-primary: #60BBE9;
+            --brand-secondary: #09243F;
+            --brand-accent: #60BBE9;
+
+            --border-color: #dee2e6;
+            --border-accent: #60BBE9;
+
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
+
+            /* Status Colors */
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+
+            /* Chart Colors */
+            --chart-bg: #e9ecef;
+            --chart-progress: var(--brand-primary);
+
+            /* Interactive Elements */
+            --hover-bg: rgba(96, 187, 233, 0.1);
+            --active-bg: rgba(96, 187, 233, 0.2);
+
+            /* Mobile Breakpoints */
+            --mobile-breakpoint: 768px;
+            --tablet-breakpoint: 1024px;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+        /* Dark Theme */
+        :root[data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --bg-tertiary: #404040;
+
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-muted: #808080;
+
+            --brand-primary: #60BBE9;
+            --brand-secondary: #4a9cd9;
+            --brand-accent: #7ac3ed;
+
+            --border-color: #404040;
+            --border-accent: #60BBE9;
+
+            --shadow-light: rgba(255, 255, 255, 0.1);
+            --shadow-medium: rgba(255, 255, 255, 0.15);
+
+            --chart-bg: #404040;
+            --chart-progress: var(--brand-primary);
+
+            --hover-bg: rgba(96, 187, 233, 0.2);
+            --active-bg: rgba(96, 187, 233, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             padding: 20px;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .dashboard-container {
+            max-width: 95%;
+            margin: 0 auto;
+            overflow-x: hidden;
         }
 
         .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow-light);
+            margin-bottom: 20px;
+            border-left: 4px solid var(--border-accent);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
         }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle:hover {
+            background: var(--hover-bg);
+            border-color: var(--brand-primary);
+        }
+
+        .theme-toggle:active {
+            background: var(--active-bg);
+        }
+
+        .theme-icon {
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        /* Header controls layout */
+        .header-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            flex-direction: column;
+            margin-top: 15px;
+        }
+
+        @media (min-width: 640px) {
+            .header-controls {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+
+        .export-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .export-btn {
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .export-btn:hover {
+            background: var(--brand-secondary);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px var(--shadow-medium);
+        }
+
+        .export-btn:active {
+            transform: translateY(0);
+        }
+
+        .export-btn:focus {
+            outline: 2px solid var(--brand-accent);
+            outline-offset: 2px;
+        }
+
+        /* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+        /* Focus management for keyboard navigation */
+        .theme-toggle:focus {
+            outline: 2px solid var(--brand-primary);
+            outline-offset: 2px;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            :root {
+                --shadow-light: rgba(0, 0, 0, 0.3);
+                --shadow-medium: rgba(0, 0, 0, 0.4);
+            }
+
+            .header {
+                border-left-width: 6px;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* Screen reader only text */
+        .sr-only {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+
+        /* Focus indicators for interactive elements */
+        .card:focus-within {
+            box-shadow: 0 0 0 2px var(--brand-primary);
+        }
+
+        .progress-ring:focus {
+            outline: 2px solid var(--brand-primary);
+            outline-offset: 2px;
+        }
+
+        /* Improved color contrast for text */
+        .metric-value {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* ===== MOBILE RESPONSIVE DESIGN ===== */
+        /* Tablet breakpoint */
+        @media (max-width: 1024px) {
+            .dashboard-container {
+                max-width: 98%;
+                margin: 0 auto;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .theme-toggle {
+                padding: 10px 16px;
+                font-size: 13px;
+                /* Ensure minimum touch target of 44x44px for accessibility */
+                min-height: 44px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .card h2 {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+
+            .progress-rings-container {
+                gap: 15px;
+            }
+
+            .team-member {
+                margin-bottom: 15px;
+            }
+        }
+
+        /* Mobile breakpoint */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+                margin-bottom: 8px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+
+            .timestamp {
+                font-size: 12px;
+            }
+
+            .header {
+                display: grid;
+                grid-template-areas:
+                    "title"
+                    "subtitle"
+                    "timestamp"
+                    "controls";
+                grid-template-rows: auto auto auto auto;
+                gap: 15px;
+                position: relative;
+                padding: 20px 15px; /* Normal padding */
+            }
+
+            .header-controls {
+                grid-area: controls;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 12px;
+                z-index: 10;
+            }
+
+            .header h1 {
+                grid-area: title;
+                font-size: 24px;
+                margin: 0;
+            }
+
+            .header .subtitle {
+                grid-area: subtitle;
+                margin: 0;
+            }
+
+            .header .timestamp {
+                grid-area: timestamp;
+                margin: 0;
+            }
+
+            .theme-toggle {
+                flex: none;
+            }
+
+            .export-controls {
+                display: flex;
+                flex-direction: row;
+                margin-top: 0;
+                gap: 8px;
+            }
+
+            .export-btn {
+                font-size: 12px;
+                padding: 8px 14px;
+                /* Ensure minimum touch target of 44x44px for accessibility */
+                min-height: 44px;
+                min-width: 44px;
+                border-radius: 22px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .card h2 {
+                font-size: 18px;
+                margin-bottom: 12px;
+            }
+
+            .metric {
+                margin-bottom: 15px;
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+            }
+
+            .metric-label {
+                font-size: 14px;
+                margin-bottom: 5px;
+            }
+
+            .metric-value {
+                font-size: 24px;
+            }
+
+            /* Mobile-friendly team capacity */
+            .team-member {
+                margin-bottom: 20px;
+                padding: 15px;
+                background: var(--bg-tertiary);
+                border-radius: 8px;
+            }
+
+            .team-member-name {
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+
+            .team-member-capacity {
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+
+            .progress-bar {
+                height: 25px;
+            }
+
+            .progress-fill {
+                font-size: 14px;
+                line-height: 25px;
+            }
+
+            /* Mobile charts */
+            .chart-container {
+                height: 250px;
+                margin: 10px 0;
+            }
+
+            .velocity-container {
+                height: 250px;
+                margin: 10px 0;
+            }
+
+            /* Specific fixes for Historical Capacity chart only */
+            #capacityHistoryChart {
+                display: block !important;
+                width: 100% !important;
+                height: 250px !important;
+                min-width: 200px !important;
+                visibility: visible !important;
+            }
+
+            .progress-rings-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .progress-ring {
+                margin-bottom: 15px;
+            }
+
+            .gauge-container {
+                width: 150px;
+                height: 150px;
+            }
+
+            /* Mobile timeline adjustments */
+            .timeline-container {
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+
+            .timeline-row {
+                min-width: 600px;
+            }
+
+            .timeline-project-col,
+            .timeline-project-name {
+                min-width: 120px;
+                width: 120px;
+            }
+
+            /* Enhanced horizontal scroll for mobile */
+            @media (max-width: 768px) {
+                .timeline-container {
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                    scroll-snap-type: x proximity;
+                    padding-bottom: 15px;
+                    position: relative;
+                }
+
+                /* Hide the vertical line on mobile */
+                .timeline-container::before {
+                    display: none;
+                }
+
+                /* Add scroll indicator */
+                .timeline-container::after {
+                    content: '← Swipe to see timeline →';
+                    position: sticky;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    bottom: 0;
+                    background: rgba(52, 152, 219, 0.9);
+                    color: white;
+                    padding: 4px 12px;
+                    border-radius: 12px;
+                    font-size: 11px;
+                    font-weight: 500;
+                    z-index: 20;
+                    white-space: nowrap;
+                    pointer-events: none;
+                    opacity: 0.8;
+                    animation: fadeInOut 3s ease-in-out infinite;
+                }
+
+                @keyframes fadeInOut {
+                    0%, 100% { opacity: 0.6; }
+                    50% { opacity: 1; }
+                }
+
+                .timeline-header,
+                .timeline-row {
+                    min-width: 700px;
+                    display: flex;
+                    align-items: center;
+                }
+
+                .timeline-project-col,
+                .timeline-project-name {
+                    min-width: 140px;
+                    width: 140px;
+                    position: sticky;
+                    left: 0;
+                    background: var(--bg-secondary);
+                    z-index: 10;
+                    border-right: 2px solid var(--border-color);
+                    box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+                    flex-shrink: 0;
+                }
+
+                .timeline-dates,
+                .timeline-bars {
+                    flex: 1;
+                    min-width: 560px;
+                }
+
+                .timeline-date {
+                    font-size: 10px;
+                    scroll-snap-align: start;
+                }
+            }
+
+            /* Small mobile optimizations */
+            @media (max-width: 480px) {
+                .timeline-project-col,
+                .timeline-project-name {
+                    font-size: 12px;
+                    min-width: 100px;
+                    width: 100px;
+                }
+
+                .timeline-date {
+                    font-size: 9px;
+                    padding: 0 2px;
+                }
+
+                .timeline-bar {
+                    height: 28px;
+                    font-size: 9px;
+                }
+
+                .timeline-header,
+                .timeline-row {
+                    min-width: 600px;
+                }
+
+                .timeline-dates,
+                .timeline-bars {
+                    min-width: 500px;
+                }
+            }
+
+            /* Mobile table styles */
+            table {
+                font-size: 14px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            th, td {
+                padding: 8px 6px;
+                white-space: nowrap;
+            }
+
+            /* Add visual scroll indicator for tables */
+            .card:has(table)::after {
+                content: '← Scroll →';
+                position: absolute;
+                bottom: 10px;
+                right: 10px;
+                font-size: 11px;
+                color: var(--text-muted);
+                opacity: 0.6;
+                pointer-events: none;
+            }
+
+            .at-risk-item {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+
+            .at-risk-item h4 {
+                font-size: 16px;
+            }
+
+            .at-risk-item p {
+                font-size: 14px;
+                line-height: 1.4;
+            }
+        }
+
+        /* Small mobile breakpoint */
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+
+            .header {
+                padding: 12px;
+                padding-top: 80px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .theme-toggle {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+
+            .card {
+                padding: 12px;
+            }
+
+            .card h2 {
+                font-size: 16px;
+            }
+
+            .metric-value {
+                font-size: 20px;
+            }
+
+            .team-member {
+                padding: 12px;
+            }
+
+            .progress-ring {
+                width: 100px;
+                height: 100px;
+            }
+
+            .progress-ring-value {
+                font-size: 16px;
+            }
+
+            .progress-ring-label {
+                font-size: 9px;
+            }
+
+            .gauge-container {
+                width: 120px;
+                height: 120px;
+            }
+
+            .gauge-value {
+                font-size: 32px;
+            }
+
+            .chart-container {
+                height: 200px;
+            }
+
+            /* Stack team capacity in single column */
+            .team-capacity-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        /* ===== INTERACTIVE FEATURES ===== */
+        /* Tooltip styles */
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: normal;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            box-shadow: 0 2px 8px var(--shadow-medium);
+            z-index: 1000;
+            border: 1px solid var(--border-color);
+            max-width: 250px;
+            white-space: normal;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: 116%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: var(--bg-secondary);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .tooltip:hover::before,
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Interactive card hover effects */
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-medium);
+        }
+
+        .team-member:hover {
+            background: var(--hover-bg);
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Sortable table styles */
+        .sortable {
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+
+        .sortable:hover {
+            background: var(--hover-bg);
+        }
+
+        .sortable::after {
+            content: '↕️';
+            position: absolute;
+            right: 8px;
+            opacity: 0.5;
+            font-size: 12px;
+        }
+
+        .sortable.asc::after {
+            content: '↑';
+            opacity: 1;
+        }
+
+        .sortable.desc::after {
+            content: '↓';
+            opacity: 1;
+        }
+
+        /* Filter controls */
+        .filter-controls {
+            margin: 15px 0;
+            padding: 15px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-control {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .filter-control label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .filter-control select,
+        .filter-control input {
+            padding: 6px 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .filter-control select:focus,
+        .filter-control input:focus {
+            outline: 2px solid var(--brand-primary);
+            outline-offset: -2px;
+        }
+
+        /* Quick stats hover effects */
+        .metric:hover .metric-value {
+            color: var(--brand-primary);
+            transition: color 0.3s ease;
+        }
+
+        /* Interactive progress bars */
+        .progress-bar:hover .progress-fill {
+            box-shadow: 0 0 10px rgba(96, 187, 233, 0.4);
+            transition: box-shadow 0.3s ease;
+        }
+
+        /* Mobile filter adjustments */
+        @media (max-width: 768px) {
+            .filter-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-control {
+                justify-content: space-between;
+            }
+
+            .filter-control select,
+            .filter-control input {
+                min-width: 120px;
+            }
+        }
+
+        /* ===== PROJECT CARDS (Shoots, Deadlines, Forecast) ===== */
+        .project-card {
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px;
+            background: var(--bg-secondary);
+            margin-bottom: 16px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .project-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .project-card-date {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .project-card-time {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--brand-primary);
+            margin-top: 4px;
+        }
+
+        .project-card-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--brand-secondary);
+            color: white;
+            font-size: 14px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        .project-card-title {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 1.4;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .project-card-title:hover {
+            color: var(--brand-primary);
+        }
+
+        .project-card-details {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .project-card-meta {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* Mobile project card optimizations */
+        @media (max-width: 768px) {
+            .project-card {
+                padding: 14px;
+                margin-bottom: 14px;
+            }
+
+            .project-card-header {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .project-card-date {
+                font-size: 15px;
+            }
+
+            .project-card-time {
+                font-size: 18px;
+            }
+
+            .project-card-badge {
+                padding: 5px 10px;
+                font-size: 13px;
+                align-self: flex-start;
+            }
+
+            .project-card-title {
+                font-size: 15px;
+                line-height: 1.5;
+                /* Ensure touch targets are at least 44x44px */
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .project-card {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+
+            .project-card-date {
+                font-size: 14px;
+            }
+
+            .project-card-time {
+                font-size: 16px;
+            }
+
+            .project-card-title {
+                font-size: 14px;
+            }
+
+            .project-card-details {
+                font-size: 13px;
+            }
+        }
+
+        /* Task list and detail styles */
+        .task-list-item {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin: 4px 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+        }
+
+        .success-state {
+            text-align: center;
+            padding: 20px;
+            color: var(--success-color);
+        }
+
+        .task-name {
+            font-weight: bold;
+            color: var(--brand-secondary);
+        }
+
+        .task-detail {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .task-risk {
+            font-size: 13px;
+            color: var(--danger-color);
+            margin-top: 8px;
+        }
+
+        .project-link {
+            color: var(--brand-primary);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .project-link:hover {
+            text-decoration: underline;
+        }
+
+        .section-description {
+            color: var(--text-secondary);
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        /* At-risk and external project sections */
+        .at-risk-item {
+            border-left: 4px solid var(--danger-color);
+            padding: 10px;
+            margin-bottom: 10px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+
+        .external-project-item {
+            margin-top: 10px;
+            padding-left: 10px;
+            border-left: 2px solid var(--brand-primary);
+        }
+
+        .project-task-name {
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* ===== GAUGE CHART STYLES ===== */
+        .gauge-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+        }
+
+        .gauge-svg {
+            transform: rotate(-90deg);
+        }
+
+        .gauge-background {
+            fill: none;
+            stroke: var(--chart-bg);
+            stroke-width: 20;
+        }
+
+        .gauge-progress {
+            fill: none;
+            stroke-width: 20;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 2s ease;
+        }
+
+        .gauge-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .gauge-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--brand-primary);
+        }
+
+        .gauge-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+
+        /* ===== PROGRESS RING STYLES ===== */
+        .progress-rings-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
             gap: 20px;
+            margin: 15px 0;
+            padding: 15px;
+        }
+
+        .progress-ring {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            text-align: center;
+        }
+
+        .progress-ring-svg {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-circle {
+            fill: none;
+            stroke-width: 10;
+            stroke-linecap: round;
+        }
+
+        .progress-ring-bg {
+            stroke: var(--chart-bg);
+        }
+
+        .progress-ring-progress {
+            transition: stroke-dashoffset 2s ease;
+        }
+
+        .progress-ring-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 100px;
+            height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .progress-ring-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: block;
+            line-height: 1;
+        }
+
+        .progress-ring-label {
+            font-size: 9px;
+            color: var(--text-secondary);
+            display: block;
+            margin-top: 3px;
+            line-height: 1.2;
+            max-width: 100%;
+            text-align: center;
+        }
+
+        /* ===== TIMELINE GANTT STYLES ===== */
+        .timeline-container {
+            margin: 15px 0;
+            overflow: hidden;
+            list-style: none !important;
+            position: relative;
+            padding-left: 0 !important;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 25%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--brand-secondary);
+            z-index: 10;
+        }
+
+        .timeline-container *,
+        .timeline-container *::before,
+        .timeline-container *::after {
+            list-style: none !important;
+            list-style-type: none !important;
+        }
+
+        .timeline-header {
+            display: flex;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .timeline-project-col {
+            width: 25%;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+            padding-right: 12px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .timeline-dates {
+            display: flex;
+            flex: 1;
+        }
+
+        .timeline-date {
+            flex: 1;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .timeline-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            min-height: 32px;
+            list-style: none !important;
+            list-style-type: none !important;
+        }
+
+        .timeline-row::before,
+        .timeline-row::after,
+        .timeline-row::marker {
+            display: none !important;
+            content: none !important;
+        }
+
+        .timeline-project-name {
+            width: 25%;
+            font-size: 13px;
+            color: var(--text-primary);
+            padding-right: 12px;
+            font-weight: 500;
+            margin-right: 12px;
+            flex-shrink: 0;
+            line-height: 1.2;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .timeline-project-name::before,
+        .timeline-project-name::after,
+        .timeline-project-name::marker {
+            display: none !important;
+            content: '' !important;
+        }
+
+        .timeline-bars {
+            display: flex;
+            flex: 1;
+            position: relative;
+            height: 32px;
+        }
+
+        .timeline-bar {
+            position: absolute;
+            height: 24px;
+            border-radius: 4px;
+            background: var(--brand-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .timeline-bar.critical {
+            background: #dc3545;
+        }
+
+        .timeline-bar.warning {
+            background: #ffc107;
+        }
+
+        .timeline-bar.normal {
+            background: var(--brand-primary);
+        }
+
+        .timeline-bar.info {
+            background: #17a2b8;
+        }
+
+        /* ===== RADAR/SPIDER CHART STYLES ===== */
+        .radar-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 600px;
+            margin: 20px auto;
+        }
+
+        @media (max-width: 768px) {
+            .radar-container {
+                height: 400px;
+                max-width: 100%;
+            }
+
+            .radar-container svg {
+                max-width: 100%;
+                height: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .radar-container {
+                height: 300px;
+            }
+
+            .radar-label {
+                font-size: 10px !important;
+            }
+        }
+
+        .radar-grid {
+            fill: none;
+            stroke: var(--border-color);
+            stroke-width: 1;
+        }
+
+        .radar-axis {
+            stroke: var(--text-secondary);
+            stroke-width: 1;
+        }
+
+        .radar-area {
+            fill: rgba(96, 187, 233, 0.3);
+            stroke: #60BBE9;
+            stroke-width: 2;
+        }
+
+        .radar-target {
+            fill: rgba(220, 53, 69, 0.2);
+            stroke: #dc3545;
+            stroke-width: 2;
+            stroke-dasharray: 5, 5;
+        }
+
+        .radar-label {
+            fill: var(--text-primary);
+            font-size: 12px;
+            font-weight: 600;
+            text-anchor: middle;
+        }
+
+        /* ===== SUNBURST CHART STYLES ===== */
+        .sunburst-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 400px;
+            margin: 20px auto;
+        }
+
+        @media (max-width: 768px) {
+            .sunburst-container {
+                height: 300px;
+                max-width: 100%;
+            }
+
+            .sunburst-container svg {
+                max-width: 100%;
+                height: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sunburst-container {
+                height: 250px;
+            }
+
+            .sunburst-text {
+                font-size: 9px !important;
+            }
+
+            .sunburst-center-text {
+                font-size: 18px !important;
+            }
+        }
+
+        .sunburst-slice {
+            cursor: pointer;
+            transition: opacity 0.2s;
+            stroke: white;
+            stroke-width: 2;
+        }
+
+        .sunburst-slice:hover {
+            opacity: 0.8;
+        }
+
+        .sunburst-text {
+            fill: white;
+            font-size: 11px;
+            font-weight: 600;
+            pointer-events: none;
+        }
+
+        .sunburst-center-text {
+            fill: #60BBE9;
+            font-size: 24px;
+            font-weight: 700;
+            text-anchor: middle;
+        }
+
+        /* ===== VELOCITY TREND CHART ===== */
+        .velocity-container {
+            position: relative;
+            height: 280px;
+            margin-top: 12px;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        /* ===== HEAT MAP CALENDAR STYLES ===== */
+        .heatmap-calendar {
+            display: grid;
+            grid-template-columns: auto repeat(10, 1fr);
+            gap: 4px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        @media (max-width: 1024px) {
+            .heatmap-calendar {
+                grid-template-columns: auto repeat(7, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .heatmap-calendar {
+                grid-template-columns: auto repeat(5, 1fr);
+                gap: 3px;
+                font-size: 12px;
+            }
+
+            .heatmap-day-label {
+                font-size: 10px;
+                padding: 6px 8px;
+            }
+
+            .heatmap-date {
+                font-size: 9px;
+            }
+
+            .heatmap-cell {
+                font-size: 9px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .heatmap-calendar {
+                grid-template-columns: auto repeat(3, 1fr);
+                gap: 2px;
+            }
+
+            .heatmap-day-label {
+                font-size: 9px;
+                padding: 4px 6px;
+            }
+
+            .heatmap-date {
+                font-size: 8px;
+            }
+
+            .heatmap-cell {
+                font-size: 8px;
+            }
+        }
+
+        .heatmap-day-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            padding: 8px 12px;
+            text-align: right;
+        }
+
+        .heatmap-date {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+        }
+
+        .heatmap-cell.intensity-0 {
+            background: #20c997;
+            color: white;
+        }
+
+        .heatmap-cell.intensity-1 {
+            background: #28a745;
+            color: white;
+        }
+
+        .heatmap-cell.intensity-2 {
+            background: #ffc107;
+            color: white;
+        }
+
+        .heatmap-cell.intensity-3 {
+            background: #fd7e14;
+            color: white;
+        }
+
+        .heatmap-cell.intensity-4 {
+            background: #dc3545;
+            color: white;
+        }
+
+        .header h1 {
+            color: var(--text-primary);
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .header .subtitle {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .header .timestamp {
+            color: var(--brand-primary);
+            font-size: 12px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .category-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-direction: row;
+        }
+
+        .category-grid .card {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        /* Explicit desktop rules for category grid */
+        @media (min-width: 769px) {
+            .category-grid {
+                flex-direction: row !important;
+            }
+        }
+
+        .performance-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
             margin-bottom: 30px;
         }
 
         .card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: var(--bg-secondary);
+            padding: 20px 24px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px var(--shadow-light);
+            border: 1px solid var(--border-color);
+            max-width: 100%;
+            overflow: hidden;
+            transition: box-shadow 0.2s, background-color 0.3s ease;
         }
 
-        .card h3 {
-            color: #4a5568;
-            margin-bottom: 15px;
-            font-size: 1.2em;
+        .card:hover {
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        }
+
+        .card h2 {
+            color: var(--text-primary);
+            font-size: 16px;
+            margin-bottom: 18px;
+            font-weight: 600;
+            border-bottom: 2px solid var(--brand-primary);
+            padding-bottom: 8px;
         }
 
         .metric {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #edf2f7;
-        }
-
-        .metric:last-child { border-bottom: none; }
-
-        .team-member {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
         }
 
-        .utilization-bar {
-            width: 100px;
-            height: 8px;
-            background: #e2e8f0;
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .metric-value {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--brand-primary);
+        }
+
+        .metric-value.positive {
+            color: #28a745;
+        }
+
+        .metric-value.negative {
+            color: var(--danger-color);
+        }
+
+        .metric-value.warning {
+            color: #ffc107;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 24px;
+            background: var(--chart-bg);
             border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--brand-primary);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .progress-fill.over-capacity {
+            background: var(--danger-color);
+        }
+
+        .alert {
+            background: rgba(255, 193, 7, 0.1);
+            border-left: 4px solid var(--warning-color);
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            border: 1px solid var(--warning-color);
+            color: var(--text-primary);
+        }
+
+        .alert.danger {
+            background: #f8d7da;
+            border-left-color: var(--danger-color);
+            border-color: var(--danger-color);
+            color: #721c24;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            border-left-color: #28a745;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+            margin-top: 12px;
+            max-width: 100%;
             overflow: hidden;
         }
 
-        .utilization-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4ade80 0%, #fbbf24 70%, #ef4444 100%);
-            transition: width 0.3s ease;
-        }
-
-        .task-item {
-            padding: 8px 0;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .task-item:last-child { border-bottom: none; }
-
-        .refresh-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
+        .team-member {
+            margin-bottom: 15px;
+            padding: 12px;
             border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: transform 0.2s;
+            border: 1px solid var(--card-border, #e9ecef);
+            background: var(--card-bg, #fff);
         }
 
-        .refresh-btn:hover {
-            transform: translateY(-2px);
+        .team-member.capacity-over {
+            border-left: 3px solid var(--danger-color);
         }
 
-        .loading {
-            opacity: 0.6;
-            pointer-events: none;
+        .team-member.capacity-high {
+            border-left: 3px solid var(--warning-color);
         }
+
+        .team-member.capacity-ok {
+            border-left: 3px solid #28a745;
+        }
+
+        .team-member-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .capacity-status {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .capacity-status.capacity-over {
+            color: var(--danger-color);
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        .capacity-status.capacity-high {
+            color: #e67e22;
+            background: rgba(230, 126, 34, 0.1);
+        }
+
+        .capacity-status.capacity-ok {
+            color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .team-member-capacity {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Forecast grid default styles */
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        /* Heatmap grid default styles */
+        .heatmap-grid {
+            margin-top: 12px;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .card {
+                box-shadow: none;
+                border: 1px solid #dee2e6;
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                width: 100%;
+                max-width: 100vw;
+            }
+
+            .dashboard-container {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .header {
+                padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .header .subtitle {
+                font-size: 12px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr !important;
+                gap: 15px;
+            }
+
+            .category-grid {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .category-grid .card {
+                flex: none;
+                min-width: auto;
+            }
+
+            .performance-row {
+                grid-template-columns: 1fr !important;
+                gap: 15px;
+            }
+
+            /* Override any inline grid styles */
+            .card [style*="grid-template-columns"],
+            [style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            .card {
+                padding: 15px;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+
+            /* Ensure all child elements respect container width */
+            .card > * {
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+
+            /* Prevent tables and images from overflowing */
+            table {
+                width: 100% !important;
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                /* Add scrollbar hint */
+                box-shadow: inset 0 -1px 0 var(--border-color);
+            }
+
+            /* Mobile table wrapper for better scrolling */
+            .card table {
+                min-width: 300px;
+            }
+
+            /* Make table headers sticky on mobile for better UX */
+            @supports (position: sticky) {
+                table thead {
+                    position: sticky;
+                    top: 0;
+                    background: var(--bg-secondary);
+                    z-index: 10;
+                }
+            }
+
+            img {
+                max-width: 100%;
+                height: auto;
+            }
+
+            /* Fix 6-Month Capacity Timeline bars */
+            [style*="min-width: 8px"] {
+                min-width: 3px !important;
+            }
+
+            .card h2 {
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+
+            .metric {
+                padding: 10px 0;
+            }
+
+            .metric-label {
+                font-size: 13px;
+            }
+
+            .metric-value {
+                font-size: 20px;
+            }
+
+            .chart-container {
+                height: 250px;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .chart-container canvas {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+
+            .velocity-container {
+                height: 250px;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .velocity-container canvas {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+
+            .team-member-name {
+                font-size: 13px;
+            }
+
+            .alert {
+                padding: 12px;
+                font-size: 13px;
+            }
+
+            /* Fix forecast grid - single column on mobile */
+            .forecast-grid {
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+            }
+
+            /* Fix heatmap - fewer columns on mobile */
+            .heatmap-grid {
+                grid-template-columns: repeat(5, 1fr) !important;
+                gap: 3px !important;
+                font-size: 10px !important;
+            }
+
+            .heatmap-grid > div {
+                padding: 6px 4px !important;
+                font-size: 10px !important;
+            }
+        }
+
+        /* Extra small mobile devices (iPhone SE, etc.) */
+        @media (max-width: 375px) {
+            body {
+                padding: 5px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .card {
+                padding: 12px;
+            }
+
+            /* Further reduce timeline bar width on very small screens */
+            [style*="min-width: 8px"] {
+                min-width: 2px !important;
+            }
+
+            .card h2 {
+                font-size: 15px;
+            }
+
+            .metric-value {
+                font-size: 18px;
+            }
+
+            .chart-container {
+                height: 220px;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .chart-container canvas {
+                max-width: 100% !important;
+            }
+
+            .velocity-container {
+                height: 220px;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .velocity-container canvas {
+                max-width: 100% !important;
+            }
+
+            /* Even more compact heatmap for small screens */
+            .heatmap-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 2px !important;
+            }
+
+            .heatmap-grid > div {
+                padding: 5px 2px !important;
+                font-size: 9px !important;
+            }
+        }
+
+        /* Landscape mobile optimization */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .chart-container {
+                height: 200px;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .chart-container canvas {
+                max-width: 100% !important;
+            }
+
+            .velocity-container {
+                height: 200px;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .velocity-container canvas {
+                max-width: 100% !important;
+            }
+        }
+
+        /* Tablet and Desktop - Restore two-column layout */
+        @media (min-width: 769px) {
+            .performance-row {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 16px;
+            }
+        }
+
+        /* Large Screen Optimizations */
+        @media (min-width: 1920px) {
+            body {
+                font-size: 18px;
+                padding: 30px;
+            }
+
+            .header h1 {
+                font-size: 48px;
+            }
+
+            .header .subtitle {
+                font-size: 20px;
+            }
+
+            .header .timestamp {
+                font-size: 16px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 25px;
+            }
+
+            .category-grid {
+                gap: 25px;
+            }
+
+            .category-grid .card {
+                flex: 1;
+                min-width: 200px;
+            }
+
+            .card h2 {
+                font-size: 24px;
+            }
+
+            .metric-label {
+                font-size: 16px;
+            }
+
+            .metric-value {
+                font-size: 36px;
+            }
+
+            .chart-container {
+                height: 400px;
+            }
+
+            .velocity-container {
+                height: 400px;
+            }
+        }
+
+        @media (min-width: 2560px) {
+            body {
+                font-size: 20px;
+                padding: 40px;
+            }
+
+            .header h1 {
+                font-size: 56px;
+            }
+
+            .header .subtitle {
+                font-size: 24px;
+            }
+
+            .header .timestamp {
+                font-size: 18px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+                gap: 30px;
+            }
+
+            .category-grid {
+                gap: 30px;
+            }
+
+            .category-grid .card {
+                flex: 1;
+                min-width: 190px;
+            }
+
+            .card {
+                padding: 35px;
+            }
+
+            .card h2 {
+                font-size: 28px;
+            }
+
+            .metric-label {
+                font-size: 18px;
+            }
+
+            .metric-value {
+                font-size: 42px;
+            }
+
+            .chart-container {
+                height: 500px;
+            }
+
+            .velocity-container {
+                height: 500px;
+            }
+
+            .progress-ring {
+                transform: scale(1.25);
+            }
+
+            .progress-ring-value {
+                font-size: 36px;
+            }
+
+            .progress-ring-label {
+                font-size: 14px;
+            }
+
+            .progress-rings-container {
+                gap: 50px !important;
+            }
+        }
+
+        @media (min-width: 3840px) {
+            body {
+                font-size: 24px;
+                padding: 50px;
+            }
+
+            .header h1 {
+                font-size: 72px;
+            }
+
+            .header .subtitle {
+                font-size: 32px;
+            }
+
+            .header .timestamp {
+                font-size: 22px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+                gap: 40px;
+            }
+
+            .category-grid {
+                gap: 40px;
+            }
+
+            .category-grid .card {
+                flex: 1;
+                min-width: 200px;
+            }
+
+            .card {
+                padding: 45px;
+                border-radius: 20px;
+            }
+
+            .card h2 {
+                font-size: 36px;
+                margin-bottom: 25px;
+            }
+
+            .metric-label {
+                font-size: 22px;
+            }
+
+            .metric-value {
+                font-size: 52px;
+            }
+
+            .chart-container {
+                height: 600px;
+            }
+
+            .velocity-container {
+                height: 600px;
+            }
+
+            .progress-ring {
+                transform: scale(1.5);
+            }
+
+            .progress-ring-value {
+                font-size: 44px;
+            }
+
+            .progress-ring-label {
+                font-size: 16px;
+            }
+
+            .progress-rings-container {
+                gap: 70px !important;
+                padding: 40px !important;
+            }
+
+            .team-member-name {
+                font-size: 20px;
+            }
+
+            .team-member-capacity {
+                font-size: 16px;
+            }
+
+            .progress-bar {
+                height: 35px;
+            }
+
+            .progress-fill {
+                font-size: 18px;
+                line-height: 35px;
+            }
+        }
+
     </style>
 </head>
 <body>
-    <div class="container" x-data="dashboard()">
-        <div class="header">
-            <h1>Studio Dashboard</h1>
-            <p>Perimeter Church Production Overview</p>
-        </div>
+    <div class="dashboard-container">
+        <header class="header" role="banner">
+            <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
+            <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
+            <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: February 06, 2026 at 01:09 PM</p>
 
-        <div style="text-align: center; margin-bottom: 20px;">
-            <button class="refresh-btn" @click="refreshData()" :disabled="loading">
-                <span x-show="!loading">Refresh Data</span>
-                <span x-show="loading">Loading...</span>
-            </button>
-        </div>
+            <div class="header-controls">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
+                    <span class="theme-icon" id="themeIcon">Dark</span>
+                    <span id="themeText">Dark Mode</span>
+                </button>
 
-        <div class="dashboard-grid" :class="{ 'loading': loading }">
-            <!-- Metrics Overview -->
-            <div class="card">
-                <h3>📊 Overview</h3>
-                <div class="metric">
-                    <span>Total Tasks</span>
-                    <strong x-text="data.metrics?.total_tasks || 0"></strong>
-                </div>
-                <div class="metric">
-                    <span>At Risk</span>
-                    <strong x-text="data.metrics?.at_risk_count || 0" style="color: #ef4444;"></strong>
-                </div>
-                <div class="metric">
-                    <span>Upcoming Shoots</span>
-                    <strong x-text="data.metrics?.upcoming_shoots || 0"></strong>
-                </div>
-                <div class="metric">
-                    <span>Upcoming Deadlines</span>
-                    <strong x-text="data.metrics?.upcoming_deadlines || 0"></strong>
+                <div class="export-controls">
+                    <button class="export-btn" onclick="exportToPDF()" aria-label="Export dashboard as PDF" title="Export as PDF">
+                        PDF
+                    </button>
+                    <button class="export-btn" onclick="exportToCSV()" aria-label="Export data as CSV" title="Export as CSV">
+                        CSV
+                    </button>
                 </div>
             </div>
+            <span id="theme-description" class="sr-only">Switch between dark and light themes for better visibility</span>
+        </header>
 
-            <!-- Team Capacity -->
+        <main role="main" aria-labelledby="dashboard-title">
+            <!-- Two-column layout for Performance Overview and Contracted/Outsourced Projects -->
+            <div class="performance-row" role="region" aria-label="Performance metrics and charts">
+            <!-- Performance Overview -->
+            <section class="card" role="region" aria-labelledby="performance-title">
+                <h2 id="performance-title">Performance Overview</h2>
+                <div class="metric" role="group" aria-labelledby="active-tasks-label">
+                    <span id="active-tasks-label" class="metric-label">Active Tasks</span>
+                    <span class="metric-value" aria-describedby="active-tasks-label">0</span>
+                </div>
+                <div class="metric" role="group" aria-labelledby="completed-30d-label">
+                    <span id="completed-30d-label" class="metric-label">Projects Completed (30d)</span>
+                    <span class="metric-value" aria-describedby="completed-30d-label">16</span>
+                </div>
+                <div class="metric" role="group" aria-labelledby="completed-year-label">
+                    <span id="completed-year-label" class="metric-label">Projects Completed This Year</span>
+                    <span class="metric-value" aria-describedby="completed-year-label">16</span>
+                </div>
+                <div class="metric" role="group" aria-labelledby="avg-variance-label">
+                    <span id="avg-variance-label" class="metric-label">Avg Days Variance</span>
+                    <span class="metric-value positive" aria-describedby="avg-variance-label" role="status" aria-label="Average project variance in days">-9.3</span>
+                </div>
+                <div class="metric" role="group" aria-labelledby="delayed-capacity-label">
+                    <span id="delayed-capacity-label" class="metric-label">Delayed Due to Capacity</span>
+                    <span class="metric-value positive" aria-describedby="delayed-capacity-label" role="status">0</span>
+                </div>
+            </section>
+
+            <!-- Contracted/Outsourced Projects -->
             <div class="card">
-                <h3>👥 Team Capacity</h3>
-                <template x-for="member in data.team_capacity || []" :key="member.name">
-                    <div class="team-member">
-                        <div>
-                            <strong x-text="member.name"></strong>
-                            <div style="font-size: 0.9em; color: #666;">
-                                <span x-text="member.current"></span>/<span x-text="member.max"></span> tasks
+                <h2>Contracted/Outsourced Projects</h2>
+
+            <div class="empty-state">
+                <div style="font-size: 16px; color: var(--text-secondary);">No external projects</div>
+            </div>
+
+            </div>
+        </div>
+
+        <!-- Team Capacity (Full Width) -->
+        <div class="grid">
+            <section class="card full-width" role="region" aria-labelledby="team-capacity-title">
+                <h2 id="team-capacity-title">Team Capacity</h2>
+                <div class="team-capacity-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 10px;" role="list" aria-label="Team member capacity overview">
+
+                    <div class="team-member tooltip capacity-ok" role="listitem" tabindex="0" aria-labelledby="member-zach-welliver-name" data-tooltip="Allocated: 0.0% of 100% max">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                            <div id="member-zach-welliver-name" class="team-member-name">Zach Welliver</div>
+                            <div class="capacity-status capacity-ok">Available</div>
+                        </div>
+                        <div class="team-member-capacity" aria-label="Current capacity utilization">0% / 100% capacity</div>
+                        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 0%">
+                            <div class="progress-fill " style="width: 0.0%" aria-hidden="true">
+                                0% allocated
                             </div>
                         </div>
-                        <div class="utilization-bar">
-                            <div class="utilization-fill" :style="`width: ${Math.min(member.current / member.max * 100, 100)}%`"></div>
-                        </div>
                     </div>
-                </template>
-            </div>
 
-            <!-- At Risk Tasks -->
-            <div class="card">
-                <h3>⚠️ At Risk Tasks</h3>
-                <template x-for="task in data.at_risk_tasks || []" :key="task.name">
-                    <div class="task-item">
-                        <strong x-text="task.name" style="color: #ef4444;"></strong>
-                        <div style="font-size: 0.9em; color: #666;">
-                            <span x-text="task.project"></span> • <span x-text="task.assignee"></span>
+                    <div class="team-member tooltip capacity-ok" role="listitem" tabindex="0" aria-labelledby="member-nick-clark-name" data-tooltip="Allocated: 0.0% of 100% max">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                            <div id="member-nick-clark-name" class="team-member-name">Nick Clark</div>
+                            <div class="capacity-status capacity-ok">Available</div>
                         </div>
-                        <div style="font-size: 0.8em; color: #ef4444;">
-                            <span x-text="task.risks?.join(', ') || 'No specific risks'"></span>
+                        <div class="team-member-capacity" aria-label="Current capacity utilization">0% / 100% capacity</div>
+                        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 0%">
+                            <div class="progress-fill " style="width: 0.0%" aria-hidden="true">
+                                0% allocated
+                            </div>
                         </div>
                     </div>
-                </template>
-            </div>
 
-            <!-- Upcoming Events -->
-            <div class="card">
-                <h3>📅 Upcoming Events</h3>
-                <template x-for="shoot in data.upcoming_shoots || []" :key="shoot.name">
-                    <div class="task-item">
-                        <strong x-text="shoot.name"></strong>
-                        <div style="font-size: 0.9em; color: #666;">
-                            <span x-text="shoot.project"></span>
+                    <div class="team-member tooltip capacity-ok" role="listitem" tabindex="0" aria-labelledby="member-adriel-abella-name" data-tooltip="Allocated: 0.0% of 100% max">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                            <div id="member-adriel-abella-name" class="team-member-name">Adriel Abella</div>
+                            <div class="capacity-status capacity-ok">Available</div>
                         </div>
-                        <div style="font-size: 0.8em; color: #4ade80;">
-                            <span x-text="new Date(shoot.datetime).toLocaleDateString()"></span>
+                        <div class="team-member-capacity" aria-label="Current capacity utilization">0% / 100% capacity</div>
+                        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 0%">
+                            <div class="progress-fill " style="width: 0.0%" aria-hidden="true">
+                                0% allocated
+                            </div>
                         </div>
                     </div>
-                </template>
+
+                    <div class="team-member tooltip capacity-ok" role="listitem" tabindex="0" aria-labelledby="member-john-meyer-name" data-tooltip="Allocated: 0.0% of 30% max">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                            <div id="member-john-meyer-name" class="team-member-name">John Meyer</div>
+                            <div class="capacity-status capacity-ok">Available</div>
+                        </div>
+                        <div class="team-member-capacity" aria-label="Current capacity utilization">0% / 30% capacity</div>
+                        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 0%">
+                            <div class="progress-fill " style="width: 0.0%" aria-hidden="true">
+                                0% allocated
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+        </section>
+
+        <!-- At-Risk Tasks (Full Width) -->
+        <div class="card full-width" style="margin-top: 30px; margin-bottom: 30px;">
+            <h2>At-Risk Tasks</h2>
+    
+            <div class="success-state">
+                <div style="font-size: 18px;">No tasks currently at risk</div>
+            </div>
+        
+        </div>
+
+        <!-- Upcoming Shoots -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>Upcoming Shoots</h2>
+    
+            <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+                <div style="font-size: 16px;">No upcoming shoots scheduled</div>
+            </div>
+        
+        </div>
+
+        <!-- Upcoming Project Deadlines -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>Upcoming Project Deadlines</h2>
+            <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Projects due within the next 10 days</p>
+    
+            <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+                <div style="font-size: 16px;">No upcoming deadlines in the next 10 days</div>
+            </div>
+        
+        </div>
+
+        <!-- Progress Rings -->
+        <div class="card full-width" style="margin-bottom: 30px; overflow: visible !important; padding: 40px 50px;">
+            <h2>Key Performance Metrics</h2>
+            <div class="progress-rings-container" style="overflow: visible !important;">
+                <div class="progress-ring">
+                    <svg class="progress-ring-svg" width="140" height="140">
+                        <circle class="progress-ring-circle progress-ring-bg" cx="70" cy="70" r="55"></circle>
+                        <circle class="progress-ring-circle progress-ring-progress" cx="70" cy="70" r="55"
+                                stroke="#4ecca3" id="ringOnTime"></circle>
+                    </svg>
+                    <div class="progress-ring-text">
+                        <span class="progress-ring-value" id="ringOnTimeValue">0%</span>
+                        <span class="progress-ring-label">On-Time Delivery</span>
+                    </div>
+                </div>
+                <div class="progress-ring">
+                    <svg class="progress-ring-svg" width="140" height="140">
+                        <circle class="progress-ring-circle progress-ring-bg" cx="70" cy="70" r="55"></circle>
+                        <circle class="progress-ring-circle progress-ring-progress" cx="70" cy="70" r="55"
+                                stroke="#60BBE9" id="ringUtilization"></circle>
+                    </svg>
+                    <div class="progress-ring-text">
+                        <span class="progress-ring-value" id="ringUtilizationValue">0%</span>
+                        <span class="progress-ring-label">Team Utilization</span>
+                    </div>
+                </div>
+                <div class="progress-ring">
+                    <svg class="progress-ring-svg" width="140" height="140">
+                        <circle class="progress-ring-circle progress-ring-bg" cx="70" cy="70" r="55"></circle>
+                        <circle class="progress-ring-circle progress-ring-progress" cx="70" cy="70" r="55"
+                                stroke="#a78bfa" id="ringProjects"></circle>
+                    </svg>
+                    <div class="progress-ring-text">
+                        <span class="progress-ring-value" id="ringProjectsValue">0</span>
+                        <span class="progress-ring-label">Active Projects</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div style="text-align: center; color: white; margin-top: 20px;">
-            <p>Last Updated: <span x-text="lastUpdated"></span></p>
+        <!-- Timeline Gantt -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>Project Timeline</h2>
+            <p style="color: var(--text-secondary); margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Next 10 days</p>
+            <div class="timeline-container" id="projectTimeline">
+                <!-- Timeline will be generated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Radar/Spider Chart -->
+        <div class="card full-width" style="margin-bottom: 30px; overflow: visible;">
+            <h2>Workload Balance</h2>
+            <p style="color: var(--text-secondary); margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Actual vs Target distribution across categories</p>
+            <div class="radar-container" id="radarChart">
+                <!-- Radar will be generated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Velocity Trend Chart -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>Team Velocity Trend</h2>
+            <p style="color: var(--text-secondary); margin-top: 5px; margin-bottom: 15px; font-size: 14px;">Projects completed per week over the last 8 weeks</p>
+            <div class="velocity-container">
+                <canvas id="velocityChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 6-Month Capacity Timeline -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>6-Month Capacity Timeline</h2>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 15px;">
+                Weekly team capacity projection showing workload distribution over the next 26 weeks
+            </div>
+    
+            <div style="margin-top: 15px;">
+                <!-- Timeline header with month labels -->
+                <div style="display: flex; margin-bottom: 10px; font-size: 12px; font-weight: bold; color: var(--text-secondary);">
+    
+                    <div style="flex: 4; text-align: center; border-right: 1px solid #dee2e6;">Feb</div>
+                
+                    <div style="flex: 4; text-align: center; border-right: 1px solid #dee2e6;">Mar</div>
+                
+                    <div style="flex: 4; text-align: center; border-right: 1px solid #dee2e6;">Apr</div>
+                
+                    <div style="flex: 5; text-align: center; border-right: 1px solid #dee2e6;">May</div>
+                
+                    <div style="flex: 4; text-align: center; border-right: 1px solid #dee2e6;">Jun</div>
+                
+                    <div style="flex: 5; text-align: center;">Jul</div>
+        
+                </div>
+
+                <!-- Timeline bars -->
+                <div style="display: flex; gap: 3px; height: 60px; align-items: flex-end;">
+    
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 1 (2026-02-06): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 2 (2026-02-13): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 3 (2026-02-20): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 4 (2026-02-27): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 5 (2026-03-06): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 6 (2026-03-13): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 7 (2026-03-20): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 8 (2026-03-27): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 9 (2026-04-03): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 10 (2026-04-10): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 11 (2026-04-17): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 12 (2026-04-24): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 13 (2026-05-01): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 14 (2026-05-08): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 15 (2026-05-15): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 16 (2026-05-22): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 17 (2026-05-29): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 18 (2026-06-05): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 19 (2026-06-12): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 20 (2026-06-19): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 21 (2026-06-26): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 22 (2026-07-03): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 23 (2026-07-10): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 24 (2026-07-17): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 25 (2026-07-24): 0% capacity, 0 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 26 (2026-07-31): 0% capacity, 0 tasks">
+                    </div>
+        
+                </div>
+
+                <!-- Week number labels (show every 4th week) -->
+                <div style="display: flex; gap: 3px; margin-top: 5px; font-size: 9px; color: var(--text-secondary);">
+    
+                    <div style="flex: 1; text-align: center; min-width: 8px;">W1</div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; text-align: center; min-width: 8px;">W5</div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; text-align: center; min-width: 8px;">W9</div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; text-align: center; min-width: 8px;">W13</div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; text-align: center; min-width: 8px;">W17</div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; text-align: center; min-width: 8px;">W21</div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                    <div style="flex: 1; text-align: center; min-width: 8px;">W25</div>
+            
+                    <div style="flex: 1; min-width: 8px;"></div>
+            
+                </div>
+
+                <!-- Legend -->
+                <div style="margin-top: 15px; font-size: 11px; color: var(--text-secondary); display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: #28a745; border-radius: 2px;"></span> Low</div>
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: #ffc107; border-radius: 2px;"></span> Medium</div>
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: #fd7e14; border-radius: 2px;"></span> High</div>
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: #dc3545; border-radius: 2px;"></span> Very High</div>
+                </div>
+                <div style="margin-top: 5px; font-size: 10px; color: var(--text-secondary); text-align: center; font-style: italic;">
+                    Colors scale adaptively based on peak workload over the 6-month period
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Workload Distribution Heatmap -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>Daily Workload Distribution - Next 30 Days</h2>
+            <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 15px;">
+                <strong>How busy will each day be?</strong> Shows the team's expected workload intensity per day (work distributed across task timelines)
+            </div>
+            <div class="heatmap-grid">
+    
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-06: 0.0% capacity">
+                    <div style="font-weight: bold;">02/06</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-07: 0.0% capacity">
+                    <div style="font-weight: bold;">02/07</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-08: 0.0% capacity">
+                    <div style="font-weight: bold;">02/08</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-09: 0.0% capacity">
+                    <div style="font-weight: bold;">02/09</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-10: 0.0% capacity">
+                    <div style="font-weight: bold;">02/10</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-11: 0.0% capacity">
+                    <div style="font-weight: bold;">02/11</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-12: 0.0% capacity">
+                    <div style="font-weight: bold;">02/12</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-13: 0.0% capacity">
+                    <div style="font-weight: bold;">02/13</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-14: 0.0% capacity">
+                    <div style="font-weight: bold;">02/14</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-15: 0.0% capacity">
+                    <div style="font-weight: bold;">02/15</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-16: 0.0% capacity">
+                    <div style="font-weight: bold;">02/16</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-17: 0.0% capacity">
+                    <div style="font-weight: bold;">02/17</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-18: 0.0% capacity">
+                    <div style="font-weight: bold;">02/18</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-19: 0.0% capacity">
+                    <div style="font-weight: bold;">02/19</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-20: 0.0% capacity">
+                    <div style="font-weight: bold;">02/20</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-21: 0.0% capacity">
+                    <div style="font-weight: bold;">02/21</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-22: 0.0% capacity">
+                    <div style="font-weight: bold;">02/22</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-23: 0.0% capacity">
+                    <div style="font-weight: bold;">02/23</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-24: 0.0% capacity">
+                    <div style="font-weight: bold;">02/24</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-25: 0.0% capacity">
+                    <div style="font-weight: bold;">02/25</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-26: 0.0% capacity">
+                    <div style="font-weight: bold;">02/26</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-27: 0.0% capacity">
+                    <div style="font-weight: bold;">02/27</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-28: 0.0% capacity">
+                    <div style="font-weight: bold;">02/28</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-01: 0.0% capacity">
+                    <div style="font-weight: bold;">03/01</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-02: 0.0% capacity">
+                    <div style="font-weight: bold;">03/02</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-03: 0.0% capacity">
+                    <div style="font-weight: bold;">03/03</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-04: 0.0% capacity">
+                    <div style="font-weight: bold;">03/04</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-05: 0.0% capacity">
+                    <div style="font-weight: bold;">03/05</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-06: 0.0% capacity">
+                    <div style="font-weight: bold;">03/06</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-03-07: 0.0% capacity">
+                    <div style="font-weight: bold;">03/07</div>
+                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                </div>
+        
+            </div>
+            <div style="margin-top: 15px; font-size: 11px; color: var(--text-secondary); display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <div><span style="display: inline-block; width: 12px; height: 12px; background: #20c997; border-radius: 2px;"></span> Very Low</div>
+                <div><span style="display: inline-block; width: 12px; height: 12px; background: #28a745; border-radius: 2px;"></span> Low</div>
+                <div><span style="display: inline-block; width: 12px; height: 12px; background: #ffc107; border-radius: 2px;"></span> Medium</div>
+                <div><span style="display: inline-block; width: 12px; height: 12px; background: #fd7e14; border-radius: 2px;"></span> High</div>
+                <div><span style="display: inline-block; width: 12px; height: 12px; background: #dc3545; border-radius: 2px;"></span> Very High</div>
+            </div>
+            <div style="margin-top: 10px; font-size: 11px; color: var(--text-secondary); text-align: center;">
+                <em>Colors scale adaptively based on peak workload over the 30-day period</em>
+            </div>
+        </div>
+
+        <!-- Historical Capacity Utilization -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>Historical Capacity Utilization</h2>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+                Team utilization percentage over the last 30 days (click legend items to filter)
+            </div>
+            <div class="chart-container">
+                <canvas id="capacityHistoryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Forecasted Projects -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>Forecasted Projects</h2>
+            <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Upcoming projects in the forecast pipeline</p>
+    
+            <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+                <div style="font-size: 16px;">No forecasted projects at this time</div>
+            </div>
+        
+        </div>
+
+        <!-- Historical Trends Chart -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>Historical Allocation Trends</h2>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+                Daily allocation percentages over time
+            </div>
+            <div class="chart-container">
+                <canvas id="trendsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Category Performance Summary -->
+        <div class="card full-width" style="margin-bottom: 30px;">
+            <h2>Category Performance Summary</h2>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px;">
+                Allocation performance across all project categories
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border-color);">
+                            <th style="text-align: left; padding: 12px 16px; font-weight: 600; color: var(--text-primary);">Category</th>
+                            <th style="text-align: right; padding: 12px 16px; font-weight: 600; color: var(--text-primary);">Cumulative Avg</th>
+                            <th style="text-align: right; padding: 12px 16px; font-weight: 600; color: var(--text-primary);">Annual Target</th>
+                            <th style="text-align: right; padding: 12px 16px; font-weight: 600; color: var(--text-primary);">Variance</th>
+                            <th style="text-align: center; padding: 12px 16px; font-weight: 600; color: var(--text-primary);">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: rgba(96, 187, 233, 0.05); border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 12px 16px; font-weight: 500; color: var(--text-primary);">Communications</td>
+                            <td style="padding: 12px 16px; text-align: right; font-weight: 500;">49.6%</td>
+                            <td style="padding: 12px 16px; text-align: right; color: var(--text-secondary);">30.0%</td>
+                            <td style="padding: 12px 16px; text-align: right; font-weight: 600;" class="negative">+19.6%</td>
+                            <td style="padding: 12px 16px; text-align: center; font-size: 12px;">
+                                <span style="display: inline-flex; align-items: center; gap: 4px;">
+                                    <span>!</span>
+                                    <span>Over Allocated</span>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr style="background: transparent; border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 12px 16px; font-weight: 500; color: var(--text-primary);">Creative Resources</td>
+                            <td style="padding: 12px 16px; text-align: right; font-weight: 500;">4.8%</td>
+                            <td style="padding: 12px 16px; text-align: right; color: var(--text-secondary);">15.0%</td>
+                            <td style="padding: 12px 16px; text-align: right; font-weight: 600;" class="negative">-10.2%</td>
+                            <td style="padding: 12px 16px; text-align: center; font-size: 12px;">
+                                <span style="display: inline-flex; align-items: center; gap: 4px;">
+                                    <span>!</span>
+                                    <span>Under Allocated</span>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr style="background: rgba(96, 187, 233, 0.05); border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 12px 16px; font-weight: 500; color: var(--text-primary);">Partners</td>
+                            <td style="padding: 12px 16px; text-align: right; font-weight: 500;">0.1%</td>
+                            <td style="padding: 12px 16px; text-align: right; color: var(--text-secondary);">5.0%</td>
+                            <td style="padding: 12px 16px; text-align: right; font-weight: 600;" class="positive">-4.9%</td>
+                            <td style="padding: 12px 16px; text-align: center; font-size: 12px;">
+                                <span style="display: inline-flex; align-items: center; gap: 4px;">
+                                    <span>✓</span>
+                                    <span>On Track</span>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr style="background: transparent; border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 12px 16px; font-weight: 500; color: var(--text-primary);">Pastoral/Strategic</td>
+                            <td style="padding: 12px 16px; text-align: right; font-weight: 500;">34.0%</td>
+                            <td style="padding: 12px 16px; text-align: right; color: var(--text-secondary);">20.0%</td>
+                            <td style="padding: 12px 16px; text-align: right; font-weight: 600;" class="negative">+14.0%</td>
+                            <td style="padding: 12px 16px; text-align: center; font-size: 12px;">
+                                <span style="display: inline-flex; align-items: center; gap: 4px;">
+                                    <span>!</span>
+                                    <span>Over Allocated</span>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr style="background: rgba(96, 187, 233, 0.05); border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 12px 16px; font-weight: 500; color: var(--text-primary);">Spiritual Formation</td>
+                            <td style="padding: 12px 16px; text-align: right; font-weight: 500;">11.2%</td>
+                            <td style="padding: 12px 16px; text-align: right; color: var(--text-secondary);">25.0%</td>
+                            <td style="padding: 12px 16px; text-align: right; font-weight: 600;" class="negative">-13.8%</td>
+                            <td style="padding: 12px 16px; text-align: center; font-size: 12px;">
+                                <span style="display: inline-flex; align-items: center; gap: 4px;">
+                                    <span>!</span>
+                                    <span>Under Allocated</span>
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script>
-        function dashboard() {
-            return {
-                data: {},
-                loading: false,
-                lastUpdated: 'Never',
 
-                async init() {
-                    await this.refreshData();
+        // Historical Trends Chart
+
+        // Function to get theme-aware colors
+        function getChartTextColor() {
+            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            return isDarkMode ? '#ffffff' : '#333333';
+        }
+
+        function getChartGridColor() {
+            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            return isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+        }
+
+        const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+        new Chart(trendsCtx, {
+            type: 'line',
+            data: {
+                labels: ["2025-11-25", "2025-11-26", "2025-11-27", "2025-11-28", "2025-11-29", "2025-11-30", "2025-12-01", "2025-12-02", "2025-12-03", "2025-12-04", "2025-12-05", "2025-12-06", "2025-12-07", "2025-12-08", "2025-12-09", "2025-12-10", "2025-12-11", "2025-12-12", "2025-12-13", "2025-12-14", "2025-12-15", "2025-12-16", "2025-12-17", "2025-12-18", "2025-12-19", "2025-12-20", "2025-12-21", "2025-12-22", "2025-12-23", "2025-12-24", "2025-12-25", "2025-12-28", "2025-12-29", "2025-12-30", "2025-12-31", "2026-01-01", "2026-01-02", "2026-01-03", "2026-01-04", "2026-01-05", "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09", "2026-01-10", "2026-01-11", "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15", "2026-01-16", "2026-01-17", "2026-01-18", "2026-01-19", "2026-01-20", "2026-01-21", "2026-01-22", "2026-01-23", "2026-01-24", "2026-01-25", "2026-01-26", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30", "2026-01-31", "2026-02-01", "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05", "2026-02-06"],
+                datasets: [{"label": "Spiritual Formation", "data": [18.7, 18.3, 10.8, 10.9, 9.3, 11.1, 11.2, 11.3, 11.5, 11.6, 11.4, 11.6, 11.8, 11.9, 8.5, 8.5, 8.5, 8.6, 8.7, 8.8, 8.9, 9.0, 9.1, 8.6, 8.7, 8.8, 8.9, 9.0, 8.8, 8.9, 9.0, 9.3, 9.5, 9.6, 9.8, 9.9, 10.1, 10.3, 10.4, 10.6, 9.7, 9.9, 10.3, 10.4, 9.9, 10.3, 10.5, 10.2, 10.2, 12.1, 11.5, 11.6, 11.8, 11.9, 12.0, 12.1, 12.0, 11.7, 11.8, 9.1, 9.0, 9.0, 14.4, 18.9, 17.4, 17.1, 17.3, 17.4, 14.5, 14.9, 14.7, 14.5], "borderColor": "#60BBE9", "backgroundColor": "#60BBE9", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Communications", "data": [30.5, 29.7, 33.1, 32.8, 32.8, 32.4, 32.1, 32.1, 31.8, 31.6, 33.4, 32.5, 32.6, 32.7, 52.6, 52.9, 53.4, 53.5, 53.7, 54.2, 54.7, 55.2, 55.8, 58.9, 59.4, 60.0, 60.6, 61.1, 59.2, 59.8, 60.4, 62.1, 62.6, 63.1, 63.7, 64.3, 64.9, 65.5, 66.1, 66.8, 62.8, 63.3, 63.0, 62.6, 56.4, 56.0, 56.7, 57.1, 58.4, 57.0, 54.4, 54.8, 55.3, 55.7, 56.2, 56.7, 58.0, 53.2, 53.6, 41.1, 40.4, 40.8, 39.2, 38.9, 35.0, 34.7, 34.8, 34.9, 37.1, 37.3, 37.3, 36.6], "borderColor": "#09243F", "backgroundColor": "#09243F", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Creative Resources", "data": [9.4, 6.4, 11.2, 11.3, 9.7, 11.5, 11.7, 11.8, 11.9, 12.0, 11.9, 12.1, 11.8, 11.5, 7.9, 7.7, 7.4, 7.2, 7.0, 6.7, 6.5, 6.3, 6.1, 5.5, 5.3, 5.0, 4.8, 4.5, 4.1, 3.9, 3.6, 2.8, 2.5, 2.3, 2.0, 1.7, 1.4, 1.0, 0.7, 0.4, 3.2, 3.0, 2.8, 2.4, 2.0, 1.7, 1.4, 1.0, 0.7, 0.3, 2.3, 2.0, 1.7, 1.4, 1.1, 0.7, 0.4, 2.5, 2.1, 1.4, 1.1, 0.8, 0.5, 0.2, 6.0, 5.7, 5.6, 5.4, 5.4, 5.3, 5.1, 4.8], "borderColor": "#28a745", "backgroundColor": "#28a745", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Pastoral/Strategic", "data": [37.0, 42.7, 45.0, 45.0, 38.1, 45.0, 45.0, 44.8, 44.9, 44.8, 43.3, 43.7, 43.8, 43.9, 31.0, 30.9, 30.7, 30.7, 30.6, 30.3, 29.9, 29.5, 29.1, 27.0, 26.6, 26.2, 25.7, 25.3, 27.9, 27.5, 27.0, 25.8, 25.4, 25.0, 24.5, 24.1, 23.7, 23.2, 22.7, 22.3, 23.8, 23.4, 23.6, 24.3, 31.5, 31.7, 31.2, 31.6, 30.7, 30.6, 31.8, 31.5, 31.3, 31.0, 30.7, 30.5, 29.6, 32.6, 32.4, 48.5, 49.6, 49.3, 45.8, 41.9, 41.6, 42.5, 42.4, 42.3, 43.0, 42.5, 42.9, 44.1], "borderColor": "#ffc107", "backgroundColor": "#ffc107", "borderWidth": 2, "fill": false, "tension": 0.1}, {"label": "Partners", "data": [4.4, 3.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.4, 0.4, 0.3, 0.2, 0.2, 0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "borderColor": "#dc3545", "backgroundColor": "#dc3545", "borderWidth": 2, "fill": false, "tension": 0.1}]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
                 },
-
-                async refreshData() {
-                    this.loading = true;
-                    try {
-                        const response = await fetch('/api/dashboard');
-                        this.data = await response.json();
-                        this.lastUpdated = new Date().toLocaleTimeString();
-                    } catch (error) {
-                        console.error('Failed to fetch data:', error);
-                        this.data = { error: 'Failed to load data' };
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: getChartTextColor(),
+                            font: {
+                                size: window.innerWidth < 768 ? 10 : 12
+                            },
+                            callback: function(value) {
+                                return value + '%';
+                            },
+                            maxTicksLimit: window.innerWidth < 768 ? 6 : 10
+                        },
+                        grid: {
+                            color: getChartGridColor(),
+                            display: window.innerWidth >= 480
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: getChartTextColor(),
+                            font: {
+                                size: window.innerWidth < 768 ? 9 : 11
+                            },
+                            maxRotation: window.innerWidth < 768 ? 90 : 45,
+                            minRotation: window.innerWidth < 768 ? 90 : 45,
+                            autoSkip: true,
+                            autoSkipPadding: window.innerWidth < 768 ? 20 : 10,
+                            maxTicksLimit: window.innerWidth < 480 ? 10 : (window.innerWidth < 768 ? 15 : 20)
+                        },
+                        grid: {
+                            color: getChartGridColor(),
+                            display: false
+                        }
                     }
-                    this.loading = false;
+                },
+                plugins: {
+                    legend: {
+                        position: window.innerWidth < 768 ? 'bottom' : 'top',
+                        labels: {
+                            color: getChartTextColor(),
+                            font: {
+                                size: window.innerWidth < 768 ? 10 : 12
+                            },
+                            padding: window.innerWidth < 768 ? 8 : 10,
+                            boxWidth: window.innerWidth < 768 ? 12 : 15,
+                            boxHeight: window.innerWidth < 768 ? 12 : 15
+                        }
+                    },
+                    tooltip: {
+                        enabled: true,
+                        mode: 'index',
+                        intersect: false,
+                        titleFont: {
+                            size: window.innerWidth < 768 ? 11 : 13
+                        },
+                        bodyFont: {
+                            size: window.innerWidth < 768 ? 10 : 12
+                        },
+                        padding: window.innerWidth < 768 ? 8 : 12,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Historical Capacity Utilization Chart with per-member datasets
+        function generateCapacityHistoryChart() {
+            console.log('=== generateCapacityHistoryChart called ===');
+
+            // Destroy existing chart if it exists
+            if (window.capacityHistoryChart) {
+                console.log('Destroying existing chart');
+                try {
+                    window.capacityHistoryChart.destroy();
+                } catch (e) {
+                    console.log('Error destroying chart:', e);
+                }
+                window.capacityHistoryChart = null;
+            }
+
+            const chartElement = document.getElementById('capacityHistoryChart');
+            console.log('Chart element found:', !!chartElement);
+
+            if (chartElement) {
+                // Force refresh container dimensions before creating chart
+                chartElement.style.display = 'block';
+                chartElement.style.visibility = 'visible';
+                chartElement.style.opacity = '1';
+
+                // Trigger reflow to ensure dimensions are calculated
+                const width = chartElement.offsetWidth;
+                const height = chartElement.offsetHeight;
+                console.log('Chart container dimensions:', width, 'x', height);
+                console.log('Chart container style:', chartElement.style.cssText);
+
+                // Ensure minimum dimensions for chart visibility
+                if (width < 200) {
+                    console.log('Container width too small, setting minimum width');
+                    chartElement.style.minWidth = '300px';
+                }
+                if (height < 150) {
+                    console.log('Container height too small, setting minimum height');
+                    chartElement.style.minHeight = '200px';
+                }
+
+                const historyCtx = chartElement.getContext('2d');
+                console.log('Canvas context obtained:', !!historyCtx);
+
+                const capacityHistoryByMember = {"Zach Welliver": [{"date": "2026-01-07", "utilization_percent": 194.0}, {"date": "2026-01-08", "utilization_percent": 194.0}, {"date": "2026-01-09", "utilization_percent": 180.0}, {"date": "2026-01-10", "utilization_percent": 180.0}, {"date": "2026-01-11", "utilization_percent": 180.0}, {"date": "2026-01-12", "utilization_percent": 130.0}, {"date": "2026-01-13", "utilization_percent": 120.0}, {"date": "2026-01-14", "utilization_percent": 130.0}, {"date": "2026-01-15", "utilization_percent": 130.0}, {"date": "2026-01-16", "utilization_percent": 130.0}, {"date": "2026-01-17", "utilization_percent": 130.0}, {"date": "2026-01-18", "utilization_percent": 130.0}, {"date": "2026-01-19", "utilization_percent": 130.0}, {"date": "2026-01-20", "utilization_percent": 130.0}, {"date": "2026-01-21", "utilization_percent": 140.0}, {"date": "2026-01-22", "utilization_percent": 140.0}, {"date": "2026-01-23", "utilization_percent": 140.0}, {"date": "2026-01-24", "utilization_percent": 292.0}, {"date": "2026-01-25", "utilization_percent": 324.0}, {"date": "2026-01-26", "utilization_percent": 196.2}, {"date": "2026-01-27", "utilization_percent": 227.5}, {"date": "2026-01-28", "utilization_percent": 265.0}, {"date": "2026-01-29", "utilization_percent": 258.8}, {"date": "2026-01-30", "utilization_percent": 252.5}, {"date": "2026-01-31", "utilization_percent": 252.5}, {"date": "2026-02-01", "utilization_percent": 252.5}, {"date": "2026-02-02", "utilization_percent": 258.8}, {"date": "2026-02-03", "utilization_percent": 236.2}, {"date": "2026-02-04", "utilization_percent": 230.0}, {"date": "2026-02-05", "utilization_percent": 230.0}], "Nick Clark": [{"date": "2026-01-07", "utilization_percent": 58.0}, {"date": "2026-01-08", "utilization_percent": 42.0}, {"date": "2026-01-09", "utilization_percent": 71.0}, {"date": "2026-01-10", "utilization_percent": 59.0}, {"date": "2026-01-11", "utilization_percent": 59.0}, {"date": "2026-01-12", "utilization_percent": 71.0}, {"date": "2026-01-13", "utilization_percent": 150.0}, {"date": "2026-01-14", "utilization_percent": 64.0}, {"date": "2026-01-15", "utilization_percent": 64.0}, {"date": "2026-01-16", "utilization_percent": 64.0}, {"date": "2026-01-17", "utilization_percent": 64.0}, {"date": "2026-01-18", "utilization_percent": 64.0}, {"date": "2026-01-19", "utilization_percent": 64.0}, {"date": "2026-01-20", "utilization_percent": 64.0}, {"date": "2026-01-21", "utilization_percent": 64.0}, {"date": "2026-01-22", "utilization_percent": 58.0}, {"date": "2026-01-23", "utilization_percent": 58.0}, {"date": "2026-01-24", "utilization_percent": 58.0}, {"date": "2026-01-25", "utilization_percent": 58.0}, {"date": "2026-01-26", "utilization_percent": 58.0}, {"date": "2026-01-27", "utilization_percent": 58.0}, {"date": "2026-01-28", "utilization_percent": 64.0}, {"date": "2026-01-29", "utilization_percent": 64.0}, {"date": "2026-01-30", "utilization_percent": 63.0}, {"date": "2026-01-31", "utilization_percent": 63.0}, {"date": "2026-02-01", "utilization_percent": 63.0}, {"date": "2026-02-02", "utilization_percent": 63.0}, {"date": "2026-02-03", "utilization_percent": 63.0}, {"date": "2026-02-04", "utilization_percent": 69.0}, {"date": "2026-02-05", "utilization_percent": 69.0}], "Adriel Abella": [{"date": "2026-01-07", "utilization_percent": 27.0}, {"date": "2026-01-08", "utilization_percent": 27.0}, {"date": "2026-01-09", "utilization_percent": 27.0}, {"date": "2026-01-10", "utilization_percent": 27.0}, {"date": "2026-01-11", "utilization_percent": 27.0}, {"date": "2026-01-12", "utilization_percent": 27.0}, {"date": "2026-01-13", "utilization_percent": 27.0}, {"date": "2026-01-14", "utilization_percent": 32.0}, {"date": "2026-01-15", "utilization_percent": 27.0}, {"date": "2026-01-16", "utilization_percent": 27.0}, {"date": "2026-01-17", "utilization_percent": 27.0}, {"date": "2026-01-18", "utilization_percent": 27.0}, {"date": "2026-01-19", "utilization_percent": 27.0}, {"date": "2026-01-20", "utilization_percent": 27.0}, {"date": "2026-01-21", "utilization_percent": 27.0}, {"date": "2026-01-22", "utilization_percent": 27.0}, {"date": "2026-01-23", "utilization_percent": 27.0}, {"date": "2026-01-24", "utilization_percent": 27.0}, {"date": "2026-01-25", "utilization_percent": 39.0}, {"date": "2026-01-26", "utilization_percent": 44.0}, {"date": "2026-01-27", "utilization_percent": 44.0}, {"date": "2026-01-28", "utilization_percent": 44.0}, {"date": "2026-01-29", "utilization_percent": 49.0}, {"date": "2026-01-30", "utilization_percent": 55.0}, {"date": "2026-01-31", "utilization_percent": 55.0}, {"date": "2026-02-01", "utilization_percent": 55.0}, {"date": "2026-02-02", "utilization_percent": 55.0}, {"date": "2026-02-03", "utilization_percent": 73.0}, {"date": "2026-02-04", "utilization_percent": 68.0}, {"date": "2026-02-05", "utilization_percent": 62.0}], "John Meyer": [{"date": "2026-01-07", "utilization_percent": 40.0}, {"date": "2026-01-08", "utilization_percent": 40.0}, {"date": "2026-01-09", "utilization_percent": 40.0}, {"date": "2026-01-10", "utilization_percent": 40.0}, {"date": "2026-01-11", "utilization_percent": 40.0}, {"date": "2026-01-12", "utilization_percent": 40.0}, {"date": "2026-01-13", "utilization_percent": 40.0}, {"date": "2026-01-14", "utilization_percent": 40.0}, {"date": "2026-01-15", "utilization_percent": 40.0}, {"date": "2026-01-16", "utilization_percent": 40.0}, {"date": "2026-01-17", "utilization_percent": 40.0}, {"date": "2026-01-18", "utilization_percent": 40.0}, {"date": "2026-01-19", "utilization_percent": 40.0}, {"date": "2026-01-20", "utilization_percent": 40.0}, {"date": "2026-01-21", "utilization_percent": 40.0}, {"date": "2026-01-22", "utilization_percent": 40.0}, {"date": "2026-01-23", "utilization_percent": 40.0}, {"date": "2026-01-24", "utilization_percent": 40.0}, {"date": "2026-01-25", "utilization_percent": 40.0}, {"date": "2026-01-26", "utilization_percent": 40.0}, {"date": "2026-01-27", "utilization_percent": 40.0}, {"date": "2026-01-28", "utilization_percent": 40.0}, {"date": "2026-01-29", "utilization_percent": 0.0}, {"date": "2026-01-30", "utilization_percent": 0.0}, {"date": "2026-01-31", "utilization_percent": 0.0}, {"date": "2026-02-01", "utilization_percent": 0.0}, {"date": "2026-02-02", "utilization_percent": 0.0}, {"date": "2026-02-03", "utilization_percent": 0.0}, {"date": "2026-02-04", "utilization_percent": 0.0}, {"date": "2026-02-05", "utilization_percent": 0.0}], "Team Total": [{"date": "2026-01-07", "utilization_percent": 69.3}, {"date": "2026-01-08", "utilization_percent": 63.6}, {"date": "2026-01-09", "utilization_percent": 71.4}, {"date": "2026-01-10", "utilization_percent": 67.1}, {"date": "2026-01-11", "utilization_percent": 67.1}, {"date": "2026-01-12", "utilization_percent": 62.5}, {"date": "2026-01-13", "utilization_percent": 88.9}, {"date": "2026-01-14", "utilization_percent": 61.8}, {"date": "2026-01-15", "utilization_percent": 60.0}, {"date": "2026-01-16", "utilization_percent": 60.0}, {"date": "2026-01-17", "utilization_percent": 60.0}, {"date": "2026-01-18", "utilization_percent": 60.0}, {"date": "2026-01-19", "utilization_percent": 60.0}, {"date": "2026-01-20", "utilization_percent": 60.0}, {"date": "2026-01-21", "utilization_percent": 61.8}, {"date": "2026-01-22", "utilization_percent": 59.6}, {"date": "2026-01-23", "utilization_percent": 59.6}, {"date": "2026-01-24", "utilization_percent": 86.8}, {"date": "2026-01-25", "utilization_percent": 96.8}, {"date": "2026-01-26", "utilization_percent": 87.4}, {"date": "2026-01-27", "utilization_percent": 95.5}, {"date": "2026-01-28", "utilization_percent": 107.1}, {"date": "2026-01-29", "utilization_percent": 103.2}, {"date": "2026-01-30", "utilization_percent": 103.2}, {"date": "2026-01-31", "utilization_percent": 103.2}, {"date": "2026-02-01", "utilization_percent": 103.2}, {"date": "2026-02-02", "utilization_percent": 104.8}, {"date": "2026-02-03", "utilization_percent": 104.8}, {"date": "2026-02-04", "utilization_percent": 103.5}, {"date": "2026-02-05", "utilization_percent": 101.6}]};
+                console.log('Data received:', Object.keys(capacityHistoryByMember), 'members with data');
+
+                // Build datasets for each team member
+                const datasets = [];
+                const memberColors = {
+                    'Zach Welliver': '#9B59B6',
+                    'Nick Clark': '#36A2EB',
+                    'Adriel Abella': '#FFCE56',
+                    'John Meyer': '#4BC0C0',
+                    'Team Total': '#60BBE9'
+                };
+
+                // Extract all unique dates from Team Total (or first available member)
+                let allDates = [];
+                if (capacityHistoryByMember['Team Total']) {
+                    allDates = capacityHistoryByMember['Team Total'].map(d => d.date);
+                } else {
+                    // Fallback to first member with data
+                    const firstMember = Object.keys(capacityHistoryByMember)[0];
+                    if (firstMember) {
+                        allDates = capacityHistoryByMember[firstMember].map(d => d.date);
+                    }
+                }
+
+                console.log('About to build datasets...');
+                console.log('All dates found:', allDates.length, 'dates from', allDates[0], 'to', allDates[allDates.length - 1]);
+
+                // Create dataset for each team member
+                const memberOrder = ['Zach Welliver', 'Nick Clark', 'Adriel Abella', 'John Meyer', 'Team Total'];
+                memberOrder.forEach(memberName => {
+                    if (capacityHistoryByMember[memberName]) {
+                        const memberData = capacityHistoryByMember[memberName];
+                        const color = memberColors[memberName] || '#999999';
+                        const isTeamTotal = memberName === 'Team Total';
+
+                        datasets.push({
+                            label: memberName,
+                            data: memberData.map(d => parseFloat(d.utilization_percent)),
+                            borderColor: color,
+                            backgroundColor: isTeamTotal ? `${color}33` : 'transparent',
+                            borderWidth: isTeamTotal ? 3 : 2,
+                            fill: isTeamTotal,
+                            tension: 0.3,
+                            pointRadius: isTeamTotal ? 5 : 3,
+                            pointBackgroundColor: color,
+                            pointBorderColor: color,
+                            pointBorderWidth: 2,
+                            hidden: false
+                        });
+                    }
+                });
+
+                // Add 100% capacity redline
+                datasets.push({
+                    label: '100% Capacity Threshold',
+                    data: Array(allDates.length).fill(100),
+                    borderColor: '#dc3545',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    borderDash: [10, 5],
+                    fill: false,
+                    tension: 0,
+                    pointRadius: 0,
+                    pointHoverRadius: 0
+                });
+
+                console.log('Generated datasets:', datasets.length, 'datasets for chart');
+                datasets.forEach((ds, i) => console.log('Dataset', i + ':', ds.label, 'with', ds.data.length, 'data points'));
+
+                if (datasets.length > 0) {
+                    console.log('Dataset details:', datasets.map(d => ({name: d.label, dataPoints: d.data.length})));
+                }
+
+                if (datasets.length > 0) {
+                    console.log('About to create chart with', allDates.length, 'labels and', datasets.length, 'datasets');
+
+                    try {
+                        window.capacityHistoryChart = new Chart(historyCtx, {
+                        type: 'line',
+                        data: {
+                            labels: allDates,
+                            datasets: datasets
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            resizeDelay: 0,
+                            devicePixelRatio: window.devicePixelRatio || 1,
+                            layout: {
+                                padding: {
+                                    top: window.innerWidth < 768 ? 10 : 20,
+                                    bottom: window.innerWidth < 768 ? 10 : 0
+                                }
+                            },
+                            interaction: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    suggestedMax: 100,
+                                    ticks: {
+                                        color: getChartTextColor(),
+                                        font: {
+                                            size: window.innerWidth < 768 ? 10 : 12
+                                        },
+                                        callback: function(value) {
+                                            return value + '%';
+                                        },
+                                        maxTicksLimit: window.innerWidth < 768 ? 6 : 10
+                                    },
+                                    grid: {
+                                        color: getChartGridColor(),
+                                        display: window.innerWidth >= 480
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        color: getChartTextColor(),
+                                        font: {
+                                            size: window.innerWidth < 768 ? 9 : 11
+                                        },
+                                        maxRotation: window.innerWidth < 768 ? 90 : 45,
+                                        minRotation: window.innerWidth < 768 ? 90 : 45,
+                                        autoSkip: true,
+                                        autoSkipPadding: window.innerWidth < 768 ? 20 : 10,
+                                        maxTicksLimit: window.innerWidth < 480 ? 8 : (window.innerWidth < 768 ? 12 : 20)
+                                    },
+                                    grid: {
+                                        color: getChartGridColor(),
+                                        display: false
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    position: window.innerWidth < 768 ? 'bottom' : 'top',
+                                    labels: {
+                                        color: getChartTextColor(),
+                                        usePointStyle: true,
+                                        font: {
+                                            size: window.innerWidth < 768 ? 10 : 12
+                                        },
+                                        padding: window.innerWidth < 768 ? 6 : 10,
+                                        boxWidth: window.innerWidth < 768 ? 10 : 12,
+                                        boxHeight: window.innerWidth < 768 ? 10 : 12
+                                    }
+                                },
+                                tooltip: {
+                                    enabled: true,
+                                    mode: 'index',
+                                    intersect: false,
+                                    titleFont: {
+                                        size: window.innerWidth < 768 ? 11 : 13
+                                    },
+                                    bodyFont: {
+                                        size: window.innerWidth < 768 ? 10 : 12
+                                    },
+                                    padding: window.innerWidth < 768 ? 8 : 12,
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        });
+
+                        console.log('Chart created successfully:', !!window.capacityHistoryChart);
+                    } catch (error) {
+                        console.error('Error creating capacity history chart:', error);
+                        console.log('Chart data that caused error:', {
+                            labels: allDates.slice(0, 5),
+                            datasetCount: datasets.length,
+                            firstDataset: datasets[0] ? {
+                                label: datasets[0].label,
+                                dataLength: datasets[0].data.length,
+                                firstFewData: datasets[0].data.slice(0, 5)
+                            } : null
+                        });
+                        return;
+                    }
+                    if (window.capacityHistoryChart) {
+                        console.log('Chart status - datasets:', window.capacityHistoryChart.data.datasets.length, 'visible:', window.capacityHistoryChart.canvas.style.display !== 'none');
+                    }
+
+                    // Mobile-specific post-creation validation
+                    if (isMobile && window.capacityHistoryChart) {
+                        setTimeout(() => {
+                            console.log('Post-creation mobile validation for capacity chart');
+                            const chart = window.capacityHistoryChart;
+                            if (chart && (!chart.data || !chart.data.datasets || chart.data.datasets.length === 0)) {
+                                console.log('Mobile chart missing data after creation - forcing update');
+                                chart.update('none');
+                            }
+                        }, 200);
+                    }
+                } else {
+                    console.log('No datasets generated for capacity history chart');
                 }
             }
         }
+
+        // Simple chart initialization check
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                if (!window.capacityHistoryChart) {
+                    console.log('Chart not found on load, creating...');
+                    generateCapacityHistoryChart();
+                }
+            }, 500);
+        });
+
+        // Additional chart validation - check every few seconds to ensure chart stays visible
+        function validateCapacityChart() {
+            const chartElement = document.getElementById('capacityHistoryChart');
+            if (chartElement && (!window.capacityHistoryChart ||
+                !window.capacityHistoryChart.canvas ||
+                window.capacityHistoryChart.canvas.style.display === 'none')) {
+                console.log('Historical Capacity chart validation failed - recreating');
+                if (window.capacityHistoryChart) {
+                    try {
+                        window.capacityHistoryChart.destroy();
+                    } catch (e) {
+                        console.log('Error destroying during validation:', e);
+                    }
+                    window.capacityHistoryChart = null;
+                }
+                generateCapacityHistoryChart();
+            }
+        }
+
+        // Run validation after DOM changes or potential CSS recalculations
+        setTimeout(() => {
+            validateCapacityChart();
+            setInterval(validateCapacityChart, 10000); // Check every 10 seconds
+        }, 2000);
+
+        // ===== NEW CHART VISUALIZATIONS =====
+
+        // Progress Rings
+        function animateProgressRing(elementId, valueId, percentage, isNumber = false) {
+            const ring = document.getElementById(elementId);
+            const valueEl = document.getElementById(valueId);
+            if (!ring || !valueEl) return;
+
+            const radius = 55;
+            const circumference = 2 * Math.PI * radius;
+
+            ring.style.strokeDasharray = circumference;
+            ring.style.strokeDashoffset = circumference;
+
+            setTimeout(() => {
+                const offset = circumference - (percentage / 100) * circumference;
+                ring.style.strokeDashoffset = offset;
+
+                // Animate the number
+                let current = 0;
+                const target = isNumber ? percentage : percentage;
+                const interval = setInterval(() => {
+                    current += isNumber ? 1 : 1;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(interval);
+                    }
+                    valueEl.textContent = isNumber ? Math.round(current) : Math.round(current) + '%';
+                }, 20);
+            }, 700);
+        }
+
+        // Timeline Gantt
+        function generateTimeline() {
+            const timelineContainer = document.getElementById('projectTimeline');
+            if (!timelineContainer) return;
+
+            // Real shoots and deadlines data
+            const shoots = [];
+            const deadlines = [];
+
+            // Combine and convert to timeline format
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            const projects = [];
+
+            // Add shoots
+            shoots.forEach(shoot => {
+                // Use start_on to due_on range if available, otherwise estimate duration
+                let startDate, endDate, duration;
+
+                if (shoot.start_on && shoot.due_on) {
+                    // Project has full date range
+                    startDate = new Date(shoot.start_on);
+                    endDate = new Date(shoot.due_on);
+                } else if (shoot.start_on) {
+                    // Has start but no due date - use film date as end
+                    startDate = new Date(shoot.start_on);
+                    endDate = new Date(shoot.datetime);
+                } else if (shoot.due_on) {
+                    // Has due but no start - estimate 5 days before due date
+                    const dueDate = new Date(shoot.due_on);
+                    startDate = new Date(dueDate);
+                    startDate.setDate(startDate.getDate() - 5);
+                    endDate = dueDate;
+                } else {
+                    // No date range - estimate 3 days before film date to film date
+                    const filmDate = new Date(shoot.datetime);
+                    startDate = new Date(filmDate);
+                    startDate.setDate(startDate.getDate() - 3);
+                    endDate = filmDate;
+                }
+
+                const daysFromNow = Math.floor((startDate - now) / (1000 * 60 * 60 * 24));
+                const daysToEnd = Math.floor((endDate - now) / (1000 * 60 * 60 * 24));
+
+                // Only show if it overlaps with the 10-day window
+                if (daysToEnd >= 0 && daysFromNow < 10) {
+                    const start = Math.max(0, daysFromNow);
+                    const end = Math.min(10, daysToEnd + 1);
+                    duration = end - start;
+
+                    if (duration > 0) {
+                        projects.push({
+                            name: shoot.name,
+                            start: start,
+                            duration: duration,
+                            status: daysFromNow <= 2 ? 'critical' : 'normal'
+                        });
+                    }
+                }
+            });
+
+            // Add deadlines
+            deadlines.forEach(deadline => {
+                // Use start_on to due_date range if available, otherwise estimate duration
+                let startDate, endDate, duration;
+
+                if (deadline.start_on) {
+                    // Project has start date
+                    startDate = new Date(deadline.start_on);
+                    endDate = new Date(deadline.due_date);
+                } else {
+                    // No start date - estimate 7 days before due date
+                    const dueDate = new Date(deadline.due_date);
+                    startDate = new Date(dueDate);
+                    startDate.setDate(startDate.getDate() - 7);
+                    endDate = dueDate;
+                }
+
+                const daysFromNow = Math.floor((startDate - now) / (1000 * 60 * 60 * 24));
+                const daysToEnd = Math.floor((endDate - now) / (1000 * 60 * 60 * 24));
+
+                // Only show if it overlaps with the 10-day window
+                if (daysToEnd >= 0 && daysFromNow < 10) {
+                    const start = Math.max(0, daysFromNow);
+                    const end = Math.min(10, daysToEnd + 1);
+                    duration = end - start;
+
+                    if (duration > 0) {
+                        projects.push({
+                            name: deadline.name,
+                            start: start,
+                            duration: duration,
+                            status: daysToEnd <= 2 ? 'critical' : daysToEnd <= 5 ? 'warning' : 'normal'
+                        });
+                    }
+                }
+            });
+
+            // If no projects, show placeholder
+            if (projects.length === 0) {
+                projects.push({
+                    name: 'No upcoming shoots or deadlines in next 10 days',
+                    start: 0,
+                    duration: 10,
+                    status: 'normal'
+                });
+            }
+
+            const totalDays = 10;
+            const dates = [];
+            for (let i = 0; i < totalDays; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() + i);
+                dates.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            }
+
+            let html = '<div class="timeline-header">';
+            html += '<div class="timeline-project-col">Project</div>';
+            html += '<div class="timeline-dates">';
+            dates.forEach(date => {
+                html += `<div class="timeline-date">${date}</div>`;
+            });
+            html += '</div></div>';
+
+            projects.forEach(project => {
+                html += '<div class="timeline-row">';
+                html += `<div class="timeline-project-name">${project.name}</div>`;
+                html += '<div class="timeline-bars">';
+                const leftPercent = (project.start / totalDays) * 100;
+                const widthPercent = (project.duration / totalDays) * 100;
+                html += `<div class="timeline-bar ${project.status}" style="left: ${leftPercent}%; width: ${widthPercent}%">${project.duration}d</div>`;
+                html += '</div></div>';
+            });
+
+            timelineContainer.innerHTML = html;
+        }
+
+        // Radar Chart
+        function generateRadarChart() {
+            const container = document.getElementById('radarChart');
+            if (!container) return;
+
+            const size = 600;
+            const center = size / 2;
+            const maxRadius = 200;
+            const numLevels = 5;
+
+            // Real category allocation data
+            const categories = [{"name": "Communications", "actual": 49.6375, "target": 30.0}, {"name": "Creative Resources", "actual": 4.840277777777778, "target": 15.0}, {"name": "Partners", "actual": 0.13333333333333333, "target": 5.0}, {"name": "Pastoral/Strategic", "actual": 34.025000000000006, "target": 20.0}, {"name": "Spiritual Formation", "actual": 11.226388888888888, "target": 25.0}];
+
+            let svg = `<svg class="radar-svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">`;
+
+            for (let i = 1; i <= numLevels; i++) {
+                const r = (maxRadius / numLevels) * i;
+                svg += `<circle class="radar-grid" cx="${center}" cy="${center}" r="${r}"/>`;
+            }
+
+            const angleStep = (Math.PI * 2) / categories.length;
+            categories.forEach((cat, i) => {
+                const angle = angleStep * i - Math.PI / 2;
+                const x = center + maxRadius * Math.cos(angle);
+                const y = center + maxRadius * Math.sin(angle);
+                svg += `<line class="radar-axis" x1="${center}" y1="${center}" x2="${x}" y2="${y}"/>`;
+
+                const labelX = center + (maxRadius + 50) * Math.cos(angle);
+                const labelY = center + (maxRadius + 50) * Math.sin(angle);
+                svg += `<text class="radar-label" x="${labelX}" y="${labelY}" dy="5">${cat.name}</text>`;
+            });
+
+            let targetPoints = '';
+            categories.forEach((cat, i) => {
+                const angle = angleStep * i - Math.PI / 2;
+                const r = (cat.target / 100) * maxRadius;
+                const x = center + r * Math.cos(angle);
+                const y = center + r * Math.sin(angle);
+                targetPoints += `${x},${y} `;
+            });
+            svg += `<polygon class="radar-target" points="${targetPoints}"/>`;
+
+            let actualPoints = '';
+            categories.forEach((cat, i) => {
+                const angle = angleStep * i - Math.PI / 2;
+                const r = (cat.actual / 100) * maxRadius;
+                const x = center + r * Math.cos(angle);
+                const y = center + r * Math.sin(angle);
+                actualPoints += `${x},${y} `;
+            });
+            svg += `<polygon class="radar-area" points="${actualPoints}"/>`;
+
+            svg += '</svg>';
+            container.innerHTML = svg;
+        }
+
+        // Velocity Chart
+        function generateVelocityChart() {
+            console.log('=== generateVelocityChart called ===');
+
+            // Destroy existing chart if it exists
+            if (window.velocityChart) {
+                console.log('Destroying existing velocity chart');
+                try {
+                    window.velocityChart.destroy();
+                } catch (e) {
+                    console.log('Error destroying velocity chart:', e);
+                }
+                window.velocityChart = null;
+            }
+
+            const canvas = document.getElementById('velocityChart');
+            console.log('Velocity chart element found:', !!canvas);
+
+            if (!canvas) return;
+
+            // Force refresh container dimensions before creating chart
+            const container = canvas.parentElement;
+            if (container) {
+                container.style.display = 'block';
+                container.style.visibility = 'visible';
+
+                // Trigger reflow to ensure dimensions are calculated
+                const width = container.offsetWidth;
+                const height = container.offsetHeight;
+                console.log('Velocity container dimensions:', width, 'x', height);
+            }
+
+            // Use actual weekly completion data
+            const weeklyData = [0, 0, 0, 4, 4, 1, 4, 3];
+
+            // Calculate appropriate Y-axis maximum with headroom
+            const maxValue = Math.max(...weeklyData);
+            const suggestedMax = Math.max(6, Math.ceil(maxValue * 1.3)); // At least 6, or 30% above max value
+            const stepSize = suggestedMax <= 10 ? 1 : Math.ceil(suggestedMax / 8); // Use step of 1 for small ranges
+
+
+            const ctx = canvas.getContext('2d');
+            window.velocityChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
+                    datasets: [{
+                        label: 'Projects Completed',
+                        data: weeklyData,
+                        borderColor: '#60BBE9',
+                        backgroundColor: 'rgba(96, 187, 233, 0.2)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#60BBE9',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    resizeDelay: 0,
+                    devicePixelRatio: window.devicePixelRatio || 1,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: suggestedMax,
+                            ticks: {
+                                stepSize: stepSize,
+                                color: getChartTextColor(),
+                                callback: function(value) {
+                                    if (Number.isInteger(value)) {
+                                        return value;
+                                    }
+                                }
+                            },
+                            grid: { color: getChartGridColor() }
+                        },
+                        x: { ticks: { color: getChartTextColor() }, grid: { color: getChartGridColor() } }
+                    }
+                }
+            });
+
+            console.log('Velocity chart created successfully:', !!window.velocityChart);
+        }
+
+        // Initialize capacity history chart on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            generateCapacityHistoryChart();
+        });
+
+        // Initialize other charts
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                animateProgressRing('ringOnTime', 'ringOnTimeValue', 100);
+                animateProgressRing('ringUtilization', 'ringUtilizationValue', 0);
+                animateProgressRing('ringProjects', 'ringProjectsValue', 0, true);
+
+                generateTimeline();
+                generateRadarChart();
+                generateVelocityChart();
+            }, 100);
+        });
+
+        // Theme Toggle Functionality
+        function toggleTheme() {
+            const root = document.documentElement;
+            const currentTheme = root.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            root.setAttribute('data-theme', newTheme);
+
+            // Update toggle button
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+
+            if (newTheme === 'dark') {
+                themeIcon.textContent = 'Light';
+                themeText.textContent = 'Light Mode';
+            } else {
+                themeIcon.textContent = 'Dark';
+                themeText.textContent = 'Dark Mode';
+            }
+
+            // Store preference in localStorage
+            localStorage.setItem('theme', newTheme);
+
+            // Refresh charts to update text colors
+            if (typeof window.capacityHistoryChart !== 'undefined') {
+                window.capacityHistoryChart.destroy();
+            }
+
+            // Regenerate charts with new theme colors
+            setTimeout(() => {
+                generateRadarChart();
+                generateVelocityChart();
+                generateCapacityHistoryChart();
+
+                // Immediate and aggressive mobile recovery
+                if (window.innerWidth <= 768) {
+                    console.log('Immediate mobile capacity chart check');
+                    // Multiple immediate checks
+                    setTimeout(() => ensureMobileCapacityChart(), 50);
+                    setTimeout(() => ensureMobileCapacityChart(), 150);
+                    setTimeout(() => ensureMobileCapacityChart(), 300);
+                    setTimeout(() => ensureMobileCapacityChart(), 600);
+                    setTimeout(() => ensureMobileCapacityChart(), 1000);
+                }
+            }, 100);
+
+            // Enhanced mobile-specific fallback after theme change
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                console.log('Mobile device detected during theme toggle');
+
+                // Multiple fallback attempts with increasing delays
+                setTimeout(() => {
+                    console.log('Mobile theme fallback attempt 1 (300ms)');
+                    ensureMobileCapacityChart();
+                }, 300);
+
+                setTimeout(() => {
+                    console.log('Mobile theme fallback attempt 2 (600ms)');
+                    ensureMobileCapacityChart();
+                }, 600);
+
+                setTimeout(() => {
+                    console.log('Mobile theme fallback attempt 3 (1000ms)');
+                    ensureMobileCapacityChart();
+                }, 1000);
+            }
+        }
+
+        // Simplified chart helper function
+        function ensureMobileCapacityChart() {
+            const chartElement = document.getElementById('capacityHistoryChart');
+            if (chartElement && !window.capacityHistoryChart) {
+                console.log('Creating missing capacity chart');
+                generateCapacityHistoryChart();
+            }
+        }
+
+        // Initialize theme from localStorage
+        function initializeTheme() {
+            const storedTheme = localStorage.getItem('theme') || 'light';
+            const root = document.documentElement;
+
+            root.setAttribute('data-theme', storedTheme);
+
+            // Update toggle button to match
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+
+            if (storedTheme === 'dark') {
+                themeIcon.textContent = 'Light';
+                themeText.textContent = 'Light Mode';
+            } else {
+                themeIcon.textContent = 'Dark';
+                themeText.textContent = 'Dark Mode';
+            }
+        }
+
+        // Initialize theme on page load
+        document.addEventListener('DOMContentLoaded', initializeTheme);
+
+        // Keyboard Navigation Support
+        function setupKeyboardNavigation() {
+            // Add keyboard support for team members
+            document.querySelectorAll('.team-member[tabindex="0"]').forEach(member => {
+                member.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        // Future: Could expand team member details or navigate to detailed view
+                        member.focus();
+                        member.style.outline = '2px solid var(--brand-primary)';
+                        setTimeout(() => {
+                            member.style.outline = '';
+                        }, 1000);
+                    }
+                });
+            });
+
+            // Skip links for better navigation
+            const skipLink = document.createElement('a');
+            skipLink.href = '#dashboard-title';
+            skipLink.textContent = 'Skip to main content';
+            skipLink.className = 'sr-only';
+            skipLink.style.position = 'absolute';
+            skipLink.style.top = '10px';
+            skipLink.style.left = '10px';
+            skipLink.style.zIndex = '9999';
+            skipLink.addEventListener('focus', function() {
+                this.classList.remove('sr-only');
+                this.style.background = 'var(--brand-primary)';
+                this.style.color = 'white';
+                this.style.padding = '8px 12px';
+                this.style.textDecoration = 'none';
+                this.style.borderRadius = '4px';
+            });
+            skipLink.addEventListener('blur', function() {
+                this.classList.add('sr-only');
+            });
+
+            document.body.insertBefore(skipLink, document.body.firstChild);
+        }
+
+        // Initialize keyboard navigation
+        document.addEventListener('DOMContentLoaded', setupKeyboardNavigation);
+
+        // Interactive Features
+        function setupInteractiveFeatures() {
+            // Add enhanced tooltips for metrics
+            document.querySelectorAll('.metric-value').forEach(metric => {
+                const label = metric.parentElement.querySelector('.metric-label')?.textContent || 'Metric';
+                const value = metric.textContent;
+
+                if (!metric.hasAttribute('data-tooltip')) {
+                    metric.classList.add('tooltip');
+                    metric.setAttribute('data-tooltip', `${label}: ${value}`);
+                }
+            });
+
+            // Add click handlers for team members
+            document.querySelectorAll('.team-member').forEach(member => {
+                member.addEventListener('click', function() {
+                    // Highlight selected member
+                    document.querySelectorAll('.team-member').forEach(m => m.classList.remove('selected'));
+                    this.classList.add('selected');
+
+                    // Add selection styling
+                    this.style.outline = '2px solid var(--brand-primary)';
+                    this.style.outlineOffset = '2px';
+
+                    // Future: Could expand to show detailed task breakdown
+                });
+            });
+
+            // Add chart interaction (basic hover effects)
+            document.querySelectorAll('.progress-ring').forEach(ring => {
+                ring.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                    this.style.transition = 'transform 0.3s ease';
+                });
+
+                ring.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+
+            // Add smooth scroll to sections
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Add card focus effects
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transition = 'all 0.3s ease';
+                });
+            });
+        }
+
+        // Table sorting functionality (if tables exist)
+        function setupTableSorting() {
+            document.querySelectorAll('.sortable').forEach(header => {
+                header.addEventListener('click', function() {
+                    const table = this.closest('table');
+                    const tbody = table.querySelector('tbody');
+                    const rows = Array.from(tbody.querySelectorAll('tr'));
+                    const columnIndex = Array.from(this.parentNode.children).indexOf(this);
+
+                    // Toggle sort direction
+                    const isAsc = this.classList.contains('asc');
+
+                    // Reset all headers
+                    table.querySelectorAll('.sortable').forEach(h => {
+                        h.classList.remove('asc', 'desc');
+                    });
+
+                    // Set current header
+                    this.classList.add(isAsc ? 'desc' : 'asc');
+
+                    // Sort rows
+                    rows.sort((a, b) => {
+                        const aText = a.cells[columnIndex].textContent.trim();
+                        const bText = b.cells[columnIndex].textContent.trim();
+
+                        // Try numeric sort first
+                        const aNum = parseFloat(aText);
+                        const bNum = parseFloat(bText);
+
+                        if (!isNaN(aNum) && !isNaN(bNum)) {
+                            return isAsc ? bNum - aNum : aNum - bNum;
+                        } else {
+                            return isAsc ? bText.localeCompare(aText) : aText.localeCompare(bText);
+                        }
+                    });
+
+                    // Reorder table
+                    rows.forEach(row => tbody.appendChild(row));
+                });
+            });
+        }
+
+        // Export Functions
+        function exportToPDF() {
+            // Create a new window with print-friendly styles
+            const printWindow = window.open('', '_blank');
+            const currentContent = document.documentElement.outerHTML;
+
+            // CSS for print - CLEAN DATA-ONLY VERSION
+            const printCSS = `
+                <style>
+                    @media print {
+                        * {
+                            box-shadow: none !important;
+                            animation: none !important;
+                            transition: none !important;
+                        }
+
+                        body {
+                            background: white !important;
+                            color: black !important;
+                            padding: 15px !important;
+                            font-family: Arial, sans-serif !important;
+                            font-size: 11px !important;
+                            line-height: 1.3 !important;
+                        }
+
+                        /* Hide all visual elements - keep only data */
+                        .header-controls,
+                        .theme-toggle,
+                        .export-btn,
+                        .chart-container,
+                        canvas,
+                        .timeline-container,
+                        .project-timeline,
+                        .progress-ring,
+                        .capacity-bar,
+                        .progress-fill {
+                            display: none !important;
+                        }
+
+                        /* Clean header */
+                        .header {
+                            padding: 0 !important;
+                            margin-bottom: 15px !important;
+                            text-align: center !important;
+                            border-bottom: 2px solid #333 !important;
+                            padding-bottom: 10px !important;
+                        }
+
+                        .header h1 {
+                            font-size: 18px !important;
+                            margin: 0 !important;
+                            font-weight: bold !important;
+                        }
+
+                        .header .subtitle {
+                            font-size: 10px !important;
+                            margin: 2px 0 !important;
+                            color: #666 !important;
+                        }
+
+                        .header .timestamp {
+                            font-size: 9px !important;
+                            margin: 2px 0 !important;
+                            color: #888 !important;
+                        }
+
+                        /* Clean, organized sections */
+                        .card {
+                            margin: 8px 0 !important;
+                            padding: 10px !important;
+                            background: white !important;
+                            border: 1px solid #ccc !important;
+                            break-inside: avoid !important;
+                            page-break-inside: avoid !important;
+                        }
+
+                        .card h2 {
+                            font-size: 14px !important;
+                            margin: 0 0 8px 0 !important;
+                            color: #333 !important;
+                            font-weight: bold !important;
+                            border-bottom: 1px solid #eee !important;
+                            padding-bottom: 4px !important;
+                        }
+
+                        /* Two-column layout for main sections */
+                        .performance-row {
+                            display: grid !important;
+                            grid-template-columns: 1fr 1fr !important;
+                            gap: 15px !important;
+                            margin-bottom: 15px !important;
+                        }
+
+                        /* Clean metrics display */
+                        .metric {
+                            margin: 4px 0 !important;
+                            display: flex !important;
+                            justify-content: space-between !important;
+                            padding: 2px 0 !important;
+                            border-bottom: 1px dotted #ddd !important;
+                        }
+
+                        .metric-label {
+                            font-size: 10px !important;
+                            color: #555 !important;
+                        }
+
+                        .metric-value {
+                            font-size: 11px !important;
+                            font-weight: bold !important;
+                            color: #000 !important;
+                        }
+
+                        /* Team capacity as clean list */
+                        .team-member {
+                            margin: 6px 0 !important;
+                            padding: 6px !important;
+                            border: 1px solid #ddd !important;
+                            background: #f9f9f9 !important;
+                        }
+
+                        .team-member-name {
+                            font-size: 10px !important;
+                            font-weight: bold !important;
+                            margin-bottom: 3px !important;
+                        }
+
+                        /* Category table - clean and readable */
+                        table {
+                            width: 100% !important;
+                            border-collapse: collapse !important;
+                            margin: 8px 0 !important;
+                            font-size: 9px !important;
+                        }
+
+                        th, td {
+                            padding: 4px 6px !important;
+                            border: 1px solid #ccc !important;
+                            text-align: left !important;
+                        }
+
+                        th {
+                            background: #f0f0f0 !important;
+                            font-weight: bold !important;
+                            font-size: 9px !important;
+                        }
+
+                        /* At-risk tasks - clean list */
+                        .project-card {
+                            margin: 6px 0 !important;
+                            padding: 6px !important;
+                            border: 1px solid #ddd !important;
+                            background: #fafafa !important;
+                            break-inside: avoid !important;
+                        }
+
+                        .project-card-title {
+                            font-size: 10px !important;
+                            font-weight: bold !important;
+                            margin-bottom: 3px !important;
+                        }
+
+                        .project-card-date {
+                            font-size: 9px !important;
+                            color: #666 !important;
+                        }
+
+                        /* Page settings */
+                        @page {
+                            margin: 0.75in;
+                            size: letter;
+                        }
+
+                        /* Simple single-column layout */
+                        .dashboard-container {
+                            display: block !important;
+                        }
+
+                        /* Hide grid layouts that cause issues */
+                        .grid {
+                            display: block !important;
+                        }
+
+                        .grid .card {
+                            margin-bottom: 10px !important;
+                        }
+                    }
+                </style>
+            `;
+
+            printWindow.document.write(currentContent.replace('</head>', printCSS + '</head>'));
+            printWindow.document.close();
+
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 500);
+        }
+
+        function exportToCSV() {
+            const data = [];
+
+            // Add header
+            data.push(['Dashboard Export', 'Generated: ' + new Date().toLocaleString()]);
+            data.push([]); // Empty row
+
+            // Extract team capacity data
+            data.push(['Team Member', 'Current Allocation', 'Max Capacity', 'Utilization %']);
+
+            document.querySelectorAll('.team-member').forEach(member => {
+                const name = member.querySelector('.team-member-name')?.textContent || 'Unknown';
+                const capacity = member.querySelector('.team-member-capacity')?.textContent || '';
+                const tooltip = member.getAttribute('data-tooltip') || '';
+
+                // Parse capacity text (e.g., "75% / 100% capacity")
+                const capacityMatch = capacity.match(/(\d+(?:\.\d+)?)%\s*\/\s*(\d+(?:\.\d+)?)%/);
+                if (capacityMatch) {
+                    const current = capacityMatch[1];
+                    const max = capacityMatch[2];
+                    const utilization = ((parseFloat(current) / parseFloat(max)) * 100).toFixed(1);
+
+                    data.push([name, current + '%', max + '%', utilization + '%']);
+                }
+            });
+
+            data.push([]); // Empty row
+
+            // Extract metrics
+            data.push(['Performance Metrics', 'Value']);
+            document.querySelectorAll('.metric').forEach(metric => {
+                const label = metric.querySelector('.metric-label')?.textContent || '';
+                const value = metric.querySelector('.metric-value')?.textContent || '';
+                if (label && value) {
+                    data.push([label.trim(), value.trim()]);
+                }
+            });
+
+            // Convert to CSV
+            const csvContent = data.map(row =>
+                row.map(field => `"${field.toString().replace(/"/g, '""')}"`)
+                   .join(',')
+            ).join('\n');
+
+            // Download file
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `perimeter-studio-dashboard-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Initialize interactive features
+        document.addEventListener('DOMContentLoaded', function() {
+            setupInteractiveFeatures();
+            setupTableSorting();
+        });
+
+        // Handle window resize for responsive charts
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                console.log('=== Window resize triggered ===');
+                console.log('New window size:', window.innerWidth, 'x', window.innerHeight);
+
+                // Check if Historical Capacity chart exists before destroying
+                const chartElement = document.getElementById('capacityHistoryChart');
+                console.log('Chart element exists:', !!chartElement);
+                console.log('Chart element dimensions:', chartElement ? chartElement.offsetWidth + 'x' + chartElement.offsetHeight : 'N/A');
+
+                // Regenerate charts with improved error handling
+                if (window.capacityHistoryChart) {
+                    console.log('Destroying existing Historical Capacity chart');
+                    try {
+                        window.capacityHistoryChart.destroy();
+                        window.capacityHistoryChart = null;
+                    } catch (e) {
+                        console.error('Error destroying chart:', e);
+                    }
+                }
+
+                // Regenerate all charts with staggered timing to avoid conflicts
+                setTimeout(() => {
+                    try {
+                        generateRadarChart();
+                    } catch (e) {
+                        console.error('Error generating radar chart:', e);
+                    }
+                }, 50);
+
+                setTimeout(() => {
+                    try {
+                        generateVelocityChart();
+                    } catch (e) {
+                        console.error('Error generating velocity chart:', e);
+                    }
+                }, 100);
+
+                setTimeout(() => {
+                    try {
+                        console.log('Regenerating Historical Capacity chart after resize');
+                        generateCapacityHistoryChart();
+                    } catch (e) {
+                        console.error('Error generating capacity history chart:', e);
+                    }
+                }, 150);
+            }, 350);
+        });
+
+        // Optimize touch interactions for mobile
+        if ('ontouchstart' in window) {
+            document.body.classList.add('touch-device');
+
+            // Improve chart tooltips for touch devices
+            const style = document.createElement('style');
+            style.textContent = `
+                .touch-device .chart-container {
+                    -webkit-tap-highlight-color: transparent;
+                }
+                .touch-device canvas {
+                    touch-action: pan-y;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
     </script>
+
+        </main>
+    </div>
 </body>
 </html>
