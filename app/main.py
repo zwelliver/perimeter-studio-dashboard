@@ -23,8 +23,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Static files directory (React frontend build)
-STATIC_DIR = Path(__file__).parent.parent / "studio-command-center" / "frontend" / "dist"
+# Static files directory - simplified path
+STATIC_DIR = Path(__file__).parent / "static"
 
 
 @asynccontextmanager
@@ -99,16 +99,17 @@ async def serve_spa(request: Request, full_path: str):
     if full_path.startswith("api/"):
         return JSONResponse(status_code=404, content={"detail": "API endpoint not found"})
 
-    # Try to serve static file first
+    # For root path, serve index.html directly
+    if full_path == "" or full_path == "index.html":
+        index_file = STATIC_DIR / "index.html"
+        if index_file.exists():
+            return FileResponse(str(index_file))
+
+    # Try to serve other static files
     if STATIC_DIR.exists():
         static_file = STATIC_DIR / full_path
         if static_file.exists() and static_file.is_file():
             return FileResponse(str(static_file))
-
-        # Fall back to index.html for SPA routing
-        index_file = STATIC_DIR / "index.html"
-        if index_file.exists():
-            return FileResponse(str(index_file))
 
     # No static files available
     return JSONResponse(

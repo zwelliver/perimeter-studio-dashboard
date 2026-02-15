@@ -1,6 +1,6 @@
 {
   "deploy": {
-    "buildCommand": "chmod +x build.sh && ./build.sh",
+    "buildCommand": "pip install -r requirements.txt",
     "startCommand": "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
   },
   "volumes": [
