@@ -64,6 +64,23 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(dashboard.router)
 
+# Debug static directory path
+logger.info(f"Looking for static files at: {STATIC_DIR}")
+logger.info(f"Static directory exists: {STATIC_DIR.exists()}")
+
+# List all possible frontend locations for debugging
+possible_paths = [
+    STATIC_DIR,
+    Path(__file__).parent.parent / "frontend" / "dist",
+    Path(__file__).parent.parent / "build",
+    Path(__file__).parent / "static"
+]
+
+for path in possible_paths:
+    logger.info(f"Checking path {path}: exists={path.exists()}")
+    if path.exists():
+        logger.info(f"Contents of {path}: {list(path.iterdir())}")
+
 # Mount static files if the directory exists
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
