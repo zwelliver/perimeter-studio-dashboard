@@ -1620,7 +1620,7 @@ def generate_html_dashboard(data):
                     background: var(--bg-secondary);
                     z-index: 10;
                     border-right: 2px solid var(--border-color);
-                    box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+                    box-shadow: 2px 0 4px var(--shadow-light);
                     flex-shrink: 0;
                 }}
 
@@ -2687,7 +2687,7 @@ def generate_html_dashboard(data):
         }}
 
         .card:hover {{
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 2px 6px var(--shadow-medium);
         }}
 
         .card h2 {{
@@ -2704,7 +2704,7 @@ def generate_html_dashboard(data):
             justify-content: space-between;
             align-items: center;
             padding: 10px 0;
-            border-bottom: 1px solid #dee2e6;
+            border-bottom: 1px solid var(--border-color);
         }}
 
         .metric:last-child {{
@@ -2771,17 +2771,21 @@ def generate_html_dashboard(data):
         }}
 
         .alert.danger {{
-            background: #f8d7da;
+            background: var(--bg-secondary);
             border-left-color: var(--danger-color);
             border-color: var(--danger-color);
-            color: #721c24;
+            color: var(--danger-color);
+            border-left-width: 4px;
+            border-left-style: solid;
         }}
 
         .alert.success {{
-            background: #d4edda;
-            border-left-color: #28a745;
-            border-color: #28a745;
-            color: #155724;
+            background: var(--bg-secondary);
+            border-left-color: var(--success-color);
+            border-color: var(--success-color);
+            color: var(--success-color);
+            border-left-width: 4px;
+            border-left-style: solid;
         }}
 
         .chart-container {{
@@ -4223,7 +4227,7 @@ def generate_html_dashboard(data):
 
         # Create datasets for each category
         trends_datasets = []
-        colors = ['#60BBE9', '#09243F', '#28a745', '#ffc107', '#dc3545']  # Brand colors
+        colors = ['#60BBE9', '#4A9CD9', '#28a745', '#ffc107', '#dc3545']  # Brand colors with better contrast
 
         for i, category in enumerate(categories):
             cat_data = history_df[history_df['Category'] == category]
@@ -4286,7 +4290,7 @@ def generate_html_dashboard(data):
             if (isDarkMode) {{
                 return ['#60BBE9', '#4A9CD9', '#7AC3ED', '#FFD700', '#FF6B6B'];  // Lighter colors for dark mode
             }} else {{
-                return ['#60BBE9', '#09243F', '#28a745', '#ffc107', '#dc3545'];  // Original colors for light mode
+                return ['#2196F3', '#4A9CD9', '#28a745', '#ffc107', '#dc3545'];  // Better contrast colors for light mode
             }}
         }}
 
@@ -5712,7 +5716,21 @@ def generate_html_dashboard(data):
                                 window.capacityHistoryChart.options.plugins.legend.labels.color = newTextColor;
                             }}
 
-                            window.capacityHistoryChart.update();
+                            // Use 'none' animation for iPad to prevent rendering issues
+                            const isTablet = window.innerWidth >= 768 && window.innerWidth <= 1024;
+                            const updateOptions = isTablet ? {{ animation: false }} : {{ animation: {{ duration: 300 }} }};
+
+                            window.capacityHistoryChart.update(updateOptions);
+
+                            // Additional iPad-specific fix: Force canvas redraw
+                            if (isTablet) {{
+                                setTimeout(() => {{
+                                    if (window.capacityHistoryChart && window.capacityHistoryChart.canvas) {{
+                                        window.capacityHistoryChart.canvas.style.visibility = 'visible';
+                                        window.capacityHistoryChart.resize();
+                                    }}
+                                }}, 100);
+                            }}
                         }}
 
                         if (window.velocityChart) {{
