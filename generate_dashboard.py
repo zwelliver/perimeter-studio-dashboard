@@ -4227,7 +4227,7 @@ def generate_html_dashboard(data):
 
         # Create datasets for each category
         trends_datasets = []
-        colors = ['#60BBE9', '#4A9CD9', '#28a745', '#ffc107', '#dc3545']  # Brand colors with better contrast
+        colors = ['#28a745', '#9B59B6', '#2196F3', '#ffc107', '#dc3545']  # Green, Purple, Blue, Yellow, Red
 
         for i, category in enumerate(categories):
             cat_data = history_df[history_df['Category'] == category]
@@ -4288,9 +4288,9 @@ def generate_html_dashboard(data):
         function getThemeAwareTrendColors() {{
             const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
             if (isDarkMode) {{
-                return ['#60BBE9', '#4A9CD9', '#7AC3ED', '#FFD700', '#FF6B6B'];  // Lighter colors for dark mode
+                return ['#7DCEA0', '#C694FF', '#60BBE9', '#FFD700', '#FF6B6B'];  // Green, Purple, Blue, Gold, Red for dark mode
             }} else {{
-                return ['#2196F3', '#4A9CD9', '#28a745', '#ffc107', '#dc3545'];  // Better contrast colors for light mode
+                return ['#28a745', '#9B59B6', '#2196F3', '#ffc107', '#dc3545'];  // Green, Purple, Blue, Yellow, Red for light mode
             }}
         }}
 
