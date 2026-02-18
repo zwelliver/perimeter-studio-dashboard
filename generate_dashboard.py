@@ -4799,7 +4799,9 @@ def generate_html_dashboard(data):
             ring.style.strokeDashoffset = circumference;
 
             setTimeout(() => {{
-                const offset = circumference - (percentage / 100) * circumference;
+                // Cap at 100% so the ring fills completely for values over 100%
+                const clampedPercent = Math.min(percentage, 100);
+                const offset = circumference - (clampedPercent / 100) * circumference;
                 ring.style.strokeDashoffset = offset;
 
                 // Animate the number
