@@ -1678,17 +1678,6 @@ def generate_html_dashboard(data):
                 white-space: nowrap;
             }}
 
-            /* Add visual scroll indicator for tables */
-            .card:has(table)::after {{
-                content: '← Scroll →';
-                position: absolute;
-                bottom: 10px;
-                right: 10px;
-                font-size: 11px;
-                color: var(--text-muted);
-                opacity: 0.6;
-                pointer-events: none;
-            }}
 
             .at-risk-item {{
                 padding: 12px;
