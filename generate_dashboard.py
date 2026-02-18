@@ -2047,8 +2047,8 @@ def generate_html_dashboard(data):
             }}
         }}
 
-        /* View More / Show Less for Upcoming Shoots */
-        .shoots-hidden .project-card:nth-child(n+4) {{
+        /* View More / Show Less for card grids */
+        .cards-collapsed .project-card:nth-child(n+4) {{
             display: none;
         }}
         .view-more-btn {{
@@ -3607,7 +3607,7 @@ def generate_html_dashboard(data):
 
     upcoming_shoots = data.get('upcoming_shoots', [])
     if upcoming_shoots:
-        shoots_hidden_class = ' shoots-hidden' if len(upcoming_shoots) > 3 else ''
+        shoots_hidden_class = ' cards-collapsed' if len(upcoming_shoots) > 3 else ''
         html += f"""
             <div id="shoots-grid" class="{shoots_hidden_class.strip()}" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
         """
@@ -3662,7 +3662,7 @@ def generate_html_dashboard(data):
         if len(upcoming_shoots) > 3:
             remaining = len(upcoming_shoots) - 3
             html += f"""
-            <button class="view-more-btn" id="shoots-toggle" onclick="toggleShoots()">View More ({remaining} remaining)</button>
+            <button class="view-more-btn" onclick="toggleCards('shoots-grid', this)">View More ({remaining} remaining)</button>
             """
     else:
         html += """
@@ -3682,8 +3682,9 @@ def generate_html_dashboard(data):
 
     upcoming_deadlines = data.get('upcoming_deadlines', [])
     if upcoming_deadlines:
-        html += """
-            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
+        deadlines_collapsed = ' cards-collapsed' if len(upcoming_deadlines) > 3 else ''
+        html += f"""
+            <div id="deadlines-grid" class="{deadlines_collapsed.strip()}" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
         """
         for deadline in upcoming_deadlines:
             # Format date
@@ -3732,6 +3733,11 @@ def generate_html_dashboard(data):
         html += """
             </div>
         """
+        if len(upcoming_deadlines) > 3:
+            remaining_deadlines = len(upcoming_deadlines) - 3
+            html += f"""
+            <button class="view-more-btn" onclick="toggleCards('deadlines-grid', this)">View More ({remaining_deadlines} remaining)</button>
+            """
     else:
         html += f"""
             <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
@@ -3985,8 +3991,9 @@ def generate_html_dashboard(data):
 
     forecasted_projects = data.get('forecasted_projects', [])
     if forecasted_projects:
-        html += """
-            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
+        forecast_collapsed = ' cards-collapsed' if len(forecasted_projects) > 3 else ''
+        html += f"""
+            <div id="forecast-grid" class="{forecast_collapsed.strip()}" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
         """
         for project in forecasted_projects:
             # Format dates
@@ -4042,6 +4049,11 @@ def generate_html_dashboard(data):
         html += """
             </div>
         """
+        if len(forecasted_projects) > 3:
+            remaining_forecast = len(forecasted_projects) - 3
+            html += f"""
+            <button class="view-more-btn" onclick="toggleCards('forecast-grid', this)">View More ({remaining_forecast} remaining)</button>
+            """
     else:
         html += f"""
             <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
@@ -5781,23 +5793,16 @@ def generate_html_dashboard(data):
         // Start observing theme changes
         observeThemeChanges();
 
-        // Toggle Upcoming Shoots view more / show less
-        function toggleShoots() {{
-            const grid = document.getElementById('shoots-grid');
-            const btn = document.getElementById('shoots-toggle');
+        // Toggle View More / Show Less for card grids
+        function toggleCards(gridId, btn) {{
+            const grid = document.getElementById(gridId);
             if (!grid || !btn) return;
-            grid.classList.toggle('shoots-hidden');
-            if (grid.classList.contains('shoots-hidden')) {{
-                btn.textContent = btn.dataset.moreText;
-            }} else {{
-                btn.textContent = 'Show Less';
-            }}
+            if (!btn.dataset.moreText) btn.dataset.moreText = btn.textContent;
+            grid.classList.toggle('cards-collapsed');
+            btn.textContent = grid.classList.contains('cards-collapsed')
+                ? btn.dataset.moreText
+                : 'Show Less';
         }}
-        // Store the original button text
-        (function() {{
-            const btn = document.getElementById('shoots-toggle');
-            if (btn) btn.dataset.moreText = btn.textContent;
-        }})();
 """
 
     html += """
