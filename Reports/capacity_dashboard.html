@@ -1023,6 +1023,26 @@
             }
         }
 
+        /* View More / Show Less for Upcoming Shoots */
+        .shoots-hidden .project-card:nth-child(n+4) {
+            display: none;
+        }
+        .view-more-btn {
+            display: block;
+            margin: 18px auto 0;
+            padding: 10px 24px;
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .view-more-btn:hover {
+            opacity: 0.85;
+        }
+
         /* Task list and detail styles */
         .task-list-item {
             font-size: 12px;
@@ -2384,7 +2404,7 @@
                 <div class="header-text">
                     <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
                     <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: February 17, 2026 at 08:53 PM</p>
+                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: February 17, 2026 at 09:00 PM</p>
                 </div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
                     <span id="themeText">Dark Mode</span>
@@ -2526,7 +2546,7 @@
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>Upcoming Shoots</h2>
     
-            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
+            <div id="shoots-grid" class="shoots-hidden" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
         
                 <div class="project-card">
                     <div class="project-card-header">
@@ -2730,6 +2750,8 @@
             
             </div>
         
+            <button class="view-more-btn" id="shoots-toggle" onclick="toggleShoots()">View More (7 remaining)</button>
+            
         </div>
 
         <!-- Upcoming Project Deadlines -->
@@ -5485,6 +5507,24 @@ Dec 1...
 
         // Start observing theme changes
         observeThemeChanges();
+
+        // Toggle Upcoming Shoots view more / show less
+        function toggleShoots() {
+            const grid = document.getElementById('shoots-grid');
+            const btn = document.getElementById('shoots-toggle');
+            if (!grid || !btn) return;
+            grid.classList.toggle('shoots-hidden');
+            if (grid.classList.contains('shoots-hidden')) {
+                btn.textContent = btn.dataset.moreText;
+            } else {
+                btn.textContent = 'Show Less';
+            }
+        }
+        // Store the original button text
+        (function() {
+            const btn = document.getElementById('shoots-toggle');
+            if (btn) btn.dataset.moreText = btn.textContent;
+        })();
 
     </script>
 
