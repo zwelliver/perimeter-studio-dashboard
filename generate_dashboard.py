@@ -1524,11 +1524,43 @@ def generate_html_dashboard(data):
                 margin: 10px 0;
             }}
 
+            /* Scrollable wrapper for capacity history chart on mobile */
+            .chart-scroll-wrapper {{
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                position: relative;
+                padding-bottom: 25px;
+            }}
+
+            .chart-scroll-wrapper .chart-container {{
+                min-width: 700px;
+                height: 380px;
+            }}
+
+            .chart-scroll-wrapper::after {{
+                content: '← Swipe to see full chart →';
+                position: sticky;
+                left: 50%;
+                transform: translateX(-50%);
+                bottom: 0;
+                background: rgba(52, 152, 219, 0.9);
+                color: white;
+                padding: 4px 12px;
+                border-radius: 12px;
+                font-size: 11px;
+                font-weight: 500;
+                z-index: 20;
+                white-space: nowrap;
+                pointer-events: none;
+                opacity: 0.8;
+                animation: fadeInOut 3s ease-in-out infinite;
+            }}
+
             /* Specific fixes for Historical Capacity chart only */
             #capacityHistoryChart {{
                 display: block !important;
                 width: 100% !important;
-                height: 250px !important;
+                height: 380px !important;
                 min-width: 200px !important;
                 visibility: visible !important;
             }}
@@ -1755,6 +1787,14 @@ def generate_html_dashboard(data):
 
             .chart-container {{
                 height: 200px;
+            }}
+
+            .chart-scroll-wrapper .chart-container {{
+                height: 340px;
+            }}
+
+            #capacityHistoryChart {{
+                height: 340px !important;
             }}
 
             /* Stack team capacity in single column */
@@ -3993,8 +4033,10 @@ def generate_html_dashboard(data):
             <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
                 Team utilization percentage over the last 30 days (click legend items to filter)
             </div>
-            <div class="chart-container">
-                <canvas id="capacityHistoryChart"></canvas>
+            <div class="chart-scroll-wrapper">
+                <div class="chart-container">
+                    <canvas id="capacityHistoryChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -4094,8 +4136,10 @@ def generate_html_dashboard(data):
             <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
                 Daily allocation percentages over time
             </div>
-            <div class="chart-container">
-                <canvas id="trendsChart"></canvas>
+            <div class="chart-scroll-wrapper">
+                <div class="chart-container">
+                    <canvas id="trendsChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -4342,6 +4386,17 @@ def generate_html_dashboard(data):
         // Update dataset colors for theme
         const trendColors = getThemeAwareTrendColors();
         const trendsDataWithColors = {json.dumps(trends_datasets)};
+        let trendsLabels = {json.dumps(dates)};
+
+        // On mobile, show only last 15 days for readability
+        if (window.innerWidth < 768 && trendsLabels.length > 15) {{
+            const sliceStart = trendsLabels.length - 15;
+            trendsLabels = trendsLabels.slice(sliceStart);
+            trendsDataWithColors.forEach(dataset => {{
+                dataset.data = dataset.data.slice(sliceStart);
+            }});
+        }}
+
         trendsDataWithColors.forEach((dataset, index) => {{
             if (index < trendColors.length) {{
                 dataset.borderColor = trendColors[index];
@@ -4352,7 +4407,7 @@ def generate_html_dashboard(data):
         window.trendsChart = new Chart(trendsCtx, {{
             type: 'line',
             data: {{
-                labels: {json.dumps(dates)},
+                labels: trendsLabels,
                 datasets: trendsDataWithColors
             }},
             options: {{
@@ -4497,6 +4552,17 @@ def generate_html_dashboard(data):
                     if (firstMember) {{
                         allDates = capacityHistoryByMember[firstMember].map(d => d.date);
                     }}
+                }}
+
+                // On mobile, show only last 15 days for readability
+                const isMobile = window.innerWidth < 768;
+                if (isMobile && allDates.length > 15) {{
+                    const sliceStart = allDates.length - 15;
+                    allDates = allDates.slice(sliceStart);
+                    // Trim each member's data to match
+                    Object.keys(capacityHistoryByMember).forEach(member => {{
+                        capacityHistoryByMember[member] = capacityHistoryByMember[member].slice(sliceStart);
+                    }});
                 }}
 
                 console.log('About to build datasets...');
