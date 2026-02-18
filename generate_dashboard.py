@@ -2047,24 +2047,29 @@ def generate_html_dashboard(data):
             }}
         }}
 
-        /* View More / Show Less for card grids */
-        .cards-collapsed .project-card:nth-child(n+4) {{
+        /* View More / Show Less for card grids (mobile only) */
+        .view-more-btn {{
             display: none;
         }}
-        .view-more-btn {{
-            display: block;
-            margin: 18px auto 0;
-            padding: 10px 24px;
-            background: var(--brand-primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
-        }}
-        .view-more-btn:hover {{
-            opacity: 0.85;
+        @media (max-width: 768px) {{
+            .cards-collapsed .project-card:nth-child(n+4) {{
+                display: none;
+            }}
+            .view-more-btn {{
+                display: block;
+                margin: 18px auto 0;
+                padding: 10px 24px;
+                background: var(--brand-primary);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 15px;
+                font-weight: 500;
+                cursor: pointer;
+            }}
+            .view-more-btn:hover {{
+                opacity: 0.85;
+            }}
         }}
 
         /* Task list and detail styles */
