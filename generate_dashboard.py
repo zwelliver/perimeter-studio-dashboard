@@ -2271,10 +2271,17 @@ def generate_html_dashboard(data):
         /* ===== TIMELINE GANTT STYLES ===== */
         .timeline-container {{
             margin: 15px 0;
-            overflow: hidden;
+            overflow-y: hidden;
+            overflow-x: hidden;
             list-style: none !important;
             position: relative;
             padding-left: 0 !important;
+        }}
+        @media (max-width: 768px) {{
+            .timeline-container {{
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }}
         }}
 
         .timeline-container::before {{
