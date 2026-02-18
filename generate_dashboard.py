@@ -2895,14 +2895,15 @@ def generate_html_dashboard(data):
 
         @media (max-width: 480px) {{
             .nav-container {{
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
                 gap: 8px;
-                justify-content: space-between;
+                padding: 0 12px;
             }}
 
             .nav-link {{
                 font-size: 11px;
-                padding: 6px 8px;
-                flex: 1;
+                padding: 6px 4px;
                 text-align: center;
                 min-width: 0;
             }}
