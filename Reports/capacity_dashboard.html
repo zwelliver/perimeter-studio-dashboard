@@ -378,47 +378,36 @@
             }
 
             .header {
-                display: grid;
-                grid-template-areas:
-                    "title"
-                    "subtitle"
-                    "timestamp"
-                    "controls";
-                grid-template-rows: auto auto auto auto;
-                gap: 15px;
                 position: relative;
-                padding: 20px 15px; /* Normal padding */
+                padding: 20px 15px;
             }
 
-            .header-controls {
-                grid-area: controls;
-                display: flex;
-                justify-content: center;
+            .header-content {
+                flex-direction: column;
                 align-items: center;
-                flex-direction: row;
-                flex-wrap: wrap;
-                gap: 12px;
-                z-index: 10;
+                gap: 10px;
             }
 
             .header h1 {
-                grid-area: title;
                 font-size: 24px;
                 margin: 0;
+                padding-right: 50px;
             }
 
             .header .subtitle {
-                grid-area: subtitle;
                 margin: 0;
             }
 
             .header .timestamp {
-                grid-area: timestamp;
                 margin: 0;
             }
 
             .theme-toggle {
-                flex: none;
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                padding: 6px 10px;
+                font-size: 12px;
             }
 
             .export-controls {
@@ -710,7 +699,6 @@
 
             .header {
                 padding: 12px;
-                padding-top: 80px;
             }
 
             .header h1 {
@@ -718,8 +706,10 @@
             }
 
             .theme-toggle {
+                top: 10px;
+                right: 10px;
                 padding: 4px 8px;
-                font-size: 12px;
+                font-size: 11px;
             }
 
             .card {
@@ -2459,7 +2449,7 @@
                 <div class="header-text">
                     <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
                     <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: February 18, 2026 at 08:30 AM</p>
+                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: February 18, 2026 at 08:45 AM</p>
                 </div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
                     <span id="themeText">Dark Mode</span>
@@ -2746,6 +2736,26 @@
                 <div class="project-card">
                     <div class="project-card-header">
                         <div>
+                            <div class="project-card-date">Mon, Mar 2</div>
+                            <div class="project-card-time">10:00 AM</div>
+                        </div>
+                        <span class="project-card-badge">Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1213016425949332/f" target="_blank" class="project-card-title">
+                            Holy Week 2026 Devo - Easter Sunday - Jeff
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1213016425949332/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
                             <div class="project-card-date">Thu, Mar 5</div>
                             <div class="project-card-time">9:30 AM</div>
                         </div>
@@ -2778,26 +2788,6 @@
                     </div>
                     <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
                         <a href="https://app.asana.com/0/0/1213123863778334/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
-                            View in Asana →
-                        </a>
-                    </div>
-                </div>
-            
-                <div class="project-card">
-                    <div class="project-card-header">
-                        <div>
-                            <div class="project-card-date">Wed, Mar 11</div>
-                            <div class="project-card-time">1:00 PM</div>
-                        </div>
-                        <span class="project-card-badge">Production</span>
-                    </div>
-                    <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212968449996300/f" target="_blank" class="project-card-title">
-                            Holy Week 2026 Devo - Monday - Laura Elvington
-                        </a>
-                    </div>
-                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-                        <a href="https://app.asana.com/0/0/1212968449996300/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
                             View in Asana →
                         </a>
                     </div>
@@ -4543,7 +4533,7 @@ Dec 1...
             if (!timelineContainer) return;
 
             // Real shoots and deadlines data
-            const shoots = [{"name": "Evergreen OME Volunteer Envisioning Video", "datetime": "2026-02-19T00:00:00+00:00", "start_on": null, "due_on": "2026-03-12", "type": "shoot"}, {"name": "Digging Deeper Recording with Chris Kam", "datetime": "2026-02-19T18:00:00+00:00", "start_on": null, "due_on": "2026-02-19", "type": "shoot"}, {"name": "Frontier Video Testimonial #1", "datetime": "2026-02-19T20:30:00+00:00", "start_on": null, "due_on": "2026-02-26", "type": "shoot"}, {"name": "WOV - Pollye Pope", "datetime": "2026-02-24T19:00:00+00:00", "start_on": null, "due_on": "2026-02-26", "type": "shoot"}, {"name": "DD into Parenting - Ep. 9: Parenting Through Trauma", "datetime": "2026-02-26T17:30:00+00:00", "start_on": null, "due_on": "2026-04-23", "type": "shoot"}, {"name": "Kingdom Purpose Journey Curriculum Module", "datetime": "2026-02-27T14:00:00+00:00", "start_on": null, "due_on": "2026-03-23", "type": "shoot"}, {"name": "CAA Staff Recruitment Video", "datetime": "2026-02-27T15:00:00+00:00", "start_on": null, "due_on": "2026-03-12", "type": "shoot"}, {"name": "Holy Week 2026 - Thursday- Eric Ryan", "datetime": "2026-03-05T14:30:00+00:00", "start_on": null, "due_on": "2026-03-24", "type": "shoot"}, {"name": "Jeff Norris: Mission to the World Teaching", "datetime": "2026-03-05T19:45:00+00:00", "start_on": null, "due_on": "2026-03-05", "type": "shoot"}, {"name": "Holy Week 2026 Devo - Monday - Laura Elvington", "datetime": "2026-03-11T17:00:00+00:00", "start_on": null, "due_on": "2026-03-24", "type": "shoot"}];
+            const shoots = [{"name": "Evergreen OME Volunteer Envisioning Video", "datetime": "2026-02-19T00:00:00+00:00", "start_on": null, "due_on": "2026-03-12", "type": "shoot"}, {"name": "Digging Deeper Recording with Chris Kam", "datetime": "2026-02-19T18:00:00+00:00", "start_on": null, "due_on": "2026-02-19", "type": "shoot"}, {"name": "Frontier Video Testimonial #1", "datetime": "2026-02-19T20:30:00+00:00", "start_on": null, "due_on": "2026-02-26", "type": "shoot"}, {"name": "WOV - Pollye Pope", "datetime": "2026-02-24T19:00:00+00:00", "start_on": null, "due_on": "2026-02-26", "type": "shoot"}, {"name": "DD into Parenting - Ep. 9: Parenting Through Trauma", "datetime": "2026-02-26T17:30:00+00:00", "start_on": null, "due_on": "2026-04-23", "type": "shoot"}, {"name": "Kingdom Purpose Journey Curriculum Module", "datetime": "2026-02-27T14:00:00+00:00", "start_on": null, "due_on": "2026-03-23", "type": "shoot"}, {"name": "CAA Staff Recruitment Video", "datetime": "2026-02-27T15:00:00+00:00", "start_on": null, "due_on": "2026-03-12", "type": "shoot"}, {"name": "Holy Week 2026 Devo - Easter Sunday - Jeff", "datetime": "2026-03-02T15:00:00+00:00", "start_on": null, "due_on": "2026-03-27", "type": "shoot"}, {"name": "Holy Week 2026 - Thursday- Eric Ryan", "datetime": "2026-03-05T14:30:00+00:00", "start_on": null, "due_on": "2026-03-24", "type": "shoot"}, {"name": "Jeff Norris: Mission to the World Teaching", "datetime": "2026-03-05T19:45:00+00:00", "start_on": null, "due_on": "2026-03-05", "type": "shoot"}];
             const deadlines = [{"name": "WOV - Lori Allison", "start_on": null, "due_date": "2026-02-19", "type": "deadline"}, {"name": "Digging Deeper Recording with Chris Kam", "start_on": null, "due_date": "2026-02-19", "type": "deadline"}, {"name": "Radical Dependence Teaching Series", "start_on": null, "due_date": "2026-02-19", "type": "deadline"}, {"name": "Unlimited Grace - Podcast-January", "start_on": null, "due_date": "2026-02-19", "type": "deadline"}, {"name": "Holy Week website b-roll video update", "start_on": null, "due_date": "2026-02-20", "type": "deadline"}, {"name": "Unlimited Grace - Podcast- February", "start_on": null, "due_date": "2026-02-23", "type": "deadline"}, {"name": "Perimeter Live Worship Album Songs", "start_on": null, "due_date": "2026-02-25", "type": "deadline"}, {"name": "WOV - Pollye Pope", "start_on": null, "due_date": "2026-02-26", "type": "deadline"}, {"name": "Frontier Video Testimonial #1", "start_on": null, "due_date": "2026-02-26", "type": "deadline"}, {"name": "Jeff's Do/Done Diagram Video", "start_on": null, "due_date": "2026-02-26", "type": "deadline"}];
 
             // Combine and convert to timeline format
