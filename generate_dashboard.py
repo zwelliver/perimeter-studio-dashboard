@@ -2207,13 +2207,16 @@ def generate_html_dashboard(data):
 
         .progress-ring {{
             position: relative;
-            width: 160px;
-            height: 160px;
+            width: 140px;
+            height: 140px;
             text-align: center;
             display: inline-block;
         }}
 
         .progress-ring-svg {{
+            display: block;
+            width: 100%;
+            height: 100%;
             transform: rotate(-90deg);
         }}
 
@@ -3758,7 +3761,7 @@ def generate_html_dashboard(data):
             <h2>Key Performance Metrics</h2>
             <div class="progress-rings-container" style="overflow: visible !important;">
                 <div class="progress-ring">
-                    <svg class="progress-ring-svg" width="140" height="140">
+                    <svg class="progress-ring-svg" viewBox="0 0 140 140">
                         <circle class="progress-ring-circle progress-ring-bg" cx="70" cy="70" r="55"></circle>
                         <circle class="progress-ring-circle progress-ring-progress" cx="70" cy="70" r="55"
                                 stroke="var(--success-color)" id="ringOnTime"></circle>
@@ -3769,7 +3772,7 @@ def generate_html_dashboard(data):
                     </div>
                 </div>
                 <div class="progress-ring">
-                    <svg class="progress-ring-svg" width="140" height="140">
+                    <svg class="progress-ring-svg" viewBox="0 0 140 140">
                         <circle class="progress-ring-circle progress-ring-bg" cx="70" cy="70" r="55"></circle>
                         <circle class="progress-ring-circle progress-ring-progress" cx="70" cy="70" r="55"
                                 stroke="var(--brand-primary)" id="ringUtilization"></circle>
@@ -3780,7 +3783,7 @@ def generate_html_dashboard(data):
                     </div>
                 </div>
                 <div class="progress-ring">
-                    <svg class="progress-ring-svg" width="140" height="140">
+                    <svg class="progress-ring-svg" viewBox="0 0 140 140">
                         <circle class="progress-ring-circle progress-ring-bg" cx="70" cy="70" r="55"></circle>
                         <circle class="progress-ring-circle progress-ring-progress" cx="70" cy="70" r="55"
                                 stroke="var(--info-color)" id="ringProjects"></circle>
