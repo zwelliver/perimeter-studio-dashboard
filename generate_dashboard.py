@@ -2047,6 +2047,26 @@ def generate_html_dashboard(data):
             }}
         }}
 
+        /* View More / Show Less for Upcoming Shoots */
+        .shoots-hidden .project-card:nth-child(n+4) {{
+            display: none;
+        }}
+        .view-more-btn {{
+            display: block;
+            margin: 18px auto 0;
+            padding: 10px 24px;
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+        }}
+        .view-more-btn:hover {{
+            opacity: 0.85;
+        }}
+
         /* Task list and detail styles */
         .task-list-item {{
             font-size: 12px;
@@ -3587,8 +3607,9 @@ def generate_html_dashboard(data):
 
     upcoming_shoots = data.get('upcoming_shoots', [])
     if upcoming_shoots:
-        html += """
-            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
+        shoots_hidden_class = ' shoots-hidden' if len(upcoming_shoots) > 3 else ''
+        html += f"""
+            <div id="shoots-grid" class="{shoots_hidden_class.strip()}" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
         """
         for shoot in upcoming_shoots:
             # Format date and time
@@ -3638,6 +3659,11 @@ def generate_html_dashboard(data):
         html += """
             </div>
         """
+        if len(upcoming_shoots) > 3:
+            remaining = len(upcoming_shoots) - 3
+            html += f"""
+            <button class="view-more-btn" id="shoots-toggle" onclick="toggleShoots()">View More ({remaining} remaining)</button>
+            """
     else:
         html += """
             <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
@@ -5754,6 +5780,24 @@ def generate_html_dashboard(data):
 
         // Start observing theme changes
         observeThemeChanges();
+
+        // Toggle Upcoming Shoots view more / show less
+        function toggleShoots() {{
+            const grid = document.getElementById('shoots-grid');
+            const btn = document.getElementById('shoots-toggle');
+            if (!grid || !btn) return;
+            grid.classList.toggle('shoots-hidden');
+            if (grid.classList.contains('shoots-hidden')) {{
+                btn.textContent = btn.dataset.moreText;
+            }} else {{
+                btn.textContent = 'Show Less';
+            }}
+        }}
+        // Store the original button text
+        (function() {{
+            const btn = document.getElementById('shoots-toggle');
+            if (btn) btn.dataset.moreText = btn.textContent;
+        }})();
 """
 
     html += """
