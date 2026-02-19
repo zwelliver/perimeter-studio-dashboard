@@ -258,18 +258,22 @@ def read_reports():
 
     # Fetch upcoming shoots from Asana
     data['upcoming_shoots'] = []
+    data['film_date_conflicts'] = []
     if ASANA_PAT:
         try:
             FILM_DATE_FIELD_GID = os.getenv('FILM_DATE_FIELD_GID')
+            COMPLEXITY_FIELD_GID = '1209600375748350'
+            VIDEOGRAPHER_FIELD_GID = '1209693890455555'
             if FILM_DATE_FIELD_GID:
                 upcoming_shoots = []
+                complexity_by_gid = {}
                 now = datetime.now(timezone.utc)
 
                 # Search for tasks with Film Date set across all production projects
                 for project_name, project_gid in project_gids.items():
                     endpoint = f"https://app.asana.com/api/1.0/projects/{project_gid}/tasks"
                     params = {
-                        'opt_fields': 'gid,name,custom_fields,start_on,due_on'
+                        'opt_fields': 'gid,name,custom_fields,start_on,due_on,assignee.name,completed'
                     }
 
                     response = requests.get(endpoint, headers=headers, params=params)
@@ -278,51 +282,66 @@ def read_reports():
                         tasks = response.json().get('data', [])
 
                         for task in tasks:
-                            # Find Film Date custom field
+                            if task.get('completed', False):
+                                continue
+
+                            # Extract custom fields: Film Date, Complexity, Videographer
+                            film_datetime = None
+                            complexity = 0
+                            videographer = None
+
                             for field in task.get('custom_fields', []):
-                                if field.get('gid') == FILM_DATE_FIELD_GID:
+                                fgid = field.get('gid')
+                                if fgid == FILM_DATE_FIELD_GID:
                                     date_value = field.get('date_value')
                                     if date_value:
-                                        # Handle both date_time and date formats
                                         film_datetime_str = date_value.get('date_time') or date_value.get('date')
                                         if film_datetime_str:
-                                            # Parse the datetime or date
                                             if 'T' in film_datetime_str or 'Z' in film_datetime_str:
-                                                # Full datetime
                                                 film_datetime = datetime.fromisoformat(film_datetime_str.replace('Z', '+00:00'))
                                             else:
-                                                # Date only - set to start of day in UTC
                                                 from datetime import date as date_type
                                                 date_obj = date_type.fromisoformat(film_datetime_str)
                                                 film_datetime = datetime.combine(date_obj, datetime.min.time()).replace(tzinfo=timezone.utc)
+                                elif fgid == COMPLEXITY_FIELD_GID:
+                                    complexity = field.get('number_value', 0) or 0
+                                elif fgid == VIDEOGRAPHER_FIELD_GID:
+                                    videographer = field.get('display_value') or field.get('text_value')
 
-                                            # Only include future shoots
-                                            if film_datetime >= now:
-                                                # Parse start_on and due_on if available
-                                                start_date = None
-                                                due_date = None
-                                                if task.get('start_on'):
-                                                    start_date = datetime.strptime(task['start_on'], '%Y-%m-%d').date()
-                                                if task.get('due_on'):
-                                                    due_date = datetime.strptime(task['due_on'], '%Y-%m-%d').date()
+                            if film_datetime and film_datetime >= now:
+                                start_date = None
+                                due_date = None
+                                if task.get('start_on'):
+                                    start_date = datetime.strptime(task['start_on'], '%Y-%m-%d').date()
+                                if task.get('due_on'):
+                                    due_date = datetime.strptime(task['due_on'], '%Y-%m-%d').date()
 
-                                                # Clean task name - remove checkboxes
-                                                task_name = task.get('name', 'Untitled')
-                                                task_name = task_name.replace('☐', '').replace('☑', '').replace('✓', '').replace('✔', '').strip()
+                                task_name = task.get('name', 'Untitled')
+                                task_name = task_name.replace('☐', '').replace('☑', '').replace('✓', '').replace('✔', '').strip()
 
-                                                upcoming_shoots.append({
-                                                    'name': task_name,
-                                                    'datetime': film_datetime,
-                                                    'start_on': start_date,
-                                                    'due_on': due_date,
-                                                    'project': project_name,
-                                                    'gid': task.get('gid')
-                                                })
-                                        break
+                                assignee_name = 'Unassigned'
+                                if task.get('assignee'):
+                                    assignee_name = task['assignee'].get('name', 'Unassigned')
+
+                                shoot_entry = {
+                                    'name': task_name,
+                                    'datetime': film_datetime,
+                                    'start_on': start_date,
+                                    'due_on': due_date,
+                                    'project': project_name,
+                                    'gid': task.get('gid'),
+                                    'assignee': assignee_name,
+                                    'videographer': videographer or '',
+                                }
+                                upcoming_shoots.append(shoot_entry)
+                                complexity_by_gid[task.get('gid')] = complexity
 
                 # Sort by datetime (earliest first) and limit to 10
                 upcoming_shoots.sort(key=lambda x: x['datetime'])
                 data['upcoming_shoots'] = upcoming_shoots[:10]
+
+                # Detect scheduling conflicts (all future shoots, not limited to 10)
+                data['film_date_conflicts'] = identify_film_date_conflicts(upcoming_shoots, complexity_by_gid)
         except Exception as e:
             print(f"Warning: Could not fetch upcoming shoots: {e}")
 
@@ -817,6 +836,111 @@ def identify_at_risk_tasks(tasks, team_capacity):
             })
 
     return at_risk
+
+
+def identify_film_date_conflicts(upcoming_shoots, complexity_by_gid=None):
+    """Identify scheduling conflicts where multiple shoots overlap on the same date/time.
+
+    Returns two types of conflicts:
+    - 'hard': Exact same datetime (definite conflict)
+    - 'soft': Same day, different times, but earlier shoot has high complexity
+              (likely to run long and overlap)
+
+    Args:
+        upcoming_shoots: list of shoot dicts with 'datetime', 'name', 'project', 'gid', etc.
+        complexity_by_gid: optional dict mapping task GID -> complexity score (1-10)
+
+    Returns:
+        list of conflict dicts sorted by date, each containing:
+        - date: date string
+        - type: 'hard' or 'soft'
+        - tasks: list of task dicts involved
+    """
+    from collections import defaultdict
+
+    if not upcoming_shoots:
+        return []
+
+    COMPLEXITY_THRESHOLD = 7  # Complexity >= this triggers proximity warnings
+
+    # Group shoots by calendar date
+    by_date = defaultdict(list)
+    for shoot in upcoming_shoots:
+        dt = shoot['datetime']
+        date_key = dt.strftime('%Y-%m-%d')
+        by_date[date_key].append(shoot)
+
+    conflicts = []
+
+    for date_key, shoots in by_date.items():
+        if len(shoots) < 2:
+            continue
+
+        # Sort shoots by time on this date
+        shoots_sorted = sorted(shoots, key=lambda s: s['datetime'])
+
+        # Check for exact datetime matches (hard conflicts)
+        by_time = defaultdict(list)
+        for shoot in shoots_sorted:
+            time_key = shoot['datetime'].strftime('%Y-%m-%d %H:%M')
+            by_time[time_key].append(shoot)
+
+        hard_conflict_gids = set()
+        for time_key, time_group in by_time.items():
+            if len(time_group) >= 2:
+                conflicts.append({
+                    'date': date_key,
+                    'type': 'hard',
+                    'label': 'Same date/time',
+                    'tasks': [
+                        {
+                            'name': s.get('name', 'Untitled'),
+                            'project': s.get('project', ''),
+                            'assignee': s.get('assignee', 'Unassigned'),
+                            'videographer': s.get('videographer', ''),
+                            'gid': s.get('gid', ''),
+                            'datetime': s['datetime'],
+                        }
+                        for s in time_group
+                    ],
+                })
+                for s in time_group:
+                    hard_conflict_gids.add(s.get('gid'))
+
+        # Check for same-day proximity warnings (soft conflicts)
+        # Only if the earlier shoot is high-complexity
+        if complexity_by_gid and len(shoots_sorted) >= 2:
+            for i in range(len(shoots_sorted) - 1):
+                earlier = shoots_sorted[i]
+                later = shoots_sorted[i + 1]
+
+                # Skip pairs already flagged as hard conflicts
+                if earlier.get('gid') in hard_conflict_gids and later.get('gid') in hard_conflict_gids:
+                    continue
+
+                earlier_complexity = complexity_by_gid.get(earlier.get('gid'), 0) or 0
+                if earlier_complexity >= COMPLEXITY_THRESHOLD:
+                    conflicts.append({
+                        'date': date_key,
+                        'type': 'soft',
+                        'label': f'High-complexity shoot (score: {earlier_complexity}) may run into next',
+                        'tasks': [
+                            {
+                                'name': s.get('name', 'Untitled'),
+                                'project': s.get('project', ''),
+                                'assignee': s.get('assignee', 'Unassigned'),
+                                'videographer': s.get('videographer', ''),
+                                'gid': s.get('gid', ''),
+                                'datetime': s['datetime'],
+                            }
+                            for s in [earlier, later]
+                        ],
+                    })
+
+    # Sort by date, hard conflicts first
+    conflicts.sort(key=lambda c: (c['date'], 0 if c['type'] == 'hard' else 1))
+    return conflicts
+
 
 def generate_capacity_heatmap(tasks, team_capacity_config):
     """Generate capacity utilization heatmap for next 30 days with adaptive color scaling"""
@@ -1402,47 +1526,36 @@ def generate_html_dashboard(data):
             }}
 
             .header {{
-                display: grid;
-                grid-template-areas:
-                    "title"
-                    "subtitle"
-                    "timestamp"
-                    "controls";
-                grid-template-rows: auto auto auto auto;
-                gap: 15px;
                 position: relative;
-                padding: 20px 15px; /* Normal padding */
+                padding: 20px 15px;
             }}
 
-            .header-controls {{
-                grid-area: controls;
-                display: flex;
-                justify-content: center;
+            .header-content {{
+                flex-direction: column;
                 align-items: center;
-                flex-direction: row;
-                flex-wrap: wrap;
-                gap: 12px;
-                z-index: 10;
+                gap: 10px;
             }}
 
             .header h1 {{
-                grid-area: title;
                 font-size: 24px;
                 margin: 0;
+                padding-right: 50px;
             }}
 
             .header .subtitle {{
-                grid-area: subtitle;
                 margin: 0;
             }}
 
             .header .timestamp {{
-                grid-area: timestamp;
                 margin: 0;
             }}
 
             .theme-toggle {{
-                flex: none;
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                padding: 6px 10px;
+                font-size: 12px;
             }}
 
             .export-controls {{
@@ -1734,7 +1847,6 @@ def generate_html_dashboard(data):
 
             .header {{
                 padding: 12px;
-                padding-top: 80px;
             }}
 
             .header h1 {{
@@ -1742,8 +1854,10 @@ def generate_html_dashboard(data):
             }}
 
             .theme-toggle {{
+                top: 10px;
+                right: 10px;
                 padding: 4px 8px;
-                font-size: 12px;
+                font-size: 11px;
             }}
 
             .card {{
@@ -3649,6 +3763,79 @@ def generate_html_dashboard(data):
         html += """
             <div class="success-state">
                 <div style="font-size: 18px;">No tasks currently at risk</div>
+            </div>
+        """
+
+    html += """
+        </div>
+
+        <!-- Scheduling Conflicts -->
+        <div class="card full-width" style="margin-top: 10px; margin-bottom: 30px;">
+            <h2>Scheduling Conflicts</h2>
+    """
+
+    film_conflicts = data.get('film_date_conflicts', [])
+    if film_conflicts:
+        html += """
+            <div style="margin-top: 15px;">
+        """
+        for conflict in film_conflicts:
+            conflict_date = conflict['date']
+            try:
+                from datetime import date as date_type
+                parsed_date = date_type.fromisoformat(conflict_date)
+                display_date = parsed_date.strftime('%A, %B %-d, %Y')
+            except Exception:
+                display_date = conflict_date
+
+            if conflict['type'] == 'hard':
+                border_color = 'var(--danger-color)'
+                badge_bg = 'rgba(220, 53, 69, 0.1)'
+                badge_color = 'var(--danger-color)'
+                badge_text = 'TIME CONFLICT'
+            else:
+                border_color = 'var(--warning-color)'
+                badge_bg = 'rgba(255, 193, 7, 0.15)'
+                badge_color = '#e6a000'
+                badge_text = 'PROXIMITY WARNING'
+
+            tasks_html = ""
+            for t in conflict['tasks']:
+                t_dt = t.get('datetime')
+                if t_dt:
+                    local_dt = t_dt.astimezone()
+                    time_str = local_dt.strftime('%-I:%M %p')
+                else:
+                    time_str = 'TBD'
+                videographer_str = f" | Videographer: {t['videographer']}" if t.get('videographer') else ""
+                task_url = f"https://app.asana.com/0/0/{t['gid']}/f" if t.get('gid') else "#"
+                tasks_html += f"""
+                    <div style="padding: 6px 0; border-bottom: 1px solid var(--border-color);">
+                        <a href="{task_url}" target="_blank" style="color: var(--accent-color); text-decoration: none; font-weight: 600;">{t['name']}</a>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+                            {time_str} | {t['project']} | {t['assignee']}{videographer_str}
+                        </div>
+                    </div>
+                """
+
+            html += f"""
+                <div style="border-left: 4px solid {border_color}; padding: 12px; margin-bottom: 12px; background: var(--bg-tertiary); border-radius: 4px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <span style="font-weight: 700; font-size: 15px;">{display_date}</span>
+                        <span style="background: {badge_bg}; color: {badge_color}; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 700;">{badge_text}</span>
+                    </div>
+                    <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">{conflict['label']}</div>
+                    {tasks_html}
+                </div>
+            """
+
+        html += """
+            </div>
+        """
+    else:
+        html += """
+            <div class="success-state">
+                <div style="font-size: 18px;">No scheduling conflicts detected</div>
             </div>
         """
 

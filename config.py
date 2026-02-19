@@ -517,6 +517,10 @@ ALERTS = {
     # --- Post-Completion Feedback ---
     "FEEDBACK_RECIPIENT": "Zach",
     "FEEDBACK_LOOKBACK_DAYS": 7,
+
+    # --- Scheduling Conflict Alerts ---
+    "SLACK_WEBHOOK_CONFLICTS": os.getenv("SLACK_WEBHOOK_CONFLICTS", os.getenv("SLACK_WEBHOOK_CAPACITY", "")),
+    "CONFLICT_COMPLEXITY_THRESHOLD": 7,  # Complexity >= this triggers same-day proximity warnings
 }
 
 
@@ -601,6 +605,10 @@ PATHS = {
 
     # --- Feedback ---
     "FEEDBACK_STATE": os.path.join(BASE_DIR, "feedback_posted_tasks.json"),
+
+    # --- Scheduling Conflict Alerts ---
+    "CONFLICT_ALERTS_LOG": os.path.join(BASE_DIR, "scheduling_conflict_alerts.txt"),
+    "CONFLICT_ALERT_STATE": os.path.join(BASE_DIR, "scheduling_conflict_state.json"),
 }
 
 
