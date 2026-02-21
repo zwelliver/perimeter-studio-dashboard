@@ -153,7 +153,8 @@ def is_testimony_video(task_name, task_notes, task_type):
     combined_text = f"{task_name_lower} {task_notes_lower}"
 
     # FIRST: Check for exclusions (WOV, scripted content, etc.)
-    is_excluded = any(excl in combined_text for excl in EXCLUDE_KEYWORDS)
+    # Only check task name — notes often contain form fields with generic words like "graphics"
+    is_excluded = any(excl in task_name_lower for excl in EXCLUDE_KEYWORDS)
     if is_excluded:
         logger.debug(f"Task excluded (scripted/WOV content): {task_name}")
         return False
@@ -168,8 +169,22 @@ def is_testimony_video(task_name, task_notes, task_type):
     strong_indicators = ['testimony', 'testimonial', 'story video', 'interview']
     has_strong_indicator = any(ind in task_name_lower for ind in strong_indicators)
 
-    # Qualify if: (Enriching + keyword) OR strong indicator
-    qualifies = (is_enriching and has_testimony_keyword) or has_strong_indicator
+    # Check for "Type of Video" form field in notes (from video request form)
+    video_type_match = re.search(
+        r"Type of Video:\s*\n?\s*(.+)",
+        task_notes or "",
+        re.IGNORECASE,
+    )
+    form_says_interview = False
+    if video_type_match:
+        video_type_value = video_type_match.group(1).strip().lower()
+        form_says_interview = any(
+            kw in video_type_value
+            for kw in ["interview", "testimony", "testimonial", "story"]
+        )
+
+    # Qualify if: (Enriching + keyword) OR strong indicator OR form field says interview
+    qualifies = (is_enriching and has_testimony_keyword) or has_strong_indicator or form_says_interview
 
     if qualifies:
         logger.info(f"Task qualifies for interview questions: {task_name}")
