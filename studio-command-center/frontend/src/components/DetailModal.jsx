@@ -1,29 +1,8 @@
-import { useState } from 'react'
 import { format, parseISO } from 'date-fns'
 import './DetailModal.css'
 
 function DetailModal({ item, type, onClose }) {
-  const [filmedStatus, setFilmedStatus] = useState('idle') // idle | loading | success | error
-  const [errorMsg, setErrorMsg] = useState('')
-
   if (!item) return null
-
-  const handleMarkFilmed = async () => {
-    if (!item.gid) return
-    setFilmedStatus('loading')
-    setErrorMsg('')
-    try {
-      const resp = await fetch(`/api/tasks/${item.gid}/mark-filmed`, { method: 'POST' })
-      if (!resp.ok) {
-        const data = await resp.json().catch(() => ({}))
-        throw new Error(data.detail || 'Failed to mark as filmed')
-      }
-      setFilmedStatus('success')
-    } catch (err) {
-      setErrorMsg(err.message)
-      setFilmedStatus('error')
-    }
-  }
 
   const renderTaskDetails = () => (
     <div className="detail-content">
@@ -125,20 +104,6 @@ function DetailModal({ item, type, onClose }) {
       </div>
 
       <div className="detail-actions">
-        {item.gid && (
-          <button
-            className={`mark-filmed-btn ${filmedStatus}`}
-            onClick={handleMarkFilmed}
-            disabled={filmedStatus === 'loading' || filmedStatus === 'success'}
-          >
-            {filmedStatus === 'idle' && 'Mark Filmed'}
-            {filmedStatus === 'loading' && (
-              <><span className="spinner" /> Updating...</>
-            )}
-            {filmedStatus === 'success' && <><span className="checkmark">✓</span> Filmed</>}
-            {filmedStatus === 'error' && 'Retry — Mark Filmed'}
-          </button>
-        )}
         <a
           href={`https://app.asana.com/0/0/${item.gid || ''}/f`}
           target="_blank"
@@ -148,9 +113,6 @@ function DetailModal({ item, type, onClose }) {
           Open in Asana →
         </a>
       </div>
-      {filmedStatus === 'error' && errorMsg && (
-        <p className="filmed-error">{errorMsg}</p>
-      )}
     </div>
   )
 

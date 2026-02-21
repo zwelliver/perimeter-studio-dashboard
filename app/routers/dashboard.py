@@ -4,66 +4,13 @@ Maintains compatibility with existing Flask API.
 """
 
 from datetime import datetime
-from fastapi import APIRouter, HTTPException
-import httpx
+from fastapi import APIRouter
 import logging
 
-from app.config import settings
 from app.services.reports import get_fresh_data, clear_cache, get_cache_age
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-
-TASK_PROGRESS_FIELD_GID = "1209598240843051"
-_filmed_option_gid: str | None = None
-
-
-async def _get_filmed_option_gid() -> str:
-    """Look up the 'Filmed' enum option GID from the Task Progress custom field. Cached after first call."""
-    global _filmed_option_gid
-    if _filmed_option_gid:
-        return _filmed_option_gid
-
-    url = f"https://app.asana.com/api/1.0/custom_fields/{TASK_PROGRESS_FIELD_GID}"
-    headers = {"Authorization": f"Bearer {settings.asana_pat_scorer}"}
-
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(url, headers=headers)
-        if resp.status_code != 200:
-            raise HTTPException(status_code=502, detail="Failed to fetch custom field from Asana")
-        data = resp.json().get("data", {})
-
-    for option in data.get("enum_options", []):
-        if option.get("name", "").strip().lower() == "filmed":
-            _filmed_option_gid = option["gid"]
-            return _filmed_option_gid
-
-    raise HTTPException(status_code=500, detail="'Filmed' option not found in Task Progress field")
-
-
-@router.post("/api/tasks/{task_gid}/mark-filmed")
-async def mark_filmed(task_gid: str):
-    """Mark a task's Task Progress custom field as 'Filmed' in Asana."""
-    filmed_gid = await _get_filmed_option_gid()
-
-    url = f"https://app.asana.com/api/1.0/tasks/{task_gid}"
-    headers = {"Authorization": f"Bearer {settings.asana_pat_scorer}"}
-    payload = {
-        "data": {
-            "custom_fields": {
-                TASK_PROGRESS_FIELD_GID: filmed_gid,
-            }
-        }
-    }
-
-    async with httpx.AsyncClient() as client:
-        resp = await client.put(url, headers=headers, json=payload)
-
-    if resp.status_code != 200:
-        logger.error("Failed to mark task %s as filmed: %s", task_gid, resp.text)
-        raise HTTPException(status_code=502, detail="Failed to update task in Asana")
-
-    return {"status": "ok", "task_gid": task_gid}
 
 
 @router.get("/api/refresh")
