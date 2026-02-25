@@ -2449,7 +2449,7 @@
                 <div class="header-text">
                     <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
                     <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: February 25, 2026 at 09:30 AM</p>
+                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: February 25, 2026 at 09:45 AM</p>
                 </div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
                     <span id="themeText">Dark Mode</span>
@@ -2478,7 +2478,7 @@
                 <h2 id="performance-title">Performance Overview</h2>
                 <div class="metric" role="group" aria-labelledby="active-tasks-label">
                     <span id="active-tasks-label" class="metric-label">Active Tasks</span>
-                    <span class="metric-value" aria-describedby="active-tasks-label">54</span>
+                    <span class="metric-value" aria-describedby="active-tasks-label">53</span>
                 </div>
                 <div class="metric" role="group" aria-labelledby="completed-30d-label">
                     <span id="completed-30d-label" class="metric-label">Projects Completed (30d)</span>
@@ -2561,15 +2561,15 @@
                         </div>
                     </div>
 
-                    <div class="team-member tooltip capacity-over" role="listitem" tabindex="0" aria-labelledby="member-john-meyer-name" data-tooltip="Allocated: 54.0% of 30% max">
+                    <div class="team-member tooltip capacity-high" role="listitem" tabindex="0" aria-labelledby="member-john-meyer-name" data-tooltip="Allocated: 27.0% of 30% max">
                         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
                             <div id="member-john-meyer-name" class="team-member-name">John Meyer</div>
-                            <div class="capacity-status capacity-over">Over capacity (+24%)</div>
+                            <div class="capacity-status capacity-high">Near capacity</div>
                         </div>
-                        <div class="team-member-capacity" aria-label="Current capacity utilization">54% / 30% capacity</div>
-                        <div class="progress-bar" role="progressbar" aria-valuenow="180" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 180%">
-                            <div class="progress-fill over-capacity" style="width: 100%" aria-hidden="true">
-                                54% allocated
+                        <div class="team-member-capacity" aria-label="Current capacity utilization">27% / 30% capacity</div>
+                        <div class="progress-bar" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 90%">
+                            <div class="progress-fill " style="width: 90.0%" aria-hidden="true">
+                                27% allocated
                             </div>
                         </div>
                     </div>
@@ -2839,26 +2839,6 @@
                 <div class="project-card">
                     <div class="project-card-header">
                         <div>
-                            <div class="project-card-date">Wed, Feb 25, 2026</div>
-                            <div style="font-size: 22px; font-weight: 600; color: #dc3545; margin-top: 6px;">DUE TODAY</div>
-                        </div>
-                        <span class="project-card-badge">Post Production</span>
-                    </div>
-                    <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1211997186982728/f" target="_blank" class="project-card-title">
-                            Perimeter Live Worship Album Songs
-                        </a>
-                    </div>
-                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-                        <a href="https://app.asana.com/0/0/1211997186982728/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
-                            View in Asana →
-                        </a>
-                    </div>
-                </div>
-            
-                <div class="project-card">
-                    <div class="project-card-header">
-                        <div>
                             <div class="project-card-date">Thu, Feb 26, 2026</div>
                             <div style="font-size: 22px; font-weight: 600; color: #fd7e14; margin-top: 6px;">DUE TOMORROW</div>
                         </div>
@@ -2998,7 +2978,7 @@
             
             </div>
         
-            <button class="view-more-btn" onclick="toggleCards('deadlines-grid', this)">View More (5 remaining)</button>
+            <button class="view-more-btn" onclick="toggleCards('deadlines-grid', this)">View More (4 remaining)</button>
             
         </div>
 
@@ -3091,8 +3071,8 @@
                 <!-- Timeline bars -->
                 <div style="display: flex; gap: 3px; height: 60px; align-items: flex-end;">
     
-                    <div style="flex: 1; background: #fd7e14; height: 61.792207792207805%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 1 (2026-02-25): 48% capacity, 24 tasks">
+                    <div style="flex: 1; background: #fd7e14; height: 60.27272727272729%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 1 (2026-02-25): 46% capacity, 23 tasks">
                     </div>
         
                     <div style="flex: 1; background: #fd7e14; height: 56.78354978354981%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
@@ -3275,12 +3255,12 @@
             </div>
             <div class="heatmap-grid">
     
-                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-25: 65.8% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-25: 57.6% capacity">
                     <div style="font-weight: bold;">02/25</div>
-                    <div style="font-size: 9px; margin-top: 2px;">66%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">58%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-26: 57.6% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-02-26: 57.6% capacity">
                     <div style="font-weight: bold;">02/26</div>
                     <div style="font-size: 9px; margin-top: 2px;">58%</div>
                 </div>
@@ -4708,7 +4688,7 @@ Dec 1...
 
             // Real shoots and deadlines data
             const shoots = [{"name": "Kingdom Purpose Journey Curriculum Module", "datetime": "2026-02-27T14:00:00+00:00", "start_on": null, "due_on": "2026-03-23", "type": "shoot"}, {"name": "Holy Week 2026 Devo - Easter Sunday - Jeff", "datetime": "2026-03-02T15:00:00+00:00", "start_on": null, "due_on": "2026-03-27", "type": "shoot"}, {"name": "Evergreen OME Volunteer Envisioning Video", "datetime": "2026-03-02T19:00:00+00:00", "start_on": null, "due_on": "2026-03-12", "type": "shoot"}, {"name": "Holy Week 2026 - Friday - Ryan Brown", "datetime": "2026-03-03T18:30:00+00:00", "start_on": null, "due_on": "2026-03-26", "type": "shoot"}, {"name": "WOV - Hanan Betancourt", "datetime": "2026-03-03T20:00:00+00:00", "start_on": null, "due_on": "2026-03-05", "type": "shoot"}, {"name": "Holy Week 2026 - Palm Sunday: Unexpected Entry - Bryan Chapell", "datetime": "2026-03-04T14:30:00+00:00", "start_on": null, "due_on": "2026-03-24", "type": "shoot"}, {"name": "Holy Week 2026 - Thursday- Eric Ryan", "datetime": "2026-03-05T14:30:00+00:00", "start_on": null, "due_on": "2026-03-24", "type": "shoot"}, {"name": "Jeff Norris: Mission to the World Teaching", "datetime": "2026-03-05T19:45:00+00:00", "start_on": null, "due_on": "2026-03-05", "type": "shoot"}, {"name": "CAA Staff Recruitment Video", "datetime": "2026-03-06T15:00:00+00:00", "start_on": null, "due_on": "2026-03-12", "type": "shoot"}, {"name": "Holy Week 2026 Devo - Monday - Laura Elvington", "datetime": "2026-03-11T17:00:00+00:00", "start_on": null, "due_on": "2026-03-24", "type": "shoot"}];
-            const deadlines = [{"name": "Perimeter Live Worship Album Songs", "start_on": null, "due_date": "2026-02-25", "type": "deadline"}, {"name": "Jeff's Do/Done Diagram Video", "start_on": null, "due_date": "2026-02-26", "type": "deadline"}, {"name": "WOV - Pollye Pope", "start_on": null, "due_date": "2026-02-26", "type": "deadline"}, {"name": "Frontier Video Testimonial #1", "start_on": null, "due_date": "2026-02-26", "type": "deadline"}, {"name": "Radical Dependence Teaching Series", "start_on": null, "due_date": "2026-02-26", "type": "deadline"}, {"name": "WOV - Hanan Betancourt", "start_on": null, "due_date": "2026-03-05", "type": "deadline"}, {"name": "Jeff Norris: Mission to the World Teaching", "start_on": null, "due_date": "2026-03-05", "type": "deadline"}, {"name": "Digging Deeper Recording with Chris Kam", "start_on": null, "due_date": "2026-03-06", "type": "deadline"}];
+            const deadlines = [{"name": "Jeff's Do/Done Diagram Video", "start_on": null, "due_date": "2026-02-26", "type": "deadline"}, {"name": "WOV - Pollye Pope", "start_on": null, "due_date": "2026-02-26", "type": "deadline"}, {"name": "Frontier Video Testimonial #1", "start_on": null, "due_date": "2026-02-26", "type": "deadline"}, {"name": "Radical Dependence Teaching Series", "start_on": null, "due_date": "2026-02-26", "type": "deadline"}, {"name": "WOV - Hanan Betancourt", "start_on": null, "due_date": "2026-03-05", "type": "deadline"}, {"name": "Jeff Norris: Mission to the World Teaching", "start_on": null, "due_date": "2026-03-05", "type": "deadline"}, {"name": "Digging Deeper Recording with Chris Kam", "start_on": null, "due_date": "2026-03-06", "type": "deadline"}];
 
             // Combine and convert to timeline format
             const now = new Date();
@@ -4992,8 +4972,8 @@ Dec 1...
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 animateProgressRing('ringOnTime', 'ringOnTimeValue', 92);
-                animateProgressRing('ringUtilization', 'ringUtilizationValue', 119);
-                animateProgressRing('ringProjects', 'ringProjectsValue', 54, true);
+                animateProgressRing('ringUtilization', 'ringUtilizationValue', 96);
+                animateProgressRing('ringProjects', 'ringProjectsValue', 53, true);
 
                 generateTimeline();
                 generateRadarChart();
