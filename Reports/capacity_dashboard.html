@@ -2449,7 +2449,7 @@
                 <div class="header-text">
                     <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
                     <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: March 12, 2026 at 12:15 PM</p>
+                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: March 12, 2026 at 12:30 PM</p>
                 </div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
                     <span id="themeText">Dark Mode</span>
@@ -2641,31 +2641,8 @@
         <div class="card full-width" style="margin-top: 10px; margin-bottom: 30px;">
             <h2>Scheduling Conflicts</h2>
     
-            <div style="margin-top: 15px;">
-        
-                <div style="border-left: 4px solid var(--warning-color); padding: 12px; margin-bottom: 12px; background: var(--bg-tertiary); border-radius: 4px;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                        <span style="font-weight: 700; font-size: 15px;">Thursday, March 12, 2026</span>
-                        <span style="background: rgba(255, 193, 7, 0.15); color: #e6a000; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 700;">PROXIMITY WARNING</span>
-                    </div>
-                    <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">High-complexity shoot (score: 9) may run into next</div>
-                    
-                    <div style="padding: 6px 0; border-bottom: 1px solid var(--border-color);">
-                        <a href="https://app.asana.com/0/0/1212955373192693/f" target="_blank" style="color: var(--accent-color); text-decoration: none; font-weight: 600;">DD into Parenting - Ep. 9: Parenting Through Trauma</a>
-                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
-                            12:30 PM | Production | Zach Welliver
-                        </div>
-                    </div>
-                
-                    <div style="padding: 6px 0; border-bottom: 1px solid var(--border-color);">
-                        <a href="https://app.asana.com/0/0/1213531057845174/f" target="_blank" style="color: var(--accent-color); text-decoration: none; font-weight: 600;">Pat Flint Testimony - Missional Living Series</a>
-                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
-                            2:30 PM | Production | Nick Clark
-                        </div>
-                    </div>
-                
-                </div>
-            
+            <div class="success-state">
+                <div style="font-size: 18px;">No scheduling conflicts detected</div>
             </div>
         
         </div>
@@ -2676,26 +2653,6 @@
     
             <div id="shoots-grid" class="cards-collapsed" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
         
-                <div class="project-card">
-                    <div class="project-card-header">
-                        <div>
-                            <div class="project-card-date">Thu, Mar 12</div>
-                            <div class="project-card-time">12:30 PM</div>
-                        </div>
-                        <span class="project-card-badge">Production</span>
-                    </div>
-                    <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1212955373192693/f" target="_blank" class="project-card-title">
-                            DD into Parenting - Ep. 9: Parenting Through Trauma
-                        </a>
-                    </div>
-                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-                        <a href="https://app.asana.com/0/0/1212955373192693/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
-                            View in Asana →
-                        </a>
-                    </div>
-                </div>
-            
                 <div class="project-card">
                     <div class="project-card-header">
                         <div>
@@ -2871,6 +2828,26 @@
                     </div>
                     <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
                         <a href="https://app.asana.com/0/0/1213327636426235/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Mon, Aug 10</div>
+                            <div class="project-card-time">2:00 PM</div>
+                        </div>
+                        <span class="project-card-badge">Forecast</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1213327636672333/f" target="_blank" class="project-card-title">
+                            Unlimited Grace: August 10
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1213327636672333/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
                             View in Asana →
                         </a>
                     </div>
@@ -4764,7 +4741,7 @@ Dec 1...
             if (!timelineContainer) return;
 
             // Real shoots and deadlines data
-            const shoots = [{"name": "DD into Parenting - Ep. 9: Parenting Through Trauma", "datetime": "2026-03-12T16:30:00+00:00", "start_on": null, "due_on": "2026-04-23", "type": "shoot"}, {"name": "Pat Flint Testimony - Missional Living Series", "datetime": "2026-03-12T18:30:00+00:00", "start_on": null, "due_on": "2026-03-26", "type": "shoot"}, {"name": "Victorious Families Journey Curriculum Module", "datetime": "2026-03-16T13:00:00+00:00", "start_on": null, "due_on": "2026-04-06", "type": "shoot"}, {"name": "Perimeter Counseling Podcast Recording via Riverside", "datetime": "2026-03-17T18:30:00+00:00", "start_on": null, "due_on": "2026-03-18", "type": "shoot"}, {"name": "WOV - Debbie Mason", "datetime": "2026-03-18T13:30:00+00:00", "start_on": null, "due_on": "2026-03-19", "type": "shoot"}, {"name": "Jeff Norris: Mission to the World Teaching", "datetime": "2026-03-19T18:45:00+00:00", "start_on": null, "due_on": "2026-03-19", "type": "shoot"}, {"name": "CAA Staff Recruitment Video", "datetime": "2026-03-27T14:00:00+00:00", "start_on": null, "due_on": "2026-04-10", "type": "shoot"}, {"name": "Unlimited Grace: April 27", "datetime": "2026-04-27T18:00:00+00:00", "start_on": null, "due_on": "2026-05-11", "type": "shoot"}, {"name": "Unlimited Grace: May 11", "datetime": "2026-05-11T18:00:00+00:00", "start_on": null, "due_on": "2026-05-25", "type": "shoot"}, {"name": "Unlimited Grace: June 15", "datetime": "2026-06-15T18:00:00+00:00", "start_on": null, "due_on": "2026-06-29", "type": "shoot"}];
+            const shoots = [{"name": "Pat Flint Testimony - Missional Living Series", "datetime": "2026-03-12T18:30:00+00:00", "start_on": null, "due_on": "2026-03-26", "type": "shoot"}, {"name": "Victorious Families Journey Curriculum Module", "datetime": "2026-03-16T13:00:00+00:00", "start_on": null, "due_on": "2026-04-06", "type": "shoot"}, {"name": "Perimeter Counseling Podcast Recording via Riverside", "datetime": "2026-03-17T18:30:00+00:00", "start_on": null, "due_on": "2026-03-18", "type": "shoot"}, {"name": "WOV - Debbie Mason", "datetime": "2026-03-18T13:30:00+00:00", "start_on": null, "due_on": "2026-03-19", "type": "shoot"}, {"name": "Jeff Norris: Mission to the World Teaching", "datetime": "2026-03-19T18:45:00+00:00", "start_on": null, "due_on": "2026-03-19", "type": "shoot"}, {"name": "CAA Staff Recruitment Video", "datetime": "2026-03-27T14:00:00+00:00", "start_on": null, "due_on": "2026-04-10", "type": "shoot"}, {"name": "Unlimited Grace: April 27", "datetime": "2026-04-27T18:00:00+00:00", "start_on": null, "due_on": "2026-05-11", "type": "shoot"}, {"name": "Unlimited Grace: May 11", "datetime": "2026-05-11T18:00:00+00:00", "start_on": null, "due_on": "2026-05-25", "type": "shoot"}, {"name": "Unlimited Grace: June 15", "datetime": "2026-06-15T18:00:00+00:00", "start_on": null, "due_on": "2026-06-29", "type": "shoot"}, {"name": "Unlimited Grace: August 10", "datetime": "2026-08-10T18:00:00+00:00", "start_on": null, "due_on": "2026-08-24", "type": "shoot"}];
             const deadlines = [{"name": "WOV - Anna Park", "start_on": null, "due_date": "2026-03-12", "type": "deadline"}, {"name": "Student Discipleship Relaunch Video", "start_on": null, "due_date": "2026-03-12", "type": "deadline"}, {"name": "Evergreen OME Volunteer Envisioning Video", "start_on": null, "due_date": "2026-03-12", "type": "deadline"}, {"name": "WOV - Anna Park", "start_on": null, "due_date": "2026-03-12", "type": "deadline"}, {"name": "Holy Week envisioning with Jeff", "start_on": null, "due_date": "2026-03-13", "type": "deadline"}, {"name": "Radical Dependence Teaching Series", "start_on": null, "due_date": "2026-03-13", "type": "deadline"}, {"name": "Perimeter Counseling Podcast Recording via Riverside", "start_on": null, "due_date": "2026-03-18", "type": "deadline"}, {"name": "DD into Parenting - Ep. 1: God's Design for Parenting", "start_on": null, "due_date": "2026-03-18", "type": "deadline"}, {"name": "WOV - Debbie Mason", "start_on": null, "due_date": "2026-03-19", "type": "deadline"}, {"name": "Jeff Norris: Mission to the World Teaching", "start_on": null, "due_date": "2026-03-19", "type": "deadline"}];
 
             // Combine and convert to timeline format
