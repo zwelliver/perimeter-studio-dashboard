@@ -2449,7 +2449,7 @@
                 <div class="header-text">
                     <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
                     <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: April 02, 2026 at 01:45 PM</p>
+                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: April 02, 2026 at 02:00 PM</p>
                 </div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
                     <span id="themeText">Dark Mode</span>
@@ -2478,7 +2478,7 @@
                 <h2 id="performance-title">Performance Overview</h2>
                 <div class="metric" role="group" aria-labelledby="active-tasks-label">
                     <span id="active-tasks-label" class="metric-label">Active Tasks</span>
-                    <span class="metric-value" aria-describedby="active-tasks-label">41</span>
+                    <span class="metric-value" aria-describedby="active-tasks-label">42</span>
                 </div>
                 <div class="metric" role="group" aria-labelledby="completed-30d-label">
                     <span id="completed-30d-label" class="metric-label">Projects Completed (30d)</span>
@@ -2585,6 +2585,16 @@
     
             <div style="margin-top: 15px;">
         
+                <div class="at-risk-item">
+                    <div class="project-task-name">WOV - Apr 12 - Davidson Jean-Rejouis</div>
+                    <div class="task-detail">
+                        Production | Unassigned | Due: 2026-04-09
+                    </div>
+                    <div class="task-risk">
+                        • Due in 7 days, needs scheduling
+                    </div>
+                </div>
+            
                 <div class="at-risk-item">
                     <div class="project-task-name">Victorious Families Journey Curriculum Module </div>
                     <div class="task-detail">
@@ -2911,6 +2921,26 @@
                 <div class="project-card">
                     <div class="project-card-header">
                         <div>
+                            <div class="project-card-date">Thu, Apr 9, 2026</div>
+                            <div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">7 DAYS</div>
+                        </div>
+                        <span class="project-card-badge">Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1213911339019647/f" target="_blank" class="project-card-title">
+                            WOV - Apr 12 - Davidson Jean-Rejouis
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1213911339019647/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
                             <div class="project-card-date">Fri, Apr 10, 2026</div>
                             <div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">8 DAYS</div>
                         </div>
@@ -2950,7 +2980,7 @@
             
             </div>
         
-            <button class="view-more-btn" onclick="toggleCards('deadlines-grid', this)">View More (4 remaining)</button>
+            <button class="view-more-btn" onclick="toggleCards('deadlines-grid', this)">View More (5 remaining)</button>
             
         </div>
 
@@ -3042,11 +3072,11 @@
                 <div style="display: flex; gap: 3px; height: 60px; align-items: flex-end;">
     
                     <div style="flex: 1; background: #fd7e14; height: 73.32900432900435%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 1 (2026-04-02): 56% capacity, 22 tasks">
+                         title="Week 1 (2026-04-02): 56% capacity, 23 tasks">
                     </div>
         
                     <div style="flex: 1; background: #ffc107; height: 55.0952380952381%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 2 (2026-04-09): 42% capacity, 18 tasks">
+                         title="Week 2 (2026-04-09): 42% capacity, 19 tasks">
                     </div>
         
                     <div style="flex: 1; background: #ffc107; height: 45.52813852813853%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
@@ -4622,7 +4652,7 @@ Dec 1...
 
             // Real shoots and deadlines data
             const shoots = [{"name": "Unlimited Grace: April 27", "datetime": "2026-04-27T18:00:00+00:00", "start_on": null, "due_on": "2026-05-11", "type": "shoot"}, {"name": "Unlimited Grace: May 11", "datetime": "2026-05-11T18:00:00+00:00", "start_on": null, "due_on": "2026-05-25", "type": "shoot"}, {"name": "Unlimited Grace: June 15", "datetime": "2026-06-15T18:00:00+00:00", "start_on": null, "due_on": "2026-06-29", "type": "shoot"}, {"name": "Unlimited Grace: August 10", "datetime": "2026-08-10T18:00:00+00:00", "start_on": null, "due_on": "2026-08-24", "type": "shoot"}, {"name": "Unlimited Grace: September 14", "datetime": "2026-09-14T18:00:00+00:00", "start_on": null, "due_on": "2026-09-28", "type": "shoot"}, {"name": "Unlimited Grace: October 26", "datetime": "2026-10-26T18:00:00+00:00", "start_on": null, "due_on": "2026-11-09", "type": "shoot"}, {"name": "Unlimited Grace: November 16", "datetime": "2026-11-16T19:00:00+00:00", "start_on": null, "due_on": "2026-11-30", "type": "shoot"}, {"name": "Unlimited Grace: December 7", "datetime": "2026-12-07T19:00:00+00:00", "start_on": null, "due_on": "2026-12-21", "type": "shoot"}];
-            const deadlines = [{"name": "ASK a Pastor \u2014 Mar 30", "start_on": null, "due_date": "2026-04-02", "type": "deadline"}, {"name": "Radical Dependence Teaching Series", "start_on": null, "due_date": "2026-04-03", "type": "deadline"}, {"name": "Victorious Families Journey Curriculum Module", "start_on": null, "due_date": "2026-04-06", "type": "deadline"}, {"name": "Kingdom Purpose Journey Curriculum Module", "start_on": null, "due_date": "2026-04-08", "type": "deadline"}, {"name": "DD into Parenting - Ep. 4: Parenting in an Anxious Age", "start_on": null, "due_date": "2026-04-08", "type": "deadline"}, {"name": "CAA Staff Recruitment Video", "start_on": null, "due_date": "2026-04-10", "type": "deadline"}, {"name": "Unlimited Grace - Podcast- February", "start_on": null, "due_date": "2026-04-10", "type": "deadline"}];
+            const deadlines = [{"name": "ASK a Pastor \u2014 Mar 30", "start_on": null, "due_date": "2026-04-02", "type": "deadline"}, {"name": "Radical Dependence Teaching Series", "start_on": null, "due_date": "2026-04-03", "type": "deadline"}, {"name": "Victorious Families Journey Curriculum Module", "start_on": null, "due_date": "2026-04-06", "type": "deadline"}, {"name": "Kingdom Purpose Journey Curriculum Module", "start_on": null, "due_date": "2026-04-08", "type": "deadline"}, {"name": "DD into Parenting - Ep. 4: Parenting in an Anxious Age", "start_on": null, "due_date": "2026-04-08", "type": "deadline"}, {"name": "WOV - Apr 12 - Davidson Jean-Rejouis", "start_on": null, "due_date": "2026-04-09", "type": "deadline"}, {"name": "CAA Staff Recruitment Video", "start_on": null, "due_date": "2026-04-10", "type": "deadline"}, {"name": "Unlimited Grace - Podcast- February", "start_on": null, "due_date": "2026-04-10", "type": "deadline"}];
 
             // Combine and convert to timeline format
             const now = new Date();
@@ -4907,7 +4937,7 @@ Dec 1...
             setTimeout(() => {
                 animateProgressRing('ringOnTime', 'ringOnTimeValue', 72);
                 animateProgressRing('ringUtilization', 'ringUtilizationValue', 64);
-                animateProgressRing('ringProjects', 'ringProjectsValue', 41, true);
+                animateProgressRing('ringProjects', 'ringProjectsValue', 42, true);
 
                 generateTimeline();
                 generateRadarChart();
