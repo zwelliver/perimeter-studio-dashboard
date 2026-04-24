@@ -2449,7 +2449,7 @@
                 <div class="header-text">
                     <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
                     <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: April 24, 2026 at 08:45 AM</p>
+                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: April 24, 2026 at 09:00 AM</p>
                 </div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
                     <span id="themeText">Dark Mode</span>
@@ -2478,7 +2478,7 @@
                 <h2 id="performance-title">Performance Overview</h2>
                 <div class="metric" role="group" aria-labelledby="active-tasks-label">
                     <span id="active-tasks-label" class="metric-label">Active Tasks</span>
-                    <span class="metric-value" aria-describedby="active-tasks-label">33</span>
+                    <span class="metric-value" aria-describedby="active-tasks-label">34</span>
                 </div>
                 <div class="metric" role="group" aria-labelledby="completed-30d-label">
                     <span id="completed-30d-label" class="metric-label">Projects Completed (30d)</span>
@@ -2670,6 +2670,26 @@
                     <div class="project-card-header">
                         <div>
                             <div class="project-card-date">Mon, Apr 27</div>
+                            <div class="project-card-time">12:00 AM</div>
+                        </div>
+                        <span class="project-card-badge">Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1214252997277223/f" target="_blank" class="project-card-title">
+                            ASK a Pastor — Apr 27
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1214252997277223/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Mon, Apr 27</div>
                             <div class="project-card-time">2:00 PM</div>
                         </div>
                         <span class="project-card-badge">Production</span>
@@ -2846,26 +2866,6 @@
                     </div>
                 </div>
             
-                <div class="project-card">
-                    <div class="project-card-header">
-                        <div>
-                            <div class="project-card-date">Mon, Sep 14</div>
-                            <div class="project-card-time">2:00 PM</div>
-                        </div>
-                        <span class="project-card-badge">Forecast</span>
-                    </div>
-                    <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1213327638959208/f" target="_blank" class="project-card-title">
-                            Unlimited Grace: September 14
-                        </a>
-                    </div>
-                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-                        <a href="https://app.asana.com/0/0/1213327638959208/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
-                            View in Asana →
-                        </a>
-                    </div>
-                </div>
-            
             </div>
         
             <button class="view-more-btn" onclick="toggleCards('shoots-grid', this)">View More (7 remaining)</button>
@@ -2877,7 +2877,7 @@
             <h2>Upcoming Project Deadlines</h2>
             <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Projects due within the next 10 days</p>
     
-            <div id="deadlines-grid" class="" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
+            <div id="deadlines-grid" class="cards-collapsed" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
         
                 <div class="project-card">
                     <div class="project-card-header">
@@ -2894,6 +2894,26 @@
                     </div>
                     <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
                         <a href="https://app.asana.com/0/0/1213692624679098/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Thu, Apr 30, 2026</div>
+                            <div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">6 DAYS</div>
+                        </div>
+                        <span class="project-card-badge">Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1214252997277223/f" target="_blank" class="project-card-title">
+                            ASK a Pastor — Apr 27
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1214252997277223/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
                             View in Asana →
                         </a>
                     </div>
@@ -2941,6 +2961,8 @@
             
             </div>
         
+            <button class="view-more-btn" onclick="toggleCards('deadlines-grid', this)">View More (1 remaining)</button>
+            
         </div>
 
         <!-- Progress Rings -->
@@ -3033,7 +3055,7 @@
                 <div style="display: flex; gap: 3px; height: 60px; align-items: flex-end;">
     
                     <div style="flex: 1; background: #fd7e14; height: 35.06060606060606%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 1 (2026-04-24): 27% capacity, 14 tasks">
+                         title="Week 1 (2026-04-24): 27% capacity, 15 tasks">
                     </div>
         
                     <div style="flex: 1; background: #fd7e14; height: 34.94805194805195%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
@@ -4541,8 +4563,8 @@ Dec 1...
             if (!timelineContainer) return;
 
             // Real shoots and deadlines data
-            const shoots = [{"name": "Unlimited Grace: April 27", "datetime": "2026-04-27T18:00:00+00:00", "start_on": null, "due_on": "2026-05-11", "type": "shoot"}, {"name": "Unlimited Grace: April 27", "datetime": "2026-04-27T18:00:00+00:00", "start_on": null, "due_on": "2026-05-11", "type": "shoot"}, {"name": "WOV - Davidson Jean-Rejouis", "datetime": "2026-04-28T18:00:00+00:00", "start_on": null, "due_on": "2026-04-30", "type": "shoot"}, {"name": "Frontier Update: Transporation Initiative", "datetime": "2026-04-29T18:00:00+00:00", "start_on": null, "due_on": "2026-05-15", "type": "shoot"}, {"name": "Louise Evans-Next Generation Serving", "datetime": "2026-05-03T13:00:00+00:00", "start_on": null, "due_on": "2026-05-27", "type": "shoot"}, {"name": "WOV - Penny Eubank", "datetime": "2026-05-05T18:00:00+00:00", "start_on": null, "due_on": "2026-05-07", "type": "shoot"}, {"name": "Unlimited Grace: May 11", "datetime": "2026-05-11T18:00:00+00:00", "start_on": null, "due_on": "2026-05-25", "type": "shoot"}, {"name": "Unlimited Grace: June 15", "datetime": "2026-06-15T18:00:00+00:00", "start_on": null, "due_on": "2026-06-29", "type": "shoot"}, {"name": "Unlimited Grace: August 10", "datetime": "2026-08-10T18:00:00+00:00", "start_on": null, "due_on": "2026-08-24", "type": "shoot"}, {"name": "Unlimited Grace: September 14", "datetime": "2026-09-14T18:00:00+00:00", "start_on": null, "due_on": "2026-09-28", "type": "shoot"}];
-            const deadlines = [{"name": "Updated Membership Class Videos", "start_on": null, "due_date": "2026-04-24", "type": "deadline"}, {"name": "WOV - Davidson Jean-Rejouis", "start_on": null, "due_date": "2026-04-30", "type": "deadline"}, {"name": "Night on the Lawn Filming and Recap Video", "start_on": null, "due_date": "2026-05-01", "type": "deadline"}];
+            const shoots = [{"name": "ASK a Pastor \u2014 Apr 27", "datetime": "2026-04-27T00:00:00+00:00", "start_on": null, "due_on": "2026-04-30", "type": "shoot"}, {"name": "Unlimited Grace: April 27", "datetime": "2026-04-27T18:00:00+00:00", "start_on": null, "due_on": "2026-05-11", "type": "shoot"}, {"name": "Unlimited Grace: April 27", "datetime": "2026-04-27T18:00:00+00:00", "start_on": null, "due_on": "2026-05-11", "type": "shoot"}, {"name": "WOV - Davidson Jean-Rejouis", "datetime": "2026-04-28T18:00:00+00:00", "start_on": null, "due_on": "2026-04-30", "type": "shoot"}, {"name": "Frontier Update: Transporation Initiative", "datetime": "2026-04-29T18:00:00+00:00", "start_on": null, "due_on": "2026-05-15", "type": "shoot"}, {"name": "Louise Evans-Next Generation Serving", "datetime": "2026-05-03T13:00:00+00:00", "start_on": null, "due_on": "2026-05-27", "type": "shoot"}, {"name": "WOV - Penny Eubank", "datetime": "2026-05-05T18:00:00+00:00", "start_on": null, "due_on": "2026-05-07", "type": "shoot"}, {"name": "Unlimited Grace: May 11", "datetime": "2026-05-11T18:00:00+00:00", "start_on": null, "due_on": "2026-05-25", "type": "shoot"}, {"name": "Unlimited Grace: June 15", "datetime": "2026-06-15T18:00:00+00:00", "start_on": null, "due_on": "2026-06-29", "type": "shoot"}, {"name": "Unlimited Grace: August 10", "datetime": "2026-08-10T18:00:00+00:00", "start_on": null, "due_on": "2026-08-24", "type": "shoot"}];
+            const deadlines = [{"name": "Updated Membership Class Videos", "start_on": null, "due_date": "2026-04-24", "type": "deadline"}, {"name": "ASK a Pastor \u2014 Apr 27", "start_on": null, "due_date": "2026-04-30", "type": "deadline"}, {"name": "WOV - Davidson Jean-Rejouis", "start_on": null, "due_date": "2026-04-30", "type": "deadline"}, {"name": "Night on the Lawn Filming and Recap Video", "start_on": null, "due_date": "2026-05-01", "type": "deadline"}];
 
             // Combine and convert to timeline format
             const now = new Date();
@@ -4827,7 +4849,7 @@ Dec 1...
             setTimeout(() => {
                 animateProgressRing('ringOnTime', 'ringOnTimeValue', 76);
                 animateProgressRing('ringUtilization', 'ringUtilizationValue', 38);
-                animateProgressRing('ringProjects', 'ringProjectsValue', 33, true);
+                animateProgressRing('ringProjects', 'ringProjectsValue', 34, true);
 
                 generateTimeline();
                 generateRadarChart();
