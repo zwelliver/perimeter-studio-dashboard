@@ -2449,7 +2449,7 @@
                 <div class="header-text">
                     <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
                     <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: April 24, 2026 at 10:00 AM</p>
+                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: April 24, 2026 at 10:15 AM</p>
                 </div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
                     <span id="themeText">Dark Mode</span>
@@ -2478,7 +2478,7 @@
                 <h2 id="performance-title">Performance Overview</h2>
                 <div class="metric" role="group" aria-labelledby="active-tasks-label">
                     <span id="active-tasks-label" class="metric-label">Active Tasks</span>
-                    <span class="metric-value" aria-describedby="active-tasks-label">34</span>
+                    <span class="metric-value" aria-describedby="active-tasks-label">33</span>
                 </div>
                 <div class="metric" role="group" aria-labelledby="completed-30d-label">
                     <span id="completed-30d-label" class="metric-label">Projects Completed (30d)</span>
@@ -2509,7 +2509,7 @@
 
                 <div class="external-project-item">
 
-                    <div class="task-list-item">• Updated Membership Class Videos | Videographer: john booth (Due: 2026-04-24)</div>
+                    <div class="task-list-item">• Updated Membership Class Videos | Videographer: john booth (Due: 2026-05-15)</div>
 
                 </div>
 
@@ -2548,15 +2548,15 @@
                         </div>
                     </div>
 
-                    <div class="team-member tooltip capacity-high" role="listitem" tabindex="0" aria-labelledby="member-adriel-abella-name" data-tooltip="Allocated: 81.0% of 100% max">
+                    <div class="team-member tooltip capacity-ok" role="listitem" tabindex="0" aria-labelledby="member-adriel-abella-name" data-tooltip="Allocated: 76.0% of 100% max">
                         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
                             <div id="member-adriel-abella-name" class="team-member-name">Adriel Abella</div>
-                            <div class="capacity-status capacity-high">Near capacity</div>
+                            <div class="capacity-status capacity-ok">Available</div>
                         </div>
-                        <div class="team-member-capacity" aria-label="Current capacity utilization">81% / 100% capacity</div>
-                        <div class="progress-bar" role="progressbar" aria-valuenow="81" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 81%">
-                            <div class="progress-fill " style="width: 81.0%" aria-hidden="true">
-                                81% allocated
+                        <div class="team-member-capacity" aria-label="Current capacity utilization">76% / 100% capacity</div>
+                        <div class="progress-bar" role="progressbar" aria-valuenow="76" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 76%">
+                            <div class="progress-fill " style="width: 76.0%" aria-hidden="true">
+                                76% allocated
                             </div>
                         </div>
                     </div>
@@ -2610,16 +2610,6 @@
                     </div>
                     <div class="task-risk">
                         • Overdue by 2 days
-                    </div>
-                </div>
-            
-                <div class="at-risk-item">
-                    <div class="project-task-name">Student Night of Worship</div>
-                    <div class="task-detail">
-                        Post Production | Adriel Abella | Due: 2026-04-21
-                    </div>
-                    <div class="task-risk">
-                        • Overdue by 3 days
                     </div>
                 </div>
             
@@ -2877,28 +2867,8 @@
             <h2>Upcoming Project Deadlines</h2>
             <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Projects due within the next 10 days</p>
     
-            <div id="deadlines-grid" class="cards-collapsed" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
+            <div id="deadlines-grid" class="" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
         
-                <div class="project-card">
-                    <div class="project-card-header">
-                        <div>
-                            <div class="project-card-date">Fri, Apr 24, 2026</div>
-                            <div style="font-size: 22px; font-weight: 600; color: #dc3545; margin-top: 6px;">DUE TODAY</div>
-                        </div>
-                        <span class="project-card-badge">Post Production</span>
-                    </div>
-                    <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1213692624679098/f" target="_blank" class="project-card-title">
-                            Updated Membership Class Videos
-                        </a>
-                    </div>
-                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-                        <a href="https://app.asana.com/0/0/1213692624679098/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
-                            View in Asana →
-                        </a>
-                    </div>
-                </div>
-            
                 <div class="project-card">
                     <div class="project-card-header">
                         <div>
@@ -2961,8 +2931,6 @@
             
             </div>
         
-            <button class="view-more-btn" onclick="toggleCards('deadlines-grid', this)">View More (1 remaining)</button>
-            
         </div>
 
         <!-- Progress Rings -->
@@ -3054,20 +3022,20 @@
                 <!-- Timeline bars -->
                 <div style="display: flex; gap: 3px; height: 60px; align-items: flex-end;">
     
-                    <div style="flex: 1; background: #fd7e14; height: 39.0%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 1 (2026-04-24): 30% capacity, 15 tasks">
+                    <div style="flex: 1; background: #fd7e14; height: 42.03896103896104%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 1 (2026-04-24): 32% capacity, 15 tasks">
                     </div>
         
-                    <div style="flex: 1; background: #ffc107; height: 34.94805194805195%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 2 (2026-05-01): 27% capacity, 12 tasks">
+                    <div style="flex: 1; background: #fd7e14; height: 38.493506493506494%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 2 (2026-05-01): 30% capacity, 13 tasks">
                     </div>
         
-                    <div style="flex: 1; background: #ffc107; height: 27.57575757575758%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 3 (2026-05-08): 21% capacity, 10 tasks">
+                    <div style="flex: 1; background: #ffc107; height: 31.121212121212128%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 3 (2026-05-08): 24% capacity, 11 tasks">
                     </div>
         
-                    <div style="flex: 1; background: #28a745; height: 18.74025974025974%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 4 (2026-05-15): 14% capacity, 8 tasks">
+                    <div style="flex: 1; background: #28a745; height: 19.246753246753247%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 4 (2026-05-15): 15% capacity, 9 tasks">
                     </div>
         
                     <div style="flex: 1; background: #28a745; height: 11.874458874458876%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
@@ -3243,109 +3211,109 @@
                     <div style="font-size: 9px; margin-top: 2px;">25%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-04-25: 27.0% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-04-25: 29.7% capacity">
                     <div style="font-weight: bold;">04/25</div>
-                    <div style="font-size: 9px; margin-top: 2px;">27%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">30%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-04-26: 27.0% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-04-26: 29.7% capacity">
                     <div style="font-weight: bold;">04/26</div>
-                    <div style="font-size: 9px; margin-top: 2px;">27%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">30%</div>
                 </div>
         
-                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-04-27: 31.5% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-04-27: 34.2% capacity">
                     <div style="font-weight: bold;">04/27</div>
-                    <div style="font-size: 9px; margin-top: 2px;">32%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">34%</div>
                 </div>
         
-                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-04-28: 33.0% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-04-28: 35.8% capacity">
                     <div style="font-weight: bold;">04/28</div>
-                    <div style="font-size: 9px; margin-top: 2px;">33%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">36%</div>
                 </div>
         
-                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-04-29: 33.0% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-04-29: 35.8% capacity">
                     <div style="font-weight: bold;">04/29</div>
-                    <div style="font-size: 9px; margin-top: 2px;">33%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">36%</div>
                 </div>
         
-                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-04-30: 33.0% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-04-30: 35.8% capacity">
                     <div style="font-weight: bold;">04/30</div>
-                    <div style="font-size: 9px; margin-top: 2px;">33%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">36%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-01: 28.2% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-01: 30.9% capacity">
                     <div style="font-weight: bold;">05/01</div>
+                    <div style="font-size: 9px; margin-top: 2px;">31%</div>
+                </div>
+        
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-02: 29.4% capacity">
+                    <div style="font-weight: bold;">05/02</div>
+                    <div style="font-size: 9px; margin-top: 2px;">29%</div>
+                </div>
+        
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-03: 29.4% capacity">
+                    <div style="font-weight: bold;">05/03</div>
+                    <div style="font-size: 9px; margin-top: 2px;">29%</div>
+                </div>
+        
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-04: 29.4% capacity">
+                    <div style="font-weight: bold;">05/04</div>
+                    <div style="font-size: 9px; margin-top: 2px;">29%</div>
+                </div>
+        
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-05: 29.4% capacity">
+                    <div style="font-weight: bold;">05/05</div>
+                    <div style="font-size: 9px; margin-top: 2px;">29%</div>
+                </div>
+        
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-06: 29.4% capacity">
+                    <div style="font-weight: bold;">05/06</div>
+                    <div style="font-size: 9px; margin-top: 2px;">29%</div>
+                </div>
+        
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-07: 29.4% capacity">
+                    <div style="font-weight: bold;">05/07</div>
+                    <div style="font-size: 9px; margin-top: 2px;">29%</div>
+                </div>
+        
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-08: 27.6% capacity">
+                    <div style="font-weight: bold;">05/08</div>
                     <div style="font-size: 9px; margin-top: 2px;">28%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-02: 26.7% capacity">
-                    <div style="font-weight: bold;">05/02</div>
-                    <div style="font-size: 9px; margin-top: 2px;">27%</div>
-                </div>
-        
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-03: 26.7% capacity">
-                    <div style="font-weight: bold;">05/03</div>
-                    <div style="font-size: 9px; margin-top: 2px;">27%</div>
-                </div>
-        
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-04: 26.7% capacity">
-                    <div style="font-weight: bold;">05/04</div>
-                    <div style="font-size: 9px; margin-top: 2px;">27%</div>
-                </div>
-        
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-05: 26.7% capacity">
-                    <div style="font-weight: bold;">05/05</div>
-                    <div style="font-size: 9px; margin-top: 2px;">27%</div>
-                </div>
-        
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-06: 26.7% capacity">
-                    <div style="font-weight: bold;">05/06</div>
-                    <div style="font-size: 9px; margin-top: 2px;">27%</div>
-                </div>
-        
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-07: 26.7% capacity">
-                    <div style="font-weight: bold;">05/07</div>
-                    <div style="font-size: 9px; margin-top: 2px;">27%</div>
-                </div>
-        
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-08: 24.8% capacity">
-                    <div style="font-weight: bold;">05/08</div>
-                    <div style="font-size: 9px; margin-top: 2px;">25%</div>
-                </div>
-        
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-09: 24.8% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-09: 27.6% capacity">
                     <div style="font-weight: bold;">05/09</div>
-                    <div style="font-size: 9px; margin-top: 2px;">25%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">28%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-10: 24.8% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-10: 27.6% capacity">
                     <div style="font-weight: bold;">05/10</div>
-                    <div style="font-size: 9px; margin-top: 2px;">25%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">28%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-11: 24.8% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-11: 27.6% capacity">
                     <div style="font-weight: bold;">05/11</div>
-                    <div style="font-size: 9px; margin-top: 2px;">25%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">28%</div>
                 </div>
         
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-12: 16.4% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-12: 19.1% capacity">
                     <div style="font-weight: bold;">05/12</div>
-                    <div style="font-size: 9px; margin-top: 2px;">16%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">19%</div>
                 </div>
         
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-13: 16.4% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-13: 19.1% capacity">
                     <div style="font-weight: bold;">05/13</div>
-                    <div style="font-size: 9px; margin-top: 2px;">16%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">19%</div>
                 </div>
         
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-14: 16.4% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-14: 19.1% capacity">
                     <div style="font-weight: bold;">05/14</div>
-                    <div style="font-size: 9px; margin-top: 2px;">16%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">19%</div>
                 </div>
         
-                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-15: 16.4% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-15: 19.1% capacity">
                     <div style="font-weight: bold;">05/15</div>
-                    <div style="font-size: 9px; margin-top: 2px;">16%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">19%</div>
                 </div>
         
                 <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-16: 14.8% capacity">
@@ -4564,7 +4532,7 @@ Dec 1...
 
             // Real shoots and deadlines data
             const shoots = [{"name": "ASK a Pastor \u2014 Apr 27", "datetime": "2026-04-27T00:00:00+00:00", "start_on": null, "due_on": "2026-04-30", "type": "shoot"}, {"name": "Unlimited Grace: April 27", "datetime": "2026-04-27T18:00:00+00:00", "start_on": null, "due_on": "2026-05-11", "type": "shoot"}, {"name": "Unlimited Grace: April 27", "datetime": "2026-04-27T18:00:00+00:00", "start_on": null, "due_on": "2026-05-11", "type": "shoot"}, {"name": "WOV - Davidson Jean-Rejouis", "datetime": "2026-04-28T18:00:00+00:00", "start_on": null, "due_on": "2026-04-30", "type": "shoot"}, {"name": "Frontier Update: Transporation Initiative", "datetime": "2026-04-29T18:00:00+00:00", "start_on": null, "due_on": "2026-05-15", "type": "shoot"}, {"name": "Louise Evans-Next Generation Serving", "datetime": "2026-05-03T13:00:00+00:00", "start_on": null, "due_on": "2026-05-27", "type": "shoot"}, {"name": "WOV - Penny Eubank", "datetime": "2026-05-05T18:00:00+00:00", "start_on": null, "due_on": "2026-05-07", "type": "shoot"}, {"name": "Unlimited Grace: May 11", "datetime": "2026-05-11T18:00:00+00:00", "start_on": null, "due_on": "2026-05-25", "type": "shoot"}, {"name": "Unlimited Grace: June 15", "datetime": "2026-06-15T18:00:00+00:00", "start_on": null, "due_on": "2026-06-29", "type": "shoot"}, {"name": "Unlimited Grace: August 10", "datetime": "2026-08-10T18:00:00+00:00", "start_on": null, "due_on": "2026-08-24", "type": "shoot"}];
-            const deadlines = [{"name": "Updated Membership Class Videos", "start_on": null, "due_date": "2026-04-24", "type": "deadline"}, {"name": "ASK a Pastor \u2014 Apr 27", "start_on": null, "due_date": "2026-04-30", "type": "deadline"}, {"name": "WOV - Davidson Jean-Rejouis", "start_on": null, "due_date": "2026-04-30", "type": "deadline"}, {"name": "Night on the Lawn Filming and Recap Video", "start_on": null, "due_date": "2026-05-01", "type": "deadline"}];
+            const deadlines = [{"name": "ASK a Pastor \u2014 Apr 27", "start_on": null, "due_date": "2026-04-30", "type": "deadline"}, {"name": "WOV - Davidson Jean-Rejouis", "start_on": null, "due_date": "2026-04-30", "type": "deadline"}, {"name": "Night on the Lawn Filming and Recap Video", "start_on": null, "due_date": "2026-05-01", "type": "deadline"}];
 
             // Combine and convert to timeline format
             const now = new Date();
@@ -4848,8 +4816,8 @@ Dec 1...
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 animateProgressRing('ringOnTime', 'ringOnTimeValue', 76);
-                animateProgressRing('ringUtilization', 'ringUtilizationValue', 40);
-                animateProgressRing('ringProjects', 'ringProjectsValue', 34, true);
+                animateProgressRing('ringUtilization', 'ringUtilizationValue', 39);
+                animateProgressRing('ringProjects', 'ringProjectsValue', 33, true);
 
                 generateTimeline();
                 generateRadarChart();
