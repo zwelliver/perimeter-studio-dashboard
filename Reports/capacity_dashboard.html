@@ -2449,7 +2449,7 @@
                 <div class="header-text">
                     <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
                     <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: May 01, 2026 at 05:15 PM</p>
+                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: May 01, 2026 at 05:30 PM</p>
                 </div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
                     <span id="themeText">Dark Mode</span>
@@ -2844,8 +2844,48 @@
             <h2>Upcoming Project Deadlines</h2>
             <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Projects due within the next 10 days</p>
     
-            <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
-                <div style="font-size: 16px;">No upcoming deadlines in the next 10 days</div>
+            <div id="deadlines-grid" class="" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
+        
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Thu, May 7, 2026</div>
+                            <div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">6 DAYS</div>
+                        </div>
+                        <span class="project-card-badge">Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1214445346196366/f" target="_blank" class="project-card-title">
+                            ASK a Pastor — May 04
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1214445346196366/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Thu, May 7, 2026</div>
+                            <div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">6 DAYS</div>
+                        </div>
+                        <span class="project-card-badge">Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1214083028381941/f" target="_blank" class="project-card-title">
+                            WOV - May 10 - Penny Eubank
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1214083028381941/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
             </div>
         
         </div>
@@ -4365,7 +4405,7 @@ Dec 1...
 
             // Real shoots and deadlines data
             const shoots = [{"name": "Louise Evans-Next Generation Serving", "datetime": "2026-05-03T13:00:00+00:00", "start_on": null, "due_on": "2026-05-27", "type": "shoot"}, {"name": "ASK a Pastor \u2014 May 04", "datetime": "2026-05-04T00:00:00+00:00", "start_on": null, "due_on": "2026-05-07", "type": "shoot"}, {"name": "WOV - May 10 - Penny Eubank", "datetime": "2026-05-05T18:00:00+00:00", "start_on": null, "due_on": "2026-05-07", "type": "shoot"}, {"name": "MS Life Volunteer Video", "datetime": "2026-05-10T00:00:00+00:00", "start_on": null, "due_on": "2026-05-28", "type": "shoot"}, {"name": "Unlimited Grace: May 11", "datetime": "2026-05-11T18:00:00+00:00", "start_on": null, "due_on": "2026-05-25", "type": "shoot"}, {"name": "Perimeter School Goal Scholarship Video", "datetime": "2026-05-15T00:00:00+00:00", "start_on": null, "due_on": "2026-05-18", "type": "shoot"}, {"name": "Unlimited Grace: June 15", "datetime": "2026-06-15T18:00:00+00:00", "start_on": null, "due_on": "2026-06-29", "type": "shoot"}, {"name": "Rush Recap Video", "datetime": "2026-07-13T00:00:00+00:00", "start_on": null, "due_on": null, "type": "shoot"}, {"name": "Unlimited Grace: August 10", "datetime": "2026-08-10T18:00:00+00:00", "start_on": null, "due_on": "2026-08-24", "type": "shoot"}, {"name": "Unlimited Grace: September 14", "datetime": "2026-09-14T18:00:00+00:00", "start_on": null, "due_on": "2026-09-28", "type": "shoot"}];
-            const deadlines = [];
+            const deadlines = [{"name": "ASK a Pastor \u2014 May 04", "start_on": null, "due_date": "2026-05-07", "type": "deadline"}, {"name": "WOV - May 10 - Penny Eubank", "start_on": null, "due_date": "2026-05-07", "type": "deadline"}];
 
             // Combine and convert to timeline format
             const now = new Date();
