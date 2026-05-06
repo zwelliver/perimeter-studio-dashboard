@@ -2449,7 +2449,7 @@
                 <div class="header-text">
                     <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
                     <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: May 06, 2026 at 03:00 PM</p>
+                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: May 06, 2026 at 03:15 PM</p>
                 </div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
                     <span id="themeText">Dark Mode</span>
@@ -2482,15 +2482,15 @@
                 </div>
                 <div class="metric" role="group" aria-labelledby="completed-30d-label">
                     <span id="completed-30d-label" class="metric-label">Projects Completed (30d)</span>
-                    <span class="metric-value" aria-describedby="completed-30d-label">22</span>
+                    <span class="metric-value" aria-describedby="completed-30d-label">23</span>
                 </div>
                 <div class="metric" role="group" aria-labelledby="completed-year-label">
                     <span id="completed-year-label" class="metric-label">Projects Completed This Year</span>
-                    <span class="metric-value" aria-describedby="completed-year-label">22</span>
+                    <span class="metric-value" aria-describedby="completed-year-label">23</span>
                 </div>
                 <div class="metric" role="group" aria-labelledby="avg-variance-label">
                     <span id="avg-variance-label" class="metric-label">Avg Days Variance</span>
-                    <span class="metric-value positive" aria-describedby="avg-variance-label" role="status" aria-label="Average project variance in days">-4.0</span>
+                    <span class="metric-value positive" aria-describedby="avg-variance-label" role="status" aria-label="Average project variance in days">-3.9</span>
                 </div>
                 <div class="metric" role="group" aria-labelledby="delayed-capacity-label">
                     <span id="delayed-capacity-label" class="metric-label">Delayed Due to Capacity</span>
@@ -2535,15 +2535,15 @@
                         </div>
                     </div>
 
-                    <div class="team-member tooltip capacity-ok" role="listitem" tabindex="0" aria-labelledby="member-nick-clark-name" data-tooltip="Allocated: 34.0% of 100% max">
+                    <div class="team-member tooltip capacity-ok" role="listitem" tabindex="0" aria-labelledby="member-nick-clark-name" data-tooltip="Allocated: 40.0% of 100% max">
                         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
                             <div id="member-nick-clark-name" class="team-member-name">Nick Clark</div>
                             <div class="capacity-status capacity-ok">Available</div>
                         </div>
-                        <div class="team-member-capacity" aria-label="Current capacity utilization">34% / 100% capacity</div>
-                        <div class="progress-bar" role="progressbar" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 34%">
-                            <div class="progress-fill " style="width: 34.0%" aria-hidden="true">
-                                34% allocated
+                        <div class="team-member-capacity" aria-label="Current capacity utilization">40% / 100% capacity</div>
+                        <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 40%">
+                            <div class="progress-fill " style="width: 40.0%" aria-hidden="true">
+                                40% allocated
                             </div>
                         </div>
                     </div>
@@ -4644,7 +4644,7 @@ Dec 1...
             }
 
             // Use actual weekly completion data
-            const weeklyData = [0, 0, 0, 10, 3, 5, 2, 2];
+            const weeklyData = [0, 0, 0, 10, 3, 5, 2, 3];
 
             // Calculate appropriate Y-axis maximum with headroom
             const maxValue = Math.max(...weeklyData);
@@ -4708,8 +4708,8 @@ Dec 1...
         // Initialize other charts
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
-                animateProgressRing('ringOnTime', 'ringOnTimeValue', 75);
-                animateProgressRing('ringUtilization', 'ringUtilizationValue', 34);
+                animateProgressRing('ringOnTime', 'ringOnTimeValue', 76);
+                animateProgressRing('ringUtilization', 'ringUtilizationValue', 36);
                 animateProgressRing('ringProjects', 'ringProjectsValue', 30, true);
 
                 generateTimeline();
