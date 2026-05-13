@@ -2449,7 +2449,7 @@
                 <div class="header-text">
                     <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
                     <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: May 13, 2026 at 01:30 AM</p>
+                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: May 13, 2026 at 01:45 AM</p>
                 </div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
                     <span id="themeText">Dark Mode</span>
@@ -2478,7 +2478,7 @@
                 <h2 id="performance-title">Performance Overview</h2>
                 <div class="metric" role="group" aria-labelledby="active-tasks-label">
                     <span id="active-tasks-label" class="metric-label">Active Tasks</span>
-                    <span class="metric-value" aria-describedby="active-tasks-label">0</span>
+                    <span class="metric-value" aria-describedby="active-tasks-label">31</span>
                 </div>
                 <div class="metric" role="group" aria-labelledby="completed-30d-label">
                     <span id="completed-30d-label" class="metric-label">Projects Completed (30d)</span>
@@ -2502,9 +2502,16 @@
             <div class="card">
                 <h2>Contracted/Outsourced Projects</h2>
 
-            <div class="empty-state">
-                <div style="font-size: 16px; color: var(--text-secondary);">No external projects</div>
-            </div>
+                <div class="metric">
+                    <span class="metric-label">Contracted/Outsourced</span>
+                    <span class="metric-value">1 Active</span>
+                </div>
+
+                <div class="external-project-item">
+
+                    <div class="task-list-item">• Updated Membership Class Videos | Videographer: john booth (Due: 2026-05-15)</div>
+
+                </div>
 
             </div>
         </div>
@@ -2515,41 +2522,41 @@
                 <h2 id="team-capacity-title">Team Capacity</h2>
                 <div class="team-capacity-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 10px;" role="list" aria-label="Team member capacity overview">
 
-                    <div class="team-member tooltip capacity-ok" role="listitem" tabindex="0" aria-labelledby="member-zach-welliver-name" data-tooltip="Allocated: 0.0% of 100% max">
+                    <div class="team-member tooltip capacity-ok" role="listitem" tabindex="0" aria-labelledby="member-zach-welliver-name" data-tooltip="Allocated: 15.0% of 100% max">
                         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
                             <div id="member-zach-welliver-name" class="team-member-name">Zach Welliver</div>
                             <div class="capacity-status capacity-ok">Available</div>
                         </div>
-                        <div class="team-member-capacity" aria-label="Current capacity utilization">0% / 100% capacity</div>
-                        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 0%">
-                            <div class="progress-fill " style="width: 0.0%" aria-hidden="true">
-                                0% allocated
+                        <div class="team-member-capacity" aria-label="Current capacity utilization">15% / 100% capacity</div>
+                        <div class="progress-bar" role="progressbar" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 15%">
+                            <div class="progress-fill " style="width: 15.0%" aria-hidden="true">
+                                15% allocated
                             </div>
                         </div>
                     </div>
 
-                    <div class="team-member tooltip capacity-ok" role="listitem" tabindex="0" aria-labelledby="member-nick-clark-name" data-tooltip="Allocated: 0.0% of 100% max">
+                    <div class="team-member tooltip capacity-ok" role="listitem" tabindex="0" aria-labelledby="member-nick-clark-name" data-tooltip="Allocated: 31.0% of 100% max">
                         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
                             <div id="member-nick-clark-name" class="team-member-name">Nick Clark</div>
                             <div class="capacity-status capacity-ok">Available</div>
                         </div>
-                        <div class="team-member-capacity" aria-label="Current capacity utilization">0% / 100% capacity</div>
-                        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 0%">
-                            <div class="progress-fill " style="width: 0.0%" aria-hidden="true">
-                                0% allocated
+                        <div class="team-member-capacity" aria-label="Current capacity utilization">31% / 100% capacity</div>
+                        <div class="progress-bar" role="progressbar" aria-valuenow="31" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 31%">
+                            <div class="progress-fill " style="width: 31.0%" aria-hidden="true">
+                                31% allocated
                             </div>
                         </div>
                     </div>
 
-                    <div class="team-member tooltip capacity-ok" role="listitem" tabindex="0" aria-labelledby="member-adriel-abella-name" data-tooltip="Allocated: 0.0% of 100% max">
+                    <div class="team-member tooltip capacity-ok" role="listitem" tabindex="0" aria-labelledby="member-adriel-abella-name" data-tooltip="Allocated: 63.0% of 100% max">
                         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
                             <div id="member-adriel-abella-name" class="team-member-name">Adriel Abella</div>
                             <div class="capacity-status capacity-ok">Available</div>
                         </div>
-                        <div class="team-member-capacity" aria-label="Current capacity utilization">0% / 100% capacity</div>
-                        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 0%">
-                            <div class="progress-fill " style="width: 0.0%" aria-hidden="true">
-                                0% allocated
+                        <div class="team-member-capacity" aria-label="Current capacity utilization">63% / 100% capacity</div>
+                        <div class="progress-bar" role="progressbar" aria-valuenow="63" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 63%">
+                            <div class="progress-fill " style="width: 63.0%" aria-hidden="true">
+                                63% allocated
                             </div>
                         </div>
                     </div>
@@ -2574,8 +2581,28 @@
         <div class="card full-width" style="margin-top: 30px; margin-bottom: 30px;">
             <h2>At-Risk Tasks</h2>
     
-            <div class="success-state">
-                <div style="font-size: 18px;">No tasks currently at risk</div>
+            <div style="margin-top: 15px;">
+        
+                <div class="at-risk-item">
+                    <div class="project-task-name">Victorious Families Journey Curriculum Module </div>
+                    <div class="task-detail">
+                        Post Production | Adriel Abella | Due: 2026-04-06
+                    </div>
+                    <div class="task-risk">
+                        • Overdue by 37 days
+                    </div>
+                </div>
+            
+                <div class="at-risk-item">
+                    <div class="project-task-name">Kingdom Purpose Journey Curriculum Module </div>
+                    <div class="task-detail">
+                        Post Production | Adriel Abella | Due: 2026-04-08
+                    </div>
+                    <div class="task-risk">
+                        • Overdue by 35 days
+                    </div>
+                </div>
+            
             </div>
         
         </div>
@@ -2594,10 +2621,212 @@
         <div class="card full-width" style="margin-bottom: 30px;">
             <h2>Upcoming Shoots</h2>
     
-            <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
-                <div style="font-size: 16px;">No upcoming shoots scheduled</div>
+            <div id="shoots-grid" class="cards-collapsed" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
+        
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Wed, May 13</div>
+                            <div class="project-card-time">9:30 AM</div>
+                        </div>
+                        <span class="project-card-badge">Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1214717508653315/f" target="_blank" class="project-card-title">
+                            WOV - Hanan Betancourt
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1214717508653315/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Thu, May 14</div>
+                            <div class="project-card-time">9:30 AM</div>
+                        </div>
+                        <span class="project-card-badge">Post Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1214060883433516/f" target="_blank" class="project-card-title">
+                            Frontier Update: Transporation Initiative
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1214060883433516/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Thu, May 14</div>
+                            <div class="project-card-time">1:30 PM</div>
+                        </div>
+                        <span class="project-card-badge">Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1213560956617532/f" target="_blank" class="project-card-title">
+                            Discipleship Spotlight Video Testimony
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1213560956617532/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Fri, May 15</div>
+                            <div class="project-card-time">12:00 AM</div>
+                        </div>
+                        <span class="project-card-badge">Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1214135598175320/f" target="_blank" class="project-card-title">
+                            Perimeter School Goal Scholarship Video
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1214135598175320/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Wed, May 20</div>
+                            <div class="project-card-time">9:00 AM</div>
+                        </div>
+                        <span class="project-card-badge">Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1214587757776876/f" target="_blank" class="project-card-title">
+                            WOV - Mia Fry
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1214587757776876/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Mon, Jun 15</div>
+                            <div class="project-card-time">2:00 PM</div>
+                        </div>
+                        <span class="project-card-badge">Forecast</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1213327636426235/f" target="_blank" class="project-card-title">
+                            Unlimited Grace: June 15
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1213327636426235/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Mon, Jul 13</div>
+                            <div class="project-card-time">12:00 AM</div>
+                        </div>
+                        <span class="project-card-badge">Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1214347336885402/f" target="_blank" class="project-card-title">
+                            Rush Recap Video
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1214347336885402/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Mon, Aug 10</div>
+                            <div class="project-card-time">2:00 PM</div>
+                        </div>
+                        <span class="project-card-badge">Forecast</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1213327636672333/f" target="_blank" class="project-card-title">
+                            Unlimited Grace: August 10
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1213327636672333/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Mon, Sep 14</div>
+                            <div class="project-card-time">2:00 PM</div>
+                        </div>
+                        <span class="project-card-badge">Forecast</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1213327638959208/f" target="_blank" class="project-card-title">
+                            Unlimited Grace: September 14
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1213327638959208/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Mon, Oct 26</div>
+                            <div class="project-card-time">2:00 PM</div>
+                        </div>
+                        <span class="project-card-badge">Forecast</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1213327636671090/f" target="_blank" class="project-card-title">
+                            Unlimited Grace: October 26
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1213327636671090/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
             </div>
         
+            <button class="view-more-btn" onclick="toggleCards('shoots-grid', this)">View More (7 remaining)</button>
+            
         </div>
 
         <!-- Upcoming Project Deadlines -->
@@ -2605,10 +2834,132 @@
             <h2>Upcoming Project Deadlines</h2>
             <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Projects due within the next 10 days</p>
     
-            <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
-                <div style="font-size: 16px;">No upcoming deadlines in the next 10 days</div>
+            <div id="deadlines-grid" class="cards-collapsed" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
+        
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Thu, May 14, 2026</div>
+                            <div style="font-size: 22px; font-weight: 600; color: #fd7e14; margin-top: 6px;">DUE TOMORROW</div>
+                        </div>
+                        <span class="project-card-badge">Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1214717508653315/f" target="_blank" class="project-card-title">
+                            WOV - Hanan Betancourt
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1214717508653315/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Thu, May 14, 2026</div>
+                            <div style="font-size: 22px; font-weight: 600; color: #fd7e14; margin-top: 6px;">DUE TOMORROW</div>
+                        </div>
+                        <span class="project-card-badge">Post Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1214632859640975/f" target="_blank" class="project-card-title">
+                            ASK a Pastor — May 11
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1214632859640975/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Fri, May 15, 2026</div>
+                            <div style="font-size: 22px; font-weight: 600; color: #ffc107; margin-top: 6px;">2 DAYS</div>
+                        </div>
+                        <span class="project-card-badge">Post Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1213692624679098/f" target="_blank" class="project-card-title">
+                            Updated Membership Class Videos
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1213692624679098/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Mon, May 18, 2026</div>
+                            <div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">5 DAYS</div>
+                        </div>
+                        <span class="project-card-badge">Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1214135598175320/f" target="_blank" class="project-card-title">
+                            Perimeter School Goal Scholarship Video
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1214135598175320/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Mon, May 18, 2026</div>
+                            <div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">5 DAYS</div>
+                        </div>
+                        <span class="project-card-badge">Post Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1214060883433516/f" target="_blank" class="project-card-title">
+                            Frontier Update: Transporation Initiative
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1214060883433516/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <div class="project-card-date">Thu, May 21, 2026</div>
+                            <div style="font-size: 22px; font-weight: 600; color: #60BBE9; margin-top: 6px;">8 DAYS</div>
+                        </div>
+                        <span class="project-card-badge">Production</span>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1214587757776876/f" target="_blank" class="project-card-title">
+                            WOV - Mia Fry
+                        </a>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1214587757776876/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
             </div>
         
+            <button class="view-more-btn" onclick="toggleCards('deadlines-grid', this)">View More (3 remaining)</button>
+            
         </div>
 
         <!-- Progress Rings -->
@@ -2700,108 +3051,108 @@
                 <!-- Timeline bars -->
                 <div style="display: flex; gap: 3px; height: 60px; align-items: flex-end;">
     
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 1 (2026-05-13): 0% capacity, 0 tasks">
+                    <div style="flex: 1; background: #fd7e14; height: 26.0%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 1 (2026-05-13): 20% capacity, 14 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #ffc107; height: 18.51515151515152%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 2 (2026-05-20): 14% capacity, 9 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #ffc107; height: 13.78787878787879%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 3 (2026-05-27): 11% capacity, 9 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #ffc107; height: 16.545454545454547%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 4 (2026-06-03): 13% capacity, 6 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 12.043290043290046%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 5 (2026-06-10): 9% capacity, 6 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 11.987012987012987%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 6 (2026-06-17): 9% capacity, 4 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #ffc107; height: 14.57575757575758%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 7 (2026-06-24): 11% capacity, 4 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 6.696969696969697%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 8 (2026-07-01): 5% capacity, 2 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 6.696969696969697%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 9 (2026-07-08): 5% capacity, 2 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 6.80952380952381%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 10 (2026-07-15): 5% capacity, 3 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 8.16017316017316%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 11 (2026-07-22): 6% capacity, 3 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #ffc107; height: 18.121212121212125%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 12 (2026-07-29): 14% capacity, 3 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #ffc107; height: 18.121212121212125%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 13 (2026-08-05): 14% capacity, 3 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #ffc107; height: 19.021645021645025%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 14 (2026-08-12): 15% capacity, 4 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #ffc107; height: 16.770562770562773%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 15 (2026-08-19): 13% capacity, 4 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 10.41125541125541%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 16 (2026-08-26): 8% capacity, 4 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 12.606060606060607%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 17 (2026-09-02): 10% capacity, 3 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 12.606060606060607%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 18 (2026-09-09): 10% capacity, 3 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 9.904761904761905%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 19 (2026-09-16): 8% capacity, 3 tasks">
+                    </div>
+        
+                    <div style="flex: 1; background: #28a745; height: 8.666666666666668%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 20 (2026-09-23): 7% capacity, 2 tasks">
                     </div>
         
                     <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 2 (2026-05-20): 0% capacity, 0 tasks">
+                         title="Week 21 (2026-09-30): 1% capacity, 1 tasks">
                     </div>
         
                     <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 3 (2026-05-27): 0% capacity, 0 tasks">
+                         title="Week 22 (2026-10-07): 2% capacity, 1 tasks">
                     </div>
         
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 4 (2026-06-03): 0% capacity, 0 tasks">
+                    <div style="flex: 1; background: #28a745; height: 5.5151515151515165%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 23 (2026-10-14): 4% capacity, 1 tasks">
                     </div>
         
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 5 (2026-06-10): 0% capacity, 0 tasks">
+                    <div style="flex: 1; background: #28a745; height: 7.766233766233768%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 24 (2026-10-21): 6% capacity, 2 tasks">
                     </div>
         
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 6 (2026-06-17): 0% capacity, 0 tasks">
+                    <div style="flex: 1; background: #28a745; height: 13.16883116883117%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 25 (2026-10-28): 10% capacity, 4 tasks">
                     </div>
         
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 7 (2026-06-24): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 8 (2026-07-01): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 9 (2026-07-08): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 10 (2026-07-15): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 11 (2026-07-22): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 12 (2026-07-29): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 13 (2026-08-05): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 14 (2026-08-12): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 15 (2026-08-19): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 16 (2026-08-26): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 17 (2026-09-02): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 18 (2026-09-09): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 19 (2026-09-16): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 20 (2026-09-23): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 21 (2026-09-30): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 22 (2026-10-07): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 23 (2026-10-14): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 24 (2026-10-21): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 25 (2026-10-28): 0% capacity, 0 tasks">
-                    </div>
-        
-                    <div style="flex: 1; background: #28a745; height: 5%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 26 (2026-11-04): 0% capacity, 0 tasks">
+                    <div style="flex: 1; background: #ffc107; height: 16.545454545454547%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 26 (2026-11-04): 13% capacity, 4 tasks">
                     </div>
         
                 </div>
@@ -2884,154 +3235,154 @@
             </div>
             <div class="heatmap-grid">
     
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-13: 0.0% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-13: 25.5% capacity">
                     <div style="font-weight: bold;">05/13</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">25%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-14: 0.0% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-14: 25.5% capacity">
                     <div style="font-weight: bold;">05/14</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">25%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-15: 0.0% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-15: 20.6% capacity">
                     <div style="font-weight: bold;">05/15</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">21%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-16: 0.0% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-16: 17.9% capacity">
                     <div style="font-weight: bold;">05/16</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">18%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-17: 0.0% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-17: 17.9% capacity">
                     <div style="font-weight: bold;">05/17</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">18%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-18: 0.0% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-18: 17.9% capacity">
                     <div style="font-weight: bold;">05/18</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">18%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-19: 0.0% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-19: 14.8% capacity">
                     <div style="font-weight: bold;">05/19</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">15%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-20: 0.0% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-20: 14.8% capacity">
                     <div style="font-weight: bold;">05/20</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">15%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-21: 0.0% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-21: 14.8% capacity">
                     <div style="font-weight: bold;">05/21</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">15%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-22: 0.0% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-22: 14.8% capacity">
                     <div style="font-weight: bold;">05/22</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">15%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-23: 0.0% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-23: 14.8% capacity">
                     <div style="font-weight: bold;">05/23</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">15%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-24: 0.0% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-24: 14.8% capacity">
                     <div style="font-weight: bold;">05/24</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">15%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-25: 0.0% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-25: 14.8% capacity">
                     <div style="font-weight: bold;">05/25</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">15%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-26: 0.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-26: 10.6% capacity">
                     <div style="font-weight: bold;">05/26</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">11%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-27: 0.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-27: 10.6% capacity">
                     <div style="font-weight: bold;">05/27</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">11%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-28: 0.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-28: 9.1% capacity">
                     <div style="font-weight: bold;">05/28</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">9%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-29: 0.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-29: 6.1% capacity">
                     <div style="font-weight: bold;">05/29</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">6%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-30: 0.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-30: 10.3% capacity">
                     <div style="font-weight: bold;">05/30</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">10%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-31: 0.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-05-31: 12.7% capacity">
                     <div style="font-weight: bold;">05/31</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">13%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-01: 0.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-01: 12.7% capacity">
                     <div style="font-weight: bold;">06/01</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">13%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-02: 0.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-02: 12.7% capacity">
                     <div style="font-weight: bold;">06/02</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">13%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-03: 0.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-03: 12.7% capacity">
                     <div style="font-weight: bold;">06/03</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">13%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-04: 0.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-04: 12.7% capacity">
                     <div style="font-weight: bold;">06/04</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">13%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-05: 0.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-05: 12.7% capacity">
                     <div style="font-weight: bold;">06/05</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">13%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-06: 0.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-06: 12.7% capacity">
                     <div style="font-weight: bold;">06/06</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">13%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-07: 0.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-07: 12.7% capacity">
                     <div style="font-weight: bold;">06/07</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">13%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-08: 0.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-08: 12.7% capacity">
                     <div style="font-weight: bold;">06/08</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">13%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-09: 0.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-09: 12.7% capacity">
                     <div style="font-weight: bold;">06/09</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">13%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-10: 0.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-10: 12.7% capacity">
                     <div style="font-weight: bold;">06/10</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">13%</div>
                 </div>
         
-                <div style="background: #20c997; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-11: 0.0% capacity">
+                <div style="background: #28a745; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-11: 12.7% capacity">
                     <div style="font-weight: bold;">06/11</div>
-                    <div style="font-size: 9px; margin-top: 2px;">0%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">13%</div>
                 </div>
         
             </div>
@@ -3065,10 +3416,474 @@
             <h2>Forecasted Projects</h2>
             <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Upcoming projects in the forecast pipeline</p>
     
-            <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
-                <div style="font-size: 16px;">No forecasted projects at this time</div>
+            <div id="forecast-grid" class="cards-collapsed" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 18px;">
+        
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div style="flex: 1;">
+                            <div class="project-card-date">Jun 29, 2026</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1213327636426235/f" target="_blank" class="project-card-title" style="font-weight: 600;">
+                            Unlimited Grace: June 15
+                        </a>
+                    </div>
+            
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+                        This will be a teaching with Bryan Chappel and the teaching team. 4 seated, Bryan standing. We'll use the whiteboard from the Ministry center and lav ...
+                    </div>
+                
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1213327636426235/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div style="flex: 1;">
+                            <div class="project-card-date">Jun 30, 2026</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1212122465319896/f" target="_blank" class="project-card-title" style="font-weight: 600;">
+                            Camp Spotlight Video
+                        </a>
+                    </div>
+            
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+                        Project Title:
+Camp Spotlight Video
+
+Category:
+Communications
+
+Type:
+Ministry Support
+
+Estimated Start Date:
+Jun 22, 2026
+
+Estimated Due Date:
+Jun 30,...
+                    </div>
+                
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1212122465319896/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div style="flex: 1;">
+                            <div class="project-card-date">Jul 17, 2026</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1212118499750510/f" target="_blank" class="project-card-title" style="font-weight: 600;">
+                            Rush Broll Capture & Highlight Video
+                        </a>
+                    </div>
+            
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+                        Project Title:
+Rush Broll Capture & Highlight Video
+
+Category:
+Communications
+
+Type:
+Ministry Support
+
+Estimated Start Date:
+Jul 13, 2026
+
+Estimated D...
+                    </div>
+                
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1212118499750510/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div style="flex: 1;">
+                            <div class="project-card-date">Jul 22, 2026</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1212291280322883/f" target="_blank" class="project-card-title" style="font-weight: 600;">
+                            July: Frontier Story: Atlanta United/ Upper 90 (Play date July 26)
+                        </a>
+                    </div>
+            
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+                        Project Title:
+JULY: Frontier Testimonial 
+
+Category:
+Communications
+
+Type:
+Enriching
+
+Estimated Start Date:
+May 8, 2026
+
+Estimated Due Date:
+Jul 1, 2...
+                    </div>
+                
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1212291280322883/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div style="flex: 1;">
+                            <div class="project-card-date">Aug 19, 2026</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1212293854312682/f" target="_blank" class="project-card-title" style="font-weight: 600;">
+                            Frontier Update: Facilities (Play date August 23)
+                        </a>
+                    </div>
+            
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+                        Project Title:
+Q3 Frontier Update
+
+Category:
+Communications
+
+Type:
+Ministry Support
+
+Estimated Start Date:
+Jul 3, 2026
+
+Estimated Due Date:
+Aug 23, 20...
+                    </div>
+                
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1212293854312682/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div style="flex: 1;">
+                            <div class="project-card-date">Aug 24, 2026</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1213327636672333/f" target="_blank" class="project-card-title" style="font-weight: 600;">
+                            Unlimited Grace: August 10
+                        </a>
+                    </div>
+            
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+                        This will be a teaching with Bryan Chappel and the teaching team. 4 seated, Bryan standing. We'll use the whiteboard from the Ministry center and lav ...
+                    </div>
+                
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1213327636672333/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div style="flex: 1;">
+                            <div class="project-card-date">Aug 28, 2026</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1212154797482792/f" target="_blank" class="project-card-title" style="font-weight: 600;">
+                            Digging Deeper 2026 - Season 2
+                        </a>
+                    </div>
+            
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+                        Project Title:
+Digging Deeper 2026 - Season 2
+
+Category:
+Pastoral/Strategic
+
+Type:
+Equipping
+
+Estimated Start Date:
+Aug 10, 2026
+
+Estimated Due Date:
+...
+                    </div>
+                
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1212154797482792/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div style="flex: 1;">
+                            <div class="project-card-date">Sep 16, 2026</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1212347847751095/f" target="_blank" class="project-card-title" style="font-weight: 600;">
+                            September: Frontier Testimonial (Play date September 20)
+                        </a>
+                    </div>
+            
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+                        Project Title:
+September: Frontier Testimonial
+
+Category:
+Communications
+
+Estimated Start Date:
+Jul 10, 2026
+
+Estimated Due Date:
+Sep 1, 2026
+
+General...
+                    </div>
+                
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1212347847751095/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div style="flex: 1;">
+                            <div class="project-card-date">Sep 28, 2026</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1213327638959208/f" target="_blank" class="project-card-title" style="font-weight: 600;">
+                            Unlimited Grace: September 14
+                        </a>
+                    </div>
+            
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+                        This will be a teaching with Bryan Chappel and the teaching team. 4 seated, Bryan standing. We'll use the whiteboard from the Ministry center and lav ...
+                    </div>
+                
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1213327638959208/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div style="flex: 1;">
+                            <div class="project-card-date">Oct 1, 2026</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1212347868675560/f" target="_blank" class="project-card-title" style="font-weight: 600;">
+                            October: Fronter Video
+                        </a>
+                    </div>
+            
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+                        Project Title:
+OCTOBER: Fronter Video
+
+Category:
+Communications
+
+Type:
+Enriching
+
+Estimated Start Date:
+Aug 7, 2026
+
+Estimated Due Date:
+Oct 1, 2026
+
+...
+                    </div>
+                
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1212347868675560/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div style="flex: 1;">
+                            <div class="project-card-date">Nov 9, 2026</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1213327636671090/f" target="_blank" class="project-card-title" style="font-weight: 600;">
+                            Unlimited Grace: October 26
+                        </a>
+                    </div>
+            
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+                        This will be a teaching with Bryan Chappel and the teaching team. 4 seated, Bryan standing. We'll use the whiteboard from the Ministry center and lav ...
+                    </div>
+                
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1213327636671090/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div style="flex: 1;">
+                            <div class="project-card-date">Nov 22, 2026</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1212347063656932/f" target="_blank" class="project-card-title" style="font-weight: 600;">
+                            Q4 Frontier Update
+                        </a>
+                    </div>
+            
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+                        Project Title:
+Q4 Frontier Update 
+
+Category:
+Communications
+
+Type:
+Ministry Support
+
+Estimated Start Date:
+Sep 25, 2026
+
+Estimated Due Date:
+Nov 22, ...
+                    </div>
+                
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1212347063656932/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div style="flex: 1;">
+                            <div class="project-card-date">Nov 30, 2026</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1213327701080493/f" target="_blank" class="project-card-title" style="font-weight: 600;">
+                            Unlimited Grace: November 16
+                        </a>
+                    </div>
+            
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+                        This will be a teaching with Bryan Chappel and the teaching team. 4 seated, Bryan standing. We'll use the whiteboard from the Ministry center and lav ...
+                    </div>
+                
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1213327701080493/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div style="flex: 1;">
+                            <div class="project-card-date">Dec 1, 2026</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1212347895231264/f" target="_blank" class="project-card-title" style="font-weight: 600;">
+                            December: Frontier Testimonial
+                        </a>
+                    </div>
+            
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+                        Project Title:
+December: Frontier Testimonial
+
+Category:
+Communications
+
+Type:
+Enriching
+
+Estimated Start Date:
+Oct 1, 2025
+
+Estimated Due Date:
+Dec 1...
+                    </div>
+                
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1212347895231264/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
+                <div class="project-card">
+                    <div class="project-card-header">
+                        <div style="flex: 1;">
+                            <div class="project-card-date">Dec 21, 2026</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <a href="https://app.asana.com/0/0/1213327640391687/f" target="_blank" class="project-card-title" style="font-weight: 600;">
+                            Unlimited Grace: December 7
+                        </a>
+                    </div>
+            
+                    <div style="margin-bottom: 12px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+                        This will be a teaching with Bryan Chappel and the teaching team. 4 seated, Bryan standing. We'll use the whiteboard from the Ministry center and lav ...
+                    </div>
+                
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
+                        <a href="https://app.asana.com/0/0/1213327640391687/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
+                            View in Asana →
+                        </a>
+                    </div>
+                </div>
+            
             </div>
         
+            <button class="view-more-btn" onclick="toggleCards('forecast-grid', this)">View More (12 remaining)</button>
+            
         </div>
 
         <!-- Radar/Spider Chart -->
@@ -3663,8 +4478,8 @@
             if (!timelineContainer) return;
 
             // Real shoots and deadlines data
-            const shoots = [];
-            const deadlines = [];
+            const shoots = [{"name": "WOV - Hanan Betancourt", "datetime": "2026-05-13T13:30:00+00:00", "start_on": null, "due_on": "2026-05-14", "type": "shoot"}, {"name": "Frontier Update: Transporation Initiative", "datetime": "2026-05-14T13:30:00+00:00", "start_on": null, "due_on": "2026-05-18", "type": "shoot"}, {"name": "Discipleship Spotlight Video Testimony", "datetime": "2026-05-14T17:30:00+00:00", "start_on": null, "due_on": "2026-05-28", "type": "shoot"}, {"name": "Perimeter School Goal Scholarship Video", "datetime": "2026-05-15T00:00:00+00:00", "start_on": null, "due_on": "2026-05-18", "type": "shoot"}, {"name": "WOV - Mia Fry", "datetime": "2026-05-20T13:00:00+00:00", "start_on": null, "due_on": "2026-05-21", "type": "shoot"}, {"name": "Unlimited Grace: June 15", "datetime": "2026-06-15T18:00:00+00:00", "start_on": null, "due_on": "2026-06-29", "type": "shoot"}, {"name": "Rush Recap Video", "datetime": "2026-07-13T00:00:00+00:00", "start_on": null, "due_on": null, "type": "shoot"}, {"name": "Unlimited Grace: August 10", "datetime": "2026-08-10T18:00:00+00:00", "start_on": null, "due_on": "2026-08-24", "type": "shoot"}, {"name": "Unlimited Grace: September 14", "datetime": "2026-09-14T18:00:00+00:00", "start_on": null, "due_on": "2026-09-28", "type": "shoot"}, {"name": "Unlimited Grace: October 26", "datetime": "2026-10-26T18:00:00+00:00", "start_on": null, "due_on": "2026-11-09", "type": "shoot"}];
+            const deadlines = [{"name": "WOV - Hanan Betancourt", "start_on": null, "due_date": "2026-05-14", "type": "deadline"}, {"name": "ASK a Pastor \u2014 May 11", "start_on": null, "due_date": "2026-05-14", "type": "deadline"}, {"name": "Updated Membership Class Videos", "start_on": null, "due_date": "2026-05-15", "type": "deadline"}, {"name": "Perimeter School Goal Scholarship Video", "start_on": null, "due_date": "2026-05-18", "type": "deadline"}, {"name": "Frontier Update: Transporation Initiative", "start_on": null, "due_date": "2026-05-18", "type": "deadline"}, {"name": "WOV - Mia Fry", "start_on": null, "due_date": "2026-05-21", "type": "deadline"}];
 
             // Combine and convert to timeline format
             const now = new Date();
@@ -3948,8 +4763,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 animateProgressRing('ringOnTime', 'ringOnTimeValue', 62);
-                animateProgressRing('ringUtilization', 'ringUtilizationValue', 0);
-                animateProgressRing('ringProjects', 'ringProjectsValue', 0, true);
+                animateProgressRing('ringUtilization', 'ringUtilizationValue', 27);
+                animateProgressRing('ringProjects', 'ringProjectsValue', 31, true);
 
                 generateTimeline();
                 generateRadarChart();
