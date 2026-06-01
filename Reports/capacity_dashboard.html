@@ -2449,7 +2449,7 @@
                 <div class="header-text">
                     <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
                     <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: June 01, 2026 at 01:00 PM</p>
+                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: June 01, 2026 at 01:15 PM</p>
                 </div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
                     <span id="themeText">Dark Mode</span>
@@ -2535,15 +2535,15 @@
                         </div>
                     </div>
 
-                    <div class="team-member tooltip capacity-ok" role="listitem" tabindex="0" aria-labelledby="member-nick-clark-name" data-tooltip="Allocated: 15.0% of 100% max">
+                    <div class="team-member tooltip capacity-ok" role="listitem" tabindex="0" aria-labelledby="member-nick-clark-name" data-tooltip="Allocated: 21.0% of 100% max">
                         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
                             <div id="member-nick-clark-name" class="team-member-name">Nick Clark</div>
                             <div class="capacity-status capacity-ok">Available</div>
                         </div>
-                        <div class="team-member-capacity" aria-label="Current capacity utilization">15% / 100% capacity</div>
-                        <div class="progress-bar" role="progressbar" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 15%">
-                            <div class="progress-fill " style="width: 15.0%" aria-hidden="true">
-                                15% allocated
+                        <div class="team-member-capacity" aria-label="Current capacity utilization">21% / 100% capacity</div>
+                        <div class="progress-bar" role="progressbar" aria-valuenow="21" aria-valuemin="0" aria-valuemax="100" aria-label="Capacity utilization: 21%">
+                            <div class="progress-fill " style="width: 21.0%" aria-hidden="true">
+                                21% allocated
                             </div>
                         </div>
                     </div>
@@ -3049,8 +3049,8 @@
                 <!-- Timeline bars -->
                 <div style="display: flex; gap: 3px; height: 60px; align-items: flex-end;">
     
-                    <div style="flex: 1; background: #ffc107; height: 18.7965367965368%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
-                         title="Week 1 (2026-06-01): 14% capacity, 11 tasks">
+                    <div style="flex: 1; background: #ffc107; height: 20.14718614718615%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
+                         title="Week 1 (2026-06-01): 15% capacity, 11 tasks">
                     </div>
         
                     <div style="flex: 1; background: #ffc107; height: 18.515151515151512%; border-radius: 4px 4px 0 0; position: relative; min-width: 8px; cursor: pointer;"
@@ -3233,24 +3233,24 @@
             </div>
             <div class="heatmap-grid">
     
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-01: 15.8% capacity">
+                <div style="background: #fd7e14; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-01: 17.6% capacity">
                     <div style="font-weight: bold;">06/01</div>
+                    <div style="font-size: 9px; margin-top: 2px;">18%</div>
+                </div>
+        
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-02: 16.1% capacity">
+                    <div style="font-weight: bold;">06/02</div>
                     <div style="font-size: 9px; margin-top: 2px;">16%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-02: 14.2% capacity">
-                    <div style="font-weight: bold;">06/02</div>
-                    <div style="font-size: 9px; margin-top: 2px;">14%</div>
-                </div>
-        
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-03: 14.2% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-03: 16.1% capacity">
                     <div style="font-weight: bold;">06/03</div>
-                    <div style="font-size: 9px; margin-top: 2px;">14%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">16%</div>
                 </div>
         
-                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-04: 14.2% capacity">
+                <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-04: 16.1% capacity">
                     <div style="font-weight: bold;">06/04</div>
-                    <div style="font-size: 9px; margin-top: 2px;">14%</div>
+                    <div style="font-size: 9px; margin-top: 2px;">16%</div>
                 </div>
         
                 <div style="background: #ffc107; color: white; padding: 8px; border-radius: 4px; text-align: center; font-size: 11px;" title="2026-06-05: 14.2% capacity">
@@ -4761,7 +4761,7 @@ Dec 1...
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 animateProgressRing('ringOnTime', 'ringOnTimeValue', 41);
-                animateProgressRing('ringUtilization', 'ringUtilizationValue', 31);
+                animateProgressRing('ringUtilization', 'ringUtilizationValue', 32);
                 animateProgressRing('ringProjects', 'ringProjectsValue', 32, true);
 
                 generateTimeline();
