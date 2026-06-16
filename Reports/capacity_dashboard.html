@@ -2449,7 +2449,7 @@
                 <div class="header-text">
                     <h1 id="dashboard-title">Perimeter Studio Dashboard</h1>
                     <p class="subtitle">Video Production Capacity Tracking & Performance Metrics</p>
-                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: June 16, 2026 at 01:45 PM</p>
+                    <p class="timestamp" aria-live="polite" aria-label="Dashboard last updated">Last Updated: June 16, 2026 at 02:00 PM</p>
                 </div>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" aria-describedby="theme-description">
                     <span id="themeText">Dark Mode</span>
@@ -2630,26 +2630,6 @@
                 <div class="project-card">
                     <div class="project-card-header">
                         <div>
-                            <div class="project-card-date">Tue, Jun 16</div>
-                            <div class="project-card-time">2:00 PM</div>
-                        </div>
-                        <span class="project-card-badge">Production</span>
-                    </div>
-                    <div style="margin-bottom: 12px;">
-                        <a href="https://app.asana.com/0/0/1215564520165585/f" target="_blank" class="project-card-title">
-                            WOV - Jun 21 - Sarah Merrick
-                        </a>
-                    </div>
-                    <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #dee2e6;">
-                        <a href="https://app.asana.com/0/0/1215564520165585/f" target="_blank" style="color: #60BBE9; text-decoration: none; font-size: 14px;">
-                            View in Asana →
-                        </a>
-                    </div>
-                </div>
-            
-                <div class="project-card">
-                    <div class="project-card-header">
-                        <div>
                             <div class="project-card-date">Tue, Jun 23</div>
                             <div class="project-card-time">2:30 PM</div>
                         </div>
@@ -2789,7 +2769,7 @@
             
             </div>
         
-            <button class="view-more-btn" onclick="toggleCards('shoots-grid', this)">View More (5 remaining)</button>
+            <button class="view-more-btn" onclick="toggleCards('shoots-grid', this)">View More (4 remaining)</button>
             
         </div>
 
@@ -4265,7 +4245,7 @@ Dec 1...
             if (!timelineContainer) return;
 
             // Real shoots and deadlines data
-            const shoots = [{"name": "WOV - Jun 21 - Sarah Merrick", "datetime": "2026-06-16T18:00:00+00:00", "start_on": null, "due_on": "2026-06-18", "type": "shoot"}, {"name": "WOV - Debbie Mason", "datetime": "2026-06-23T18:30:00+00:00", "start_on": null, "due_on": "2026-06-25", "type": "shoot"}, {"name": "Rush Recap Video", "datetime": "2026-07-13T00:00:00+00:00", "start_on": null, "due_on": null, "type": "shoot"}, {"name": "Unlimited Grace: August 10", "datetime": "2026-08-10T18:00:00+00:00", "start_on": null, "due_on": "2026-08-24", "type": "shoot"}, {"name": "Unlimited Grace: September 14", "datetime": "2026-09-14T18:00:00+00:00", "start_on": null, "due_on": "2026-09-28", "type": "shoot"}, {"name": "Unlimited Grace: October 26", "datetime": "2026-10-26T18:00:00+00:00", "start_on": null, "due_on": "2026-11-09", "type": "shoot"}, {"name": "Unlimited Grace: November 16", "datetime": "2026-11-16T19:00:00+00:00", "start_on": null, "due_on": "2026-11-30", "type": "shoot"}, {"name": "Unlimited Grace: December 7", "datetime": "2026-12-07T19:00:00+00:00", "start_on": null, "due_on": "2026-12-21", "type": "shoot"}];
+            const shoots = [{"name": "WOV - Debbie Mason", "datetime": "2026-06-23T18:30:00+00:00", "start_on": null, "due_on": "2026-06-25", "type": "shoot"}, {"name": "Rush Recap Video", "datetime": "2026-07-13T00:00:00+00:00", "start_on": null, "due_on": null, "type": "shoot"}, {"name": "Unlimited Grace: August 10", "datetime": "2026-08-10T18:00:00+00:00", "start_on": null, "due_on": "2026-08-24", "type": "shoot"}, {"name": "Unlimited Grace: September 14", "datetime": "2026-09-14T18:00:00+00:00", "start_on": null, "due_on": "2026-09-28", "type": "shoot"}, {"name": "Unlimited Grace: October 26", "datetime": "2026-10-26T18:00:00+00:00", "start_on": null, "due_on": "2026-11-09", "type": "shoot"}, {"name": "Unlimited Grace: November 16", "datetime": "2026-11-16T19:00:00+00:00", "start_on": null, "due_on": "2026-11-30", "type": "shoot"}, {"name": "Unlimited Grace: December 7", "datetime": "2026-12-07T19:00:00+00:00", "start_on": null, "due_on": "2026-12-21", "type": "shoot"}];
             const deadlines = [{"name": "WOV - Jun 21 - Sarah Merrick", "start_on": null, "due_date": "2026-06-18", "type": "deadline"}, {"name": "WOV - Debbie Mason", "start_on": null, "due_date": "2026-06-25", "type": "deadline"}];
 
             // Combine and convert to timeline format
